@@ -1,7 +1,7 @@
 /*
 
  ----------------------------------------------------------------------------
- | ripple-oauth: Ripple MicroServices for Authentication Services           |
+ | ripple-auth: Ripple Authentication MicroServices                         |
  |                                                                          |
  | Copyright (c) 2018 Ripple Foundation Community Interest Company          |
  | All rights reserved.                                                     |
@@ -35,9 +35,6 @@ var adminLogin = require('./admin/login');
 var adminRegister = require('./admin/register');
 var adminDocStatus = require('./admin/docStatus');
 
-var path_to_auth;
-var auth_module_name;
-
 function getJWTFromCookie(headers) {
   var cookie = headers.cookie;
   if (!cookie) return {error: 'No Cookies'};
@@ -63,6 +60,9 @@ function getJWTFromCookie(headers) {
 
 module.exports = {
   init: function() {
+    var auth_module_name;
+    var path_to_auth;
+
     //console.log('*** running ripple-auth init() function');
     //console.log('userDefined: ' + JSON.stringify(this.userDefined));
     if (this.userDefined.auth && this.userDefined.auth.type) {
