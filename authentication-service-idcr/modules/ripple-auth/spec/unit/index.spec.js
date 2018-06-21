@@ -8,7 +8,7 @@ const adminLoginHandler = require('../../admin/login');
 const adminRegisterHandler = require('../../admin/register');
 const adminDocStatusHandler = require('../../admin/docStatus');
 
-describe('ripple-auth:', () => {
+describe('ripple-auth', () => {
   let q;
 
   beforeAll(() => {

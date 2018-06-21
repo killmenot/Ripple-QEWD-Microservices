@@ -3,7 +3,7 @@
 const handler = require('../../../admin/docStatus');
 const Worker = require('../mocks/worker');
 
-describe('ripple-auth/admin/docStatus:', () => {
+describe('ripple-auth/admin/docStatus', () => {
   let q;
   let finished;
 

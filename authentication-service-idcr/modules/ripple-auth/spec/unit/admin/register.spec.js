@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const Worker = require('../mocks/worker');
 const handler = require('../../../admin/register');
 
-describe('ripple-auth/admin/register:', () => {
+describe('ripple-auth/admin/register', () => {
   let q;
   let args;
   let finished;
