@@ -1,7 +1,7 @@
 /*
 
  ----------------------------------------------------------------------------
- | ripple-auth0: Ripple MicroServices for Auth0                             |
+ | ripple-oauth-openid: Ripple MicroServices for OAuth OpenId               |
  |                                                                          |
  | Copyright (c) 2018 Ripple Foundation Community Interest Company          |
  | All rights reserved.                                                     |
@@ -11,90 +11,66 @@
  |                                                                          |
  | Author: Rob Tweed, M/Gateway Developments Ltd                            |
  |                                                                          |
- | Licensed under the Apache License, Version 2.0 (the 'License');          |
+ | Licensed under the Apache License, Version 2.0 (the "License");          |
  | you may not use this file except in compliance with the License.         |
  | You may obtain a copy of the License at                                  |
  |                                                                          |
  |     http://www.apache.org/licenses/LICENSE-2.0                           |
  |                                                                          |
  | Unless required by applicable law or agreed to in writing, software      |
- | distributed under the License is distributed on an 'AS IS' BASIS,        |
+ | distributed under the License is distributed on an "AS IS" BASIS,        |
  | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. |
  | See the License for the specific language governing permissions and      |
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  21 July 2018
+  22 July 2018
 
 */
 
 'use strict';
 
-const nock = require('nock');
 const jwt = require('jwt-simple');
-const Worker = require('../mocks/worker');
 const handler = require('../../../handlers/getToken');
+const Worker = require('../mocks/worker');
+const authMock = require('../mocks/auth');
 
-describe('ripple-auth0/handlers/getToken', () => {
+describe('ripple-oauth-openid/handlers/getToken', () => {
   let q;
   let args;
-  let data;
   let finished;
-
-  /*jshint camelcase: false */
-  const authConfig = {
-    type: 'Auth0',
-    domain: 'xxx.eu.auth0.com',
-    client_id: 'xxxxxxxxxxxxxxxx',
-    client_secret: 'yyyyyyyyyyyyyyyyyyyyyyyyyyy',
-    callback_url: 'http://www.example.org/api/auth/token',
-    connections: ['Username-Password-Authentication', 'google-oauth2', 'twitter'],
-    index_url: '/index.html',
-    cookie_name: 'JSESSIONID'
-  };
-  /*jshint camelcase: true */
-
-  function httpMock(data) {
-    /*jshint camelcase: false */
-    nock('https://xxx.eu.auth0.com')
-      .post('/oauth/token', {
-        grant_type: 'authorization_code',
-        client_id: 'xxxxxxxxxxxxxxxx',
-        client_secret: 'yyyyyyyyyyyyyyyyyyyyyyyyyyy',
-        code: 'CODE',
-        redirect_uri: 'http://www.example.org/api/auth/token'
-      })
-      .reply(200, {
-        id_token: jwt.encode(data, 'secret')
-      });
-    /*jshint camelcase: true */
-  }
+  let tokenSet;
+  let data;
 
   beforeEach(() => {
     q = new Worker();
-    q.userDefined.auth = authConfig;
-
-    /*jshint camelcase: false */
-    data = {
-      nhs_number: 'nhsNumber'
-    };
-    /*jshint camelcase: true */
+    q.auth = authMock.mock();
 
     args = {
-      session: {},
-      req: {
-        query: {
-          code: 'CODE'
-        }
-      }
+      req: {},
+      session: {}
     };
     finished = jasmine.createSpy();
+
+    data = {
+      nhsNumber: 'nhsNumber',
+    };
+
+    /*jshint camelcase: false */
+    tokenSet = {
+      refresh_expires_in: 1200,
+      session_state: '0000-000-00-0',
+      id_token: jwt.encode(data, 'secret')
+    };
+    /*jshint camelcase: true */
   });
 
   it('should return correct response', (done) => {
-    httpMock(data);
+    q.auth.client.authorizationCallback.and.returnValue(Promise.resolve(tokenSet));
 
-    finished.and.callFake(() => {
+    handler.call(q, args, finished);
+
+    setTimeout(() => {
       /*jshint camelcase: false */
       expect(finished).toHaveBeenCalledWith({
         ok: true,
@@ -105,19 +81,41 @@ describe('ripple-auth0/handlers/getToken', () => {
       /*jshint camelcase: true */
 
       done();
-    });
+    }, 100);
+  });
+
+  it('should set session vars', (done) => {
+    q.auth.client.authorizationCallback.and.returnValue(Promise.resolve(tokenSet));
 
     handler.call(q, args, finished);
+
+    setTimeout(() => {
+      expect(args.session.authenticated).toBeTruthy();
+      expect(args.session.timeout).toBe(1200);
+      expect(args.session.nhsNumber).toBe('nhsNumber');
+      expect(args.session.role).toBe('phrUser');
+      expect(args.session.uid).toBe('0000-000-00-0');
+
+      /*jshint camelcase: false */
+      data.id_token = tokenSet.id_token;
+      /*jshint camelcase: false */
+
+      expect(args.session.openid).toEqual(data);
+
+      done();
+    }, 100);
   });
 
   it('should return default cookieName', (done) => {
     /*jshint camelcase: false */
-    delete q.userDefined.auth.cookie_name;
+    delete q.auth.config.cookie_name;
     /*jshint camelcase: true */
 
-    httpMock(data);
+    q.auth.client.authorizationCallback.and.returnValue(Promise.resolve(tokenSet));
 
-    finished.and.callFake(() => {
+    handler.call(q, args, finished);
+
+    setTimeout(() => {
       /*jshint camelcase: false */
       expect(finished).toHaveBeenCalledWith({
         ok: true,
@@ -128,19 +126,19 @@ describe('ripple-auth0/handlers/getToken', () => {
       /*jshint camelcase: true */
 
       done();
-    });
-
-    handler.call(q, args, finished);
+    }, 100);
   });
 
   it('should return default cookiePath', (done) => {
     /*jshint camelcase: false */
-    q.userDefined.auth.index_url = '';
+    q.auth.config.index_url = '';
     /*jshint camelcase: true */
 
-    httpMock(data);
+    q.auth.client.authorizationCallback.and.returnValue(Promise.resolve(tokenSet));
 
-    finished.and.callFake(() => {
+    handler.call(q, args, finished);
+
+    setTimeout(() => {
       /*jshint camelcase: false */
       expect(finished).toHaveBeenCalledWith({
         ok: true,
@@ -151,19 +149,19 @@ describe('ripple-auth0/handlers/getToken', () => {
       /*jshint camelcase: true */
 
       done();
-    });
-
-    handler.call(q, args, finished);
+    }, 100);
   });
 
   it('should return custom cookiePath', (done) => {
     /*jshint camelcase: false */
-    q.userDefined.auth.index_url = '/foo/bar/baz.html';
+    q.auth.config.index_url = '/foo/bar/baz.html';
     /*jshint camelcase: true */
 
-    httpMock(data);
+    q.auth.client.authorizationCallback.and.returnValue(Promise.resolve(tokenSet));
 
-    finished.and.callFake(() => {
+    handler.call(q, args, finished);
+
+    setTimeout(() => {
       /*jshint camelcase: false */
       expect(finished).toHaveBeenCalledWith({
         ok: true,
@@ -174,44 +172,20 @@ describe('ripple-auth0/handlers/getToken', () => {
       /*jshint camelcase: true */
 
       done();
-    });
-
-    handler.call(q, args, finished);
+    }, 100);
   });
 
-  it('should set session vars', (done) => {
-    httpMock(data);
-
-    finished.and.callFake(() => {
-      expect(args.session.timeout).toBe(1200);
-      expect(args.session.nhsNumber).toBe('nhsNumber');
-      expect(args.session.role).toBe('IDCR');
-      expect(args.session.uid).toMatch(/^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i);
-      expect(args.session.auth0).toEqual(data);
-
-      done();
-    });
+  it('should handle unhandled rejection', (done) => {
+    q.auth.client.authorizationCallback.and.returnValue(Promise.reject('ERROR MSG'));
 
     handler.call(q, args, finished);
-  });
 
-  it('should set session role to phrUser', (done) => {
-    /*jshint camelcase: false */
-    data = {
-      nhs_number: 'nhsNumber',
-      role: 'PHR'
-    };
-    /*jshint camelcase: true */
-
-    httpMock(data);
-
-    finished.and.callFake(() => {
-      expect(args.session.role).toBe('phrUser');
-      expect(args.session.auth0).toEqual(data);
+    setTimeout(() => {
+      expect(finished).toHaveBeenCalledWith({
+        error: 'ERROR MSG'
+      });
 
       done();
-    });
-
-    handler.call(q, args, finished);
+    }, 100);
   });
 });

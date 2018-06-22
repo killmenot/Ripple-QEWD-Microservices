@@ -1,7 +1,7 @@
 /*
 
  ----------------------------------------------------------------------------
- | ripple-auth0: Ripple MicroServices for Auth0                             |
+ | ripple-oauth-openid: Ripple MicroServices for OAuth OpenId               |
  |                                                                          |
  | Copyright (c) 2018 Ripple Foundation Community Interest Company          |
  | All rights reserved.                                                     |
@@ -24,33 +24,88 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  21 July 2018
+  22 July 2018
 
 */
 
 'use strict';
 
-const handler = require('../../../handlers/test');
+const nock = require('nock');
 const Worker = require('../mocks/worker');
+const authConfig = require('../../authConfig.json');
+const handler = require('../../../handlers/logout');
+const clone = require('../../helpers/utils').clone;
 
-describe('ripple-auth0/handlers/test', () => {
+describe('ripple-oauth-openid/handlers/logout', () => {
   let q;
+  let args;
   let finished;
+
+  function httpMock(data) {
+    /*jshint camelcase: false */
+    nock('https://blue.testlab.nhs.uk')
+      .get('/auth/realms/sandpit/protocol/openid-connect/logout')
+      .query({id_token_hint: 'TOKEN'})
+      .reply(200, data);
+    /*jshint camelcase: true */
+  }
 
   beforeEach(() => {
     q = new Worker();
+    q.userDefined.auth = clone(authConfig);
+
+    /*jshint camelcase: false */
+    args = {
+      session: {
+        openid: {
+          id_token: 'TOKEN'
+        }
+      }
+    };
+    /*jshint camelcase: true */
+
     finished = jasmine.createSpy();
   });
 
-  it('should return response', () => {
-    const args = {};
+  it('should return non ok response when session.openid missed', () => {
+    delete args.session.openid;
 
     handler.call(q, args, finished);
 
     expect(finished).toHaveBeenCalledWith({
-      ok: true,
-      api: 'auth/test',
-      type: 'Auth0'
+      ok: false
     });
+  });
+
+  it('should return non ok response when end_session_endpoint missed', () => {
+    /*jshint camelcase: false */
+    delete q.userDefined.auth.end_session_endpoint;
+    /*jshint camelcase: true */
+
+    handler.call(q, args, finished);
+
+    expect(finished).toHaveBeenCalledWith({
+      ok: false
+    });
+  });
+
+  it('should return ok response', (done) => {
+    const data = {
+      foo: 'bar'
+    };
+    httpMock(data);
+
+    finished.and.callFake(() => {
+      expect(finished).toHaveBeenCalledWith({
+        ok: true,
+        body: {
+          foo: 'bar'
+        }
+      });
+
+      done();
+    });
+
+    handler.call(q, args, finished);
   });
 });

@@ -1,7 +1,7 @@
 /*
 
  ----------------------------------------------------------------------------
- | ripple-auth0: Ripple MicroServices for Auth0                             |
+ | ripple-oauth-openid: Ripple MicroServices for OAuth OpenId               |
  |                                                                          |
  | Copyright (c) 2018 Ripple Foundation Community Interest Company          |
  | All rights reserved.                                                     |
@@ -24,33 +24,32 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  21 July 2018
+  22 July 2018
 
 */
 
 'use strict';
 
-const handler = require('../../../handlers/test');
-const Worker = require('../mocks/worker');
+const Worker = require('./mocks/worker');
+const rippleOAuthOpenid = require('../..');
+const oauthOpenid = require('../../oauth-openid');
 
-describe('ripple-auth0/handlers/test', () => {
+describe('ripple-auth0-openid', () => {
   let q;
-  let finished;
 
   beforeEach(() => {
     q = new Worker();
-    finished = jasmine.createSpy();
   });
 
-  it('should return response', () => {
-    const args = {};
+  describe('#init', () => {
+    beforeEach(() => {
+      spyOn(oauthOpenid, 'init');
+    });
 
-    handler.call(q, args, finished);
+    it('should init auth0 module', () => {
+      rippleOAuthOpenid.init.call(q);
 
-    expect(finished).toHaveBeenCalledWith({
-      ok: true,
-      api: 'auth/test',
-      type: 'Auth0'
+      expect(oauthOpenid.init).toHaveBeenCalledWithContext(q);
     });
   });
 });

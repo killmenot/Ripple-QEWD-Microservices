@@ -1,7 +1,7 @@
 /*
 
  ----------------------------------------------------------------------------
- | ripple-auth0: Ripple MicroServices for Auth0                             |
+ | ripple-oauth-openid: Ripple MicroServices for OAuth OpenId               |
  |                                                                          |
  | Copyright (c) 2018 Ripple Foundation Community Interest Company          |
  | All rights reserved.                                                     |
@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  21 July 2018
+  22 July 2018
 
 */
 
@@ -33,7 +33,7 @@
 const handler = require('../../../handlers/test');
 const Worker = require('../mocks/worker');
 
-describe('ripple-auth0/handlers/test', () => {
+describe('ripple-oauth-openid/handlers/test', () => {
   let q;
   let finished;
 
@@ -49,8 +49,7 @@ describe('ripple-auth0/handlers/test', () => {
 
     expect(finished).toHaveBeenCalledWith({
       ok: true,
-      api: 'auth/test',
-      type: 'Auth0'
+      api: 'oauth/test'
     });
   });
 });
