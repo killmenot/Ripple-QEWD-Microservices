@@ -30,25 +30,6 @@
 
 'use strict';
 
-const handler = require('../../../handlers/logout');
-const Worker = require('../mocks/worker');
-
-describe('ripple-auth0/handlers/logout', () => {
-  let q;
-  let finished;
-
-  beforeEach(() => {
-    q = new Worker();
-    finished = jasmine.createSpy();
-  });
-
-  it('should return correct response', () => {
-    const args = {};
-
-    handler.call(q, args, finished);
-
-    expect(finished).toHaveBeenCalledWith({
-      ok: true
-    });
-  });
-});
+exports.clone = function (obj) {
+  return JSON.parse(JSON.stringify(obj));
+};

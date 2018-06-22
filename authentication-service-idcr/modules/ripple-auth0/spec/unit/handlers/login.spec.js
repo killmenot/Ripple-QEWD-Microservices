@@ -24,13 +24,15 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  21 July 2018
+  22 July 2018
 
 */
 
 'use strict';
 
 const Worker = require('../mocks/worker');
+const authConfig = require('../../support/authConfig.json');
+const clone = require('../utils').clone;
 const handler = require('../../../handlers/login');
 
 describe('ripple-auth0/handlers/login', () => {
@@ -38,34 +40,20 @@ describe('ripple-auth0/handlers/login', () => {
   let args;
   let finished;
 
-  /*jshint camelcase: false */
-  const authConfig = {
-    type: 'Auth0',
-    domain: 'xxx.eu.auth0.com',
-    client_id: 'xxxxxxxxxxxxxxxx',
-    client_secret: 'yyyyyyyyyyyyyyyyyyyyyyyyyyy',
-    callback_url: 'http://www.example.org/api/auth/token',
-    connections: ['Username-Password-Authentication', 'google-oauth2', 'twitter'],
-    index_url: '/index.html',
-    cookie_name: 'JSESSIONID'
-  };
-  /*jshint camelcase: true */
-
   beforeEach(() => {
     q = new Worker();
-    q.userDefined.auth = authConfig;
+    q.userDefined.auth = clone(authConfig);
 
     args = {
       req: {
         query: {}
-      }
+      },
+      session: {}
     };
     finished = jasmine.createSpy();
   });
 
-  it('should return redirectURL', () => {
-    args.session = {};
-
+  it('should return correct response', () => {
     handler.call(q, args, finished);
 
     expect(finished).toHaveBeenCalledWith({
@@ -73,9 +61,13 @@ describe('ripple-auth0/handlers/login', () => {
     });
   });
 
-  it('should return redirectURL without connections', () => {
-    args.session = {};
+  it('should set session authenticated to false', () => {
+    handler.call(q, args, finished);
 
+    expect(args.session.authenticated).toBeFalsy();
+  });
+
+  it('should return correct response when no connections defined', () => {
     delete q.userDefined.auth.connections;
 
     handler.call(q, args, finished);
@@ -83,13 +75,5 @@ describe('ripple-auth0/handlers/login', () => {
     expect(finished).toHaveBeenCalledWith({
       redirectURL: 'https://xxx.eu.auth0.com/authorize?scope=openid profile email&response_type=code&sso=true&client_id=xxxxxxxxxxxxxxxx&redirect_uri=http://www.example.org/api/auth/token&auth0Client=eyJuYW1lIjoicWV3ZC1jbGllbnQiLCJ2ZXJzaW9uIjoiMS4yNi4wIn0='
     });
-  });
-
-  it('should set session authenticated to false', () => {
-    args.session = {};
-
-    handler.call(q, args, finished);
-
-    expect(args.session.authenticated).toBeFalsy();
   });
 });

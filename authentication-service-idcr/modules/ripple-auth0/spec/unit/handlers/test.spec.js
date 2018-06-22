@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  21 July 2018
+  22 July 2018
 
 */
 
@@ -42,7 +42,7 @@ describe('ripple-auth0/handlers/test', () => {
     finished = jasmine.createSpy();
   });
 
-  it('should return response', () => {
+  it('should return correct response', () => {
     const args = {};
 
     handler.call(q, args, finished);

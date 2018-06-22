@@ -35,7 +35,7 @@ const rewire = require('rewire');
 const Worker = require('./mocks/worker');
 const openidClientMock = require('./mocks/openid-client');
 const authConfig = require('../authConfig.json');
-const { __revert__ } = require('../helpers/utils');
+const { __revert__, clone } = require('../helpers/utils');
 
 describe('ripple-oauth-openid/oauth-openid', () => {
   let oAuthOpenid;
@@ -56,7 +56,7 @@ describe('ripple-oauth-openid/oauth-openid', () => {
 
   beforeEach(() => {
     q = new Worker();
-    q.userDefined.auth = authConfig;
+    q.userDefined.auth = clone(authConfig);
 
     clientSpy = jasmine.createSpy();
     issuer = {

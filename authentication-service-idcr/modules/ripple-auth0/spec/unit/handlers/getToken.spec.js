@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  21 July 2018
+  22 July 2018
 
 */
 
@@ -33,6 +33,8 @@
 const nock = require('nock');
 const jwt = require('jwt-simple');
 const Worker = require('../mocks/worker');
+const authConfig = require('../../support/authConfig.json');
+const clone = require('../utils').clone;
 const handler = require('../../../handlers/getToken');
 
 describe('ripple-auth0/handlers/getToken', () => {
@@ -40,19 +42,6 @@ describe('ripple-auth0/handlers/getToken', () => {
   let args;
   let data;
   let finished;
-
-  /*jshint camelcase: false */
-  const authConfig = {
-    type: 'Auth0',
-    domain: 'xxx.eu.auth0.com',
-    client_id: 'xxxxxxxxxxxxxxxx',
-    client_secret: 'yyyyyyyyyyyyyyyyyyyyyyyyyyy',
-    callback_url: 'http://www.example.org/api/auth/token',
-    connections: ['Username-Password-Authentication', 'google-oauth2', 'twitter'],
-    index_url: '/index.html',
-    cookie_name: 'JSESSIONID'
-  };
-  /*jshint camelcase: true */
 
   function httpMock(data) {
     /*jshint camelcase: false */
@@ -72,7 +61,7 @@ describe('ripple-auth0/handlers/getToken', () => {
 
   beforeEach(() => {
     q = new Worker();
-    q.userDefined.auth = authConfig;
+    q.userDefined.auth = clone(authConfig);
 
     /*jshint camelcase: false */
     data = {
@@ -94,7 +83,9 @@ describe('ripple-auth0/handlers/getToken', () => {
   it('should return correct response', (done) => {
     httpMock(data);
 
-    finished.and.callFake(() => {
+    handler.call(q, args, finished);
+
+    setTimeout(() => {
       /*jshint camelcase: false */
       expect(finished).toHaveBeenCalledWith({
         ok: true,
@@ -105,9 +96,7 @@ describe('ripple-auth0/handlers/getToken', () => {
       /*jshint camelcase: true */
 
       done();
-    });
-
-    handler.call(q, args, finished);
+    }, 100);
   });
 
   it('should return default cookieName', (done) => {
@@ -117,7 +106,9 @@ describe('ripple-auth0/handlers/getToken', () => {
 
     httpMock(data);
 
-    finished.and.callFake(() => {
+    handler.call(q, args, finished);
+
+    setTimeout(() => {
       /*jshint camelcase: false */
       expect(finished).toHaveBeenCalledWith({
         ok: true,
@@ -128,9 +119,7 @@ describe('ripple-auth0/handlers/getToken', () => {
       /*jshint camelcase: true */
 
       done();
-    });
-
-    handler.call(q, args, finished);
+    }, 100);
   });
 
   it('should return default cookiePath', (done) => {
@@ -140,7 +129,9 @@ describe('ripple-auth0/handlers/getToken', () => {
 
     httpMock(data);
 
-    finished.and.callFake(() => {
+    handler.call(q, args, finished);
+
+    setTimeout(() => {
       /*jshint camelcase: false */
       expect(finished).toHaveBeenCalledWith({
         ok: true,
@@ -151,9 +142,7 @@ describe('ripple-auth0/handlers/getToken', () => {
       /*jshint camelcase: true */
 
       done();
-    });
-
-    handler.call(q, args, finished);
+    }, 100);
   });
 
   it('should return custom cookiePath', (done) => {
@@ -163,7 +152,9 @@ describe('ripple-auth0/handlers/getToken', () => {
 
     httpMock(data);
 
-    finished.and.callFake(() => {
+    handler.call(q, args, finished);
+
+    setTimeout(() => {
       /*jshint camelcase: false */
       expect(finished).toHaveBeenCalledWith({
         ok: true,
@@ -174,15 +165,15 @@ describe('ripple-auth0/handlers/getToken', () => {
       /*jshint camelcase: true */
 
       done();
-    });
-
-    handler.call(q, args, finished);
+    }, 100);
   });
 
   it('should set session vars', (done) => {
     httpMock(data);
 
-    finished.and.callFake(() => {
+    handler.call(q, args, finished);
+
+    setTimeout(() => {
       expect(args.session.timeout).toBe(1200);
       expect(args.session.nhsNumber).toBe('nhsNumber');
       expect(args.session.role).toBe('IDCR');
@@ -190,9 +181,7 @@ describe('ripple-auth0/handlers/getToken', () => {
       expect(args.session.auth0).toEqual(data);
 
       done();
-    });
-
-    handler.call(q, args, finished);
+    }, 100);
   });
 
   it('should set session role to phrUser', (done) => {
@@ -205,13 +194,13 @@ describe('ripple-auth0/handlers/getToken', () => {
 
     httpMock(data);
 
-    finished.and.callFake(() => {
+    handler.call(q, args, finished);
+
+    setTimeout(() => {
       expect(args.session.role).toBe('phrUser');
       expect(args.session.auth0).toEqual(data);
 
       done();
-    });
-
-    handler.call(q, args, finished);
+    }, 100);
   });
 });

@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  21 July 2018
+  22 July 2018
 
 */
 
@@ -41,7 +41,7 @@ describe('ripple-auth0/auth0', () => {
   });
 
   describe('#init', () => {
-    xit('should init auth0 module', () => {
+    it('should init auth0 module', () => {
       auth0.init.call(q);
     });
   });
