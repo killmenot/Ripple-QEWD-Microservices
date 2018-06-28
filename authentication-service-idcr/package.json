@@ -1,0 +1,20 @@
+{
+  "name": "authentication-service-idcr",
+  "version": "1.0.0",
+  "license": "Apache-2.0",
+  "scripts": {
+    "lint": "jshint spec",
+    "test": "jasmine --config=spec/support/jasmine.json"
+  },
+  "devDependencies": {
+    "faker": "^4.1.0",
+    "jasmine": "^3.1.0",
+    "jasmine-spec-reporter": "^4.1.1",
+    "jshint": "^2.9.5",
+    "qewd": "^2.36.3",
+    "qewd-router": "^1.13.1",
+    "request": "^2.87.0",
+    "supertest": "^3.1.0",
+    "tcp-netx": "^1.0.7-a"
+  }
+}

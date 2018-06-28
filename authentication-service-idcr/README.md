@@ -34,3 +34,16 @@ and matches with its ms-hosts.json configuration.
 
 Note 2: if you're using a Raspberry Pi (RPi), use the RPi-specific Container: *rtweed/qewd-server-rpi*
 
+
+## Testing
+
+Start up this container as a foreground process using the *killmenot/qewd-server* Docker Container:
+
+    sudo docker run -it --rm -p 8085:8080 -v ~/ripple/authentication-service-idcr:/opt/qewd/mapped killmenot/qewd-server:tests
+
+Run integration tests
+
+    npm test
+
+
+
