@@ -34,11 +34,11 @@ const mockery = require('mockery');
 const router = require('qewd-router');
 const Worker = require('./mocks/worker');
 const rippleAuth = require('../..');
-const adminLoginHandler = require('../../admin/login');
-const adminRegisterHandler = require('../../admin/register');
-const adminDocStatusHandler = require('../../admin/docStatus');
+const adminLoginHandler = require('../../lib/admin/login');
+const adminRegisterHandler = require('../../lib/admin/register');
+const adminDocStatusHandler = require('../../lib/admin/docStatus');
 
-describe('ripple-auth', () => {
+describe('ripple-auth/lib/ripple-auth', () => {
   let q;
 
   beforeAll(() => {
@@ -82,12 +82,12 @@ describe('ripple-auth', () => {
           type: 'Auth0'
         };
 
-        mockery.registerMock('../ripple-auth0', authModule);
-        mockery.registerMock('../ripple-auth0/handlers/test', testHandler);
-        mockery.registerMock('../ripple-auth0/handlers/login', loginHandler);
-        mockery.registerMock('../ripple-auth0/handlers/logout', logoutHandler);
-        mockery.registerMock('../ripple-auth0/handlers/getToken', getTokenHandler);
-        mockery.registerMock('../ripple-auth0/handlers/demo', demoHandler);
+        mockery.registerMock('../../ripple-auth0', authModule);
+        mockery.registerMock('../../ripple-auth0/lib/handlers/test', testHandler);
+        mockery.registerMock('../../ripple-auth0/lib/handlers/login', loginHandler);
+        mockery.registerMock('../../ripple-auth0/lib/handlers/logout', logoutHandler);
+        mockery.registerMock('../../ripple-auth0/lib/handlers/getToken', getTokenHandler);
+        mockery.registerMock('../../ripple-auth0/lib/handlers/demo', demoHandler);
       });
 
       it('should init microservice handler', () => {
@@ -127,7 +127,7 @@ describe('ripple-auth', () => {
         authModule = {
           init: jasmine.createSpy()
         };
-        mockery.registerMock('../ripple-auth0', authModule);
+        mockery.registerMock('../../ripple-auth0', authModule);
 
         rippleAuth.init.call(q);
 
@@ -141,11 +141,11 @@ describe('ripple-auth', () => {
           type: 'OpenID Connect'
         };
 
-        mockery.registerMock('../ripple-oauth-openid', authModule);
-        mockery.registerMock('../ripple-oauth-openid/handlers/test', testHandler);
-        mockery.registerMock('../ripple-oauth-openid/handlers/login', loginHandler);
-        mockery.registerMock('../ripple-oauth-openid/handlers/logout', logoutHandler);
-        mockery.registerMock('../ripple-oauth-openid/handlers/getToken', getTokenHandler);
+        mockery.registerMock('../../ripple-oauth-openid', authModule);
+        mockery.registerMock('../../ripple-oauth-openid/lib/handlers/test', testHandler);
+        mockery.registerMock('../../ripple-oauth-openid/lib/handlers/login', loginHandler);
+        mockery.registerMock('../../ripple-oauth-openid/lib/handlers/logout', logoutHandler);
+        mockery.registerMock('../../ripple-oauth-openid/lib/handlers/getToken', getTokenHandler);
       });
 
       it('should init microservice handler', () => {
@@ -182,7 +182,7 @@ describe('ripple-auth', () => {
         authModule = {
           init: jasmine.createSpy()
         };
-        mockery.registerMock('../ripple-oauth-openid', authModule);
+        mockery.registerMock('../../ripple-oauth-openid', authModule);
 
         rippleAuth.init.call(q);
 

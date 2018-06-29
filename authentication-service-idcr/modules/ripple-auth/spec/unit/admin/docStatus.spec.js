@@ -30,10 +30,10 @@
 
 'use strict';
 
-const handler = require('../../../admin/docStatus');
+const handler = require('../../../lib/admin/docStatus');
 const Worker = require('../mocks/worker');
 
-describe('ripple-auth/admin/docStatus', () => {
+describe('ripple-auth/lib/admin/docStatus', () => {
   let q;
   let finished;
 

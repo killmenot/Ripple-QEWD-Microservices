@@ -34,10 +34,10 @@ const nock = require('nock');
 const jwt = require('jwt-simple');
 const Worker = require('../mocks/worker');
 const authConfig = require('../../support/authConfig.json');
-const clone = require('../utils').clone;
-const handler = require('../../../handlers/getToken');
+const { clone } = require('../../helpers/utils');
+const handler = require('../../../lib/handlers/getToken');
 
-describe('ripple-auth0/handlers/getToken', () => {
+describe('ripple-auth0/lib/handlers/getToken', () => {
   let q;
   let args;
   let data;

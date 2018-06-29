@@ -24,25 +24,14 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  22 July 2018
+  29 January 2018
 
 */
 
-'use strict';
+var auth0 = require('./auth0');
 
-const Worker = require('./mocks/worker');
-const auth0 = require('../../lib/auth0');
-
-describe('ripple-auth0/lib/auth0', () => {
-  let q;
-
-  beforeEach(() => {
-    q = new Worker();
-  });
-
-  describe('#init', () => {
-    it('should init auth0 module', () => {
-      auth0.init.call(q);
-    });
-  });
-});
+module.exports = {
+  init: function() {
+    auth0.init.call(this);
+  }
+};

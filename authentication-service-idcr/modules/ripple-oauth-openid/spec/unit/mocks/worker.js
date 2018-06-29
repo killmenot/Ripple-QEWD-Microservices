@@ -20,8 +20,4 @@ module.exports = function (config) {
 
     return new this.documentStore.DocumentNode(documentName, subscripts);
   };
-
-  // this.jwt.handlers = {
-  //   validateRestRequest: jasmine.createSpy()
-  // };
 };

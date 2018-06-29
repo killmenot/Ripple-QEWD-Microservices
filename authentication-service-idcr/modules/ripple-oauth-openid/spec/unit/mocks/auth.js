@@ -1,6 +1,6 @@
 'use strict';
 
-const authConfig = require('../../authConfig.json');
+const authConfig = require('../../support/authConfig.json');
 const clone = require('../../helpers/utils').clone;
 
 module.exports = {

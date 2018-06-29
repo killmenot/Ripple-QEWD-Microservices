@@ -32,10 +32,10 @@
 
 const Worker = require('../mocks/worker');
 const authConfig = require('../../support/authConfig.json');
-const clone = require('../utils').clone;
-const handler = require('../../../handlers/login');
+const { clone } = require('../../helpers/utils');
+const handler = require('../../../lib/handlers/login');
 
-describe('ripple-auth0/handlers/login', () => {
+describe('ripple-auth0/lib/handlers/login', () => {
   let q;
   let args;
   let finished;

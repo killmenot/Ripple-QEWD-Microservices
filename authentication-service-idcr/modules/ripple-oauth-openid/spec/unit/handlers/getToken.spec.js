@@ -31,11 +31,11 @@
 'use strict';
 
 const jwt = require('jwt-simple');
-const handler = require('../../../handlers/getToken');
+const handler = require('../../../lib/handlers/getToken');
 const Worker = require('../mocks/worker');
 const authMock = require('../mocks/auth');
 
-describe('ripple-oauth-openid/handlers/getToken', () => {
+describe('ripple-oauth-openid/lib/handlers/getToken', () => {
   let q;
   let args;
   let finished;

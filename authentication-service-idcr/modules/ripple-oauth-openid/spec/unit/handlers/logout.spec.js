@@ -32,11 +32,11 @@
 
 const nock = require('nock');
 const Worker = require('../mocks/worker');
-const authConfig = require('../../authConfig.json');
-const handler = require('../../../handlers/logout');
-const clone = require('../../helpers/utils').clone;
+const authConfig = require('../../support/authConfig.json');
+const handler = require('../../../lib/handlers/logout');
+const { clone } = require('../../helpers/utils');
 
-describe('ripple-oauth-openid/handlers/logout', () => {
+describe('ripple-oauth-openid/lib/handlers/logout', () => {
   let q;
   let args;
   let finished;

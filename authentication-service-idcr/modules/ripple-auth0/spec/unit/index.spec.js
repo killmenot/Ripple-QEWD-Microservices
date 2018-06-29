@@ -32,7 +32,7 @@
 
 const Worker = require('./mocks/worker');
 const rippleAuth0 = require('../..');
-const auth0 = require('../../auth0');
+const auth0 = require('../../lib/auth0');
 
 describe('ripple-auth0', () => {
   let q;

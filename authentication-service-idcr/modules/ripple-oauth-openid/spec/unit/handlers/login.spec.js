@@ -31,9 +31,9 @@
 'use strict';
 
 const Worker = require('../mocks/worker');
-const handler = require('../../../handlers/login');
+const handler = require('../../../lib/handlers/login');
 
-describe('ripple-oauth-openid/handlers/login', () => {
+describe('ripple-oauth-openid/lib/handlers/login', () => {
   let q;
   let args;
   let finished;

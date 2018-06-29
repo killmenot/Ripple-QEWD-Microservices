@@ -2,13 +2,13 @@
 
 const qewd = require('qewd').master;
 const path = require('path');
-const jwtConfig = require('../../jwt_secret.json');
-const msRoutes = require('../support/routes.json');
+const jwtConfig = require('../../../jwt_secret.json');
+const msRoutes = require('../../support/routes.json');
 const xp = qewd.intercept();
 const q = xp.q;
 
 q.on('start', function () {
-  this.worker.loaderFilePath = path.join(__dirname, '../..', 'node_modules/ewd-qoper8-worker.js');
+  this.worker.loaderFilePath = path.join(__dirname, '../../..', 'node_modules/ewd-qoper8-worker.js');
 });
 
 q.on('started', function () {
@@ -40,7 +40,7 @@ const config = {
 const routes = [
   {
     path: '/api',
-    module: path.join(__dirname, 'handlers'),
+    module: path.join(__dirname, 'local/handlers'),
     errors: {
       notfound: {
         text: 'Resource Not Recognised',

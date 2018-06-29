@@ -1,8 +1,10 @@
 'use strict';
 
+const path = require('path');
 const faker = require('faker');
 const request = require('supertest')('http://localhost:8080');
-const utils = require('../utils');
+const rawRequest = require('request');
+const utils = require('../helpers/utils');
 
 faker.qewd = {
   register: (userType) => {
@@ -24,7 +26,7 @@ describe('integration/authentication-service-idcr:', () => {
   let token = '';
 
   const options = {
-    cwd: __dirname
+    cwd: path.join(__dirname, 'local')
   };
 
   beforeAll((done) => {
@@ -45,7 +47,7 @@ describe('integration/authentication-service-idcr:', () => {
           json: true
         };
 
-        require('request')(options, (err, res) => {
+        rawRequest(options, (err, res) => {
           if (err) {
             return done.fail(err);
           }

@@ -31,9 +31,9 @@
 'use strict';
 
 const Worker = require('../mocks/worker');
-const handler = require('../../../admin/login');
+const handler = require('../../../lib/admin/login');
 
-describe('ripple-auth/admin/login', () => {
+describe('ripple-auth/lib/admin/login', () => {
   let q;
   let args;
   let finished;

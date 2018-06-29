@@ -34,10 +34,10 @@ const nock = require('nock');
 const rewire = require('rewire');
 const Worker = require('./mocks/worker');
 const openidClientMock = require('./mocks/openid-client');
-const authConfig = require('../authConfig.json');
+const authConfig = require('../support/authConfig.json');
 const { __revert__, clone } = require('../helpers/utils');
 
-describe('ripple-oauth-openid/oauth-openid', () => {
+describe('ripple-oauth-openid/lib/oauth-openid', () => {
   let oAuthOpenid;
   let q;
   let openidClient;
@@ -66,7 +66,7 @@ describe('ripple-oauth-openid/oauth-openid', () => {
     openidClient = openidClientMock.mock();
     openidClient.Issuer.and.returnValue(issuer);
 
-    oAuthOpenid = rewire('../../oauth-openid');
+    oAuthOpenid = rewire('../../lib/oauth-openid');
     openidClient.__revert__ = oAuthOpenid.__set__('Issuer', openidClient.Issuer);
 
     httpMock();
@@ -75,7 +75,7 @@ describe('ripple-oauth-openid/oauth-openid', () => {
   afterEach(() => {
     __revert__(openidClient);
 
-    delete require.cache[require.resolve('../../oauth-openid')];
+    delete require.cache[require.resolve('../../lib/oauth-openid')];
   });
 
   describe('#init', () => {

@@ -30,10 +30,10 @@
 
 'use strict';
 
-const handler = require('../../../handlers/logout');
+const handler = require('../../../lib/handlers/logout');
 const Worker = require('../mocks/worker');
 
-describe('ripple-auth0/handlers/logout', () => {
+describe('ripple-auth0/lib/handlers/logout', () => {
   let q;
   let finished;
 
