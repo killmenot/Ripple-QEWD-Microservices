@@ -1,6 +1,7 @@
 {
   "name": "ripple-oauth-openid",
   "version": "1.1.0",
+  "main": "index.js",
   "license": "Apache-2.0",
   "scripts": {
     "lint": "jshint lib spec index.js",

@@ -1,7 +1,7 @@
 /*
 
  ----------------------------------------------------------------------------
- | ripple-auth: Ripple Authentication MicroServices                         |
+ | ripple-auth0: Ripple MicroServices for Auth0                             |
  |                                                                          |
  | Copyright (c) 2018 Ripple Foundation Community Interest Company          |
  | All rights reserved.                                                     |
@@ -24,8 +24,14 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  29 June 2018
+  29 January 2018
 
 */
 
-module.exports = require('./lib/ripple-auth');
+var auth0 = require('./auth0');
+
+module.exports = {
+  init: function() {
+    auth0.init.call(this);
+  }
+};

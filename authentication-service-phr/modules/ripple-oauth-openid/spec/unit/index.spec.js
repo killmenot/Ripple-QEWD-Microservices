@@ -1,7 +1,7 @@
 /*
 
  ----------------------------------------------------------------------------
- | ripple-auth: Ripple Authentication MicroServices                         |
+ | ripple-oauth-openid: Ripple MicroServices for OAuth OpenId               |
  |                                                                          |
  | Copyright (c) 2018 Ripple Foundation Community Interest Company          |
  | All rights reserved.                                                     |
@@ -24,8 +24,32 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  29 June 2018
+  22 July 2018
 
 */
 
-module.exports = require('./lib/ripple-auth');
+'use strict';
+
+const Worker = require('./mocks/worker');
+const rippleOAuthOpenid = require('../..');
+const oauthOpenid = require('../..');
+
+describe('ripple-oauth-openid', () => {
+  let q;
+
+  beforeEach(() => {
+    q = new Worker();
+  });
+
+  describe('#init', () => {
+    beforeEach(() => {
+      spyOn(oauthOpenid, 'init');
+    });
+
+    it('should init auth0 module', () => {
+      rippleOAuthOpenid.init.call(q);
+
+      expect(oauthOpenid.init).toHaveBeenCalledWithContext(q);
+    });
+  });
+});

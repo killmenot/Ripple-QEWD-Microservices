@@ -1,7 +1,7 @@
 /*
 
  ----------------------------------------------------------------------------
- | ripple-auth: Ripple Authentication MicroServices                         |
+ | ripple-oauth-openid: Ripple MicroServices for OAuth OpenId               |
  |                                                                          |
  | Copyright (c) 2018 Ripple Foundation Community Interest Company          |
  | All rights reserved.                                                     |
@@ -24,8 +24,17 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  29 June 2018
+  21 June 2018
 
 */
 
-module.exports = require('./lib/ripple-auth');
+'use strict';
+
+exports.clone = function (obj) {
+  return JSON.parse(JSON.stringify(obj));
+};
+
+exports.__revert__ = function (obj) {
+  obj.__revert__();
+  delete obj.__revert__;
+};

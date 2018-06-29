@@ -1,7 +1,7 @@
 /*
 
  ----------------------------------------------------------------------------
- | ripple-auth: Ripple Authentication MicroServices                         |
+ | ripple-oauth-openid: Ripple MicroServices for OAuth OpenId               |
  |                                                                          |
  | Copyright (c) 2018 Ripple Foundation Community Interest Company          |
  | All rights reserved.                                                     |
@@ -24,8 +24,45 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  29 June 2018
+  22 July 2018
 
 */
 
-module.exports = require('./lib/ripple-auth');
+'use strict';
+
+const Worker = require('../mocks/worker');
+const handler = require('../../../lib/handlers/login');
+
+describe('ripple-oauth-openid/lib/handlers/login', () => {
+  let q;
+  let args;
+  let finished;
+
+  beforeEach(() => {
+    q = new Worker();
+    q.auth = {
+      getRedirectURL: jasmine.createSpy()
+    };
+
+    args = {
+      session: {}
+    };
+    finished = jasmine.createSpy();
+  });
+
+  it('should return redirectURL', () => {
+    q.auth.getRedirectURL.and.returnValue('http://exanmple.org');
+
+    handler.call(q, args, finished);
+
+    expect(finished).toHaveBeenCalledWith({
+      redirectURL: 'http://exanmple.org'
+    });
+  });
+
+  it('should set session authenticated to false', () => {
+    handler.call(q, args, finished);
+
+    expect(args.session.authenticated).toBeFalsy();
+  });
+});

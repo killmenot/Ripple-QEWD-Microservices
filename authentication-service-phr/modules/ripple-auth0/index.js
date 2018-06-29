@@ -24,14 +24,8 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  29 January 2018
+  29 June 2018
 
 */
 
-var auth0 = require('./auth0');
-
-module.exports = {
-  init: function() {
-    auth0.init.call(this);
-  }
-};
+module.exports = require('./lib');

@@ -24,8 +24,10 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  29 June 2018
+  22 June 2018
 
 */
 
-module.exports = require('./lib/ripple-auth');
+'use strict';
+
+require('jasmine-spy-matchers');

@@ -1,7 +1,7 @@
 /*
 
  ----------------------------------------------------------------------------
- | ripple-auth: Ripple Authentication MicroServices                         |
+ | ripple-auth0: Ripple MicroServices for Auth0                             |
  |                                                                          |
  | Copyright (c) 2018 Ripple Foundation Community Interest Company          |
  | All rights reserved.                                                     |
@@ -24,8 +24,34 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  29 June 2018
+  22 July 2018
 
 */
 
-module.exports = require('./lib/ripple-auth');
+'use strict';
+
+const DocumentStore = require('ewd-document-store');
+const DbGlobals = require('ewd-memory-globals');
+
+module.exports = function (config) {
+  this.db = new DbGlobals();
+  this.documentStore = new DocumentStore(this.db);
+
+  this.jwt = {};
+  this.userDefined = {
+    config: config
+  };
+
+  this.db.reset = () => this.db.store.reset();
+  this.db.use = (documentName, ...subscripts) => {
+    if (subscripts.length === 1 && Array.isArray(subscripts[0])) {
+      subscripts = subscripts[0];
+    }
+
+    return new this.documentStore.DocumentNode(documentName, subscripts);
+  };
+
+  this.jwt.handlers = {
+    validateRestRequest: jasmine.createSpy()
+  };
+};
