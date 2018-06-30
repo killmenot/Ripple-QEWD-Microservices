@@ -36,15 +36,15 @@ const authConfig = require('../../support/authConfig.json');
 const handler = require('../../../lib/handlers/logout');
 const { clone } = require('../../helpers/utils');
 
-fdescribe('ripple-oauth-openid/lib/handlers/logout', () => {
+describe('ripple-oauth-openid/lib/handlers/logout', () => {
   let q;
   let args;
   let finished;
 
   function httpMock(data) {
     /*jshint camelcase: false */
-    nock('https://blue.testlab.nhs.uk')
-      .get('/auth/realms/sandpit/protocol/openid-connect/logout')
+    nock('https://keycloak.dev1.signin.nhs.uk')
+      .get('/cicauth/realms/NHS/protocol/openid-connect/logout')
       .query({id_token_hint: 'TOKEN'})
       .reply(200, data);
     /*jshint camelcase: true */
@@ -67,16 +67,6 @@ fdescribe('ripple-oauth-openid/lib/handlers/logout', () => {
     finished = jasmine.createSpy();
   });
 
-  it('should return non ok response when session.openid missed', () => {
-    delete args.session.openid;
-
-    handler.call(q, args, finished);
-
-    expect(finished).toHaveBeenCalledWith({
-      ok: false
-    });
-  });
-
   it('should return non ok response when end_session_endpoint missed', () => {
     /*jshint camelcase: false */
     delete q.userDefined.auth.end_session_endpoint;
@@ -89,18 +79,40 @@ fdescribe('ripple-oauth-openid/lib/handlers/logout', () => {
     });
   });
 
-  it('should return ok response', (done) => {
-    const data = {
-      foo: 'bar'
-    };
+  it('should return redirectURL when logout approach is client', () => {
+    /*jshint camelcase: false */
+    q.userDefined.auth.logout_approach = 'client';
+    /*jshint camelcase: true */
+
+    handler.call(q, args, finished);
+
+    expect(finished).toHaveBeenCalledWith({
+      redirectURL: [
+        'https://keycloak.dev1.signin.nhs.uk/cicauth/realms/NHS/protocol/openid-connect/logout',
+        '?id_token_hint=TOKEN',
+        '&post_logout_redirect_uri=http://example.org'
+      ].join('')
+    });
+  });
+
+  it('should return non ok response when session.openid not set', () => {
+    args.session.openid = '';
+
+    handler.call(q, args, finished);
+
+    expect(finished).toHaveBeenCalledWith({
+      ok: false
+    });
+  });
+
+  it('should return ok response with redirectURL', (done) => {
+    const data = {};
     httpMock(data);
 
     finished.and.callFake(() => {
       expect(finished).toHaveBeenCalledWith({
         ok: true,
-        body: {
-          foo: 'bar'
-        }
+        redirectURL: 'http://example.org'
       });
 
       done();

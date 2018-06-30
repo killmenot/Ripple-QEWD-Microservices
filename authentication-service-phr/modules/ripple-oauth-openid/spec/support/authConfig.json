@@ -1,18 +1,20 @@
 {
   "type": "OpenID Connect",
-  "client_id": "xxxxx",
-  "client_secret": "yyyyyyyyyyyyyyyyyy",
-  "callback_url": "http://www.example.org/api/auth/token",
+  "client_id": "xxxxxxxxx",
+  "client_secret": "yyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+  "callback_url": "http://example.org/api/auth/token",
   "scope": {
     "login": "openid"
   },
-  "issuer": "https://blue.testlab.nhs.uk/auth/realms/sandpit",
-  "authorization_endpoint": "https://blue.testlab.nhs.uk/auth/realms/sandpit/protocol/openid-connect/auth",
-  "token_endpoint": "https://blue.testlab.nhs.uk/auth/realms/sandpit/protocol/openid-connect/token",
-  "userinfo_endpoint": "https://blue.testlab.nhs.uk/auth/realms/sandpit/protocol/openid-connect/userinfo",
-  "introspection_endpoint": "https://blue.testlab.nhs.uk/auth/realms/sandpit/protocol/openid-connect/token/introspect",
-  "jwks_endpoint": "https://blue.testlab.nhs.uk/auth/realms/sandpit/protocol/openid-connect/certs",
-  "end_session_endpoint": "https://blue.testlab.nhs.uk/auth/realms/sandpit/protocol/openid-connect/logout",
+  "issuer": "https://keycloak.dev1.signin.nhs.uk/cicauth/realms/NHS",
+  "authorization_endpoint": "https://keycloak.dev1.signin.nhs.uk/cicauth/realms/NHS/protocol/openid-connect/auth",
+  "token_endpoint": "https://keycloak.dev1.signin.nhs.uk/cicauth/realms/NHS/protocol/openid-connect/token",
+  "userinfo_endpoint": "https://keycloak.dev1.signin.nhs.uk/cicauth/realms/NHS/protocol/openid-connect/userinfo",
+  "introspection_endpoint": "https://keycloak.dev1.signin.nhs.uk/cicauth/realms/NHS/protocol/openid-connect/token/introspect",
+  "jwks_endpoint": "https://keycloak.dev1.signin.nhs.uk/cicauth/realms/NHS/protocol/openid-connect/certs",
+  "end_session_endpoint": "https://keycloak.dev1.signin.nhs.uk/cicauth/realms/NHS/protocol/openid-connect/logout",
   "index_url": "/index.html",
-  "cookie_name": "JSESSIONID"
+  "cookie_name": "JSESSIONID",
+  "logout_approach": "server",
+  "post_logout_redirect_uri": "http://example.org"
 }

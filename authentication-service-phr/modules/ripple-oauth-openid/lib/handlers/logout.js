@@ -42,7 +42,7 @@ module.exports = function(args, finished) {
   if (this.userDefined.auth.logout_approach === 'client') {
 
     uri = uri + '?id_token_hint=' + id_token;
-    uri = url + '&post_logout_redirect_uri=' + this.userDefined.auth.post_logout_redirect_uri;
+    uri = uri + '&post_logout_redirect_uri=' + this.userDefined.auth.post_logout_redirect_uri;
 
     return finished({
       //redirectURL: 'http://www.mgateway.com:8089/session/end'

@@ -46,8 +46,8 @@ describe('ripple-oauth-openid/lib/oauth-openid', () => {
 
   function httpMock() {
     /*jshint camelcase: false */
-    nock('https://blue.testlab.nhs.uk')
-      .get('/auth/realms/sandpit')
+    nock('https://keycloak.dev1.signin.nhs.uk')
+      .get('/cicauth/realms/NHS')
       .reply(200, {
         public_key: 'CONTENT'
       });
@@ -103,12 +103,12 @@ describe('ripple-oauth-openid/lib/oauth-openid', () => {
       setTimeout(() => {
         /*jshint camelcase: false */
         expect(openidClient.Issuer).toHaveBeenCalledWith({
-          issuer: 'https://blue.testlab.nhs.uk/auth/realms/sandpit',
-          authorization_endpoint: 'https://blue.testlab.nhs.uk/auth/realms/sandpit/protocol/openid-connect/auth',
-          token_endpoint: 'https://blue.testlab.nhs.uk/auth/realms/sandpit/protocol/openid-connect/token',
-          userinfo_endpoint: 'https://blue.testlab.nhs.uk/auth/realms/sandpit/protocol/openid-connect/userinfo',
-          introspection_endpoint: 'https://blue.testlab.nhs.uk/auth/realms/sandpit/protocol/openid-connect/token/introspect',
-          jwks_uri: 'https://blue.testlab.nhs.uk/auth/realms/sandpit/protocol/openid-connect/certs'
+          issuer: 'https://keycloak.dev1.signin.nhs.uk/cicauth/realms/NHS',
+          authorization_endpoint: 'https://keycloak.dev1.signin.nhs.uk/cicauth/realms/NHS/protocol/openid-connect/auth',
+          token_endpoint: 'https://keycloak.dev1.signin.nhs.uk/cicauth/realms/NHS/protocol/openid-connect/token',
+          userinfo_endpoint: 'https://keycloak.dev1.signin.nhs.uk/cicauth/realms/NHS/protocol/openid-connect/userinfo',
+          introspection_endpoint: 'https://keycloak.dev1.signin.nhs.uk/cicauth/realms/NHS/protocol/openid-connect/token/introspect',
+          jwks_uri: 'https://keycloak.dev1.signin.nhs.uk/cicauth/realms/NHS/protocol/openid-connect/certs'
         });
         /*jshint camelcase: true */
 
@@ -126,8 +126,8 @@ describe('ripple-oauth-openid/lib/oauth-openid', () => {
       setTimeout(() => {
         /*jshint camelcase: false */
         expect(clientSpy).toHaveBeenCalledWith({
-          client_id: 'xxxxx',
-          client_secret: 'yyyyyyyyyyyyyyyyyy'
+          client_id: 'xxxxxxxxx',
+          client_secret: 'yyyyyyyyyyyyyyyyyyyyyyyyyyyyy'
         });
         /*jshint camelcase: true */
 
@@ -174,7 +174,7 @@ describe('ripple-oauth-openid/lib/oauth-openid', () => {
 
         /*jshint camelcase: false */
         expect(client.authorizationUrl).toHaveBeenCalledWith({
-          redirect_uri: 'http://www.example.org/api/auth/token',
+          redirect_uri: 'http://example.org/api/auth/token',
           scope: ['scope'],
         });
         /*jshint camelcase: true */
