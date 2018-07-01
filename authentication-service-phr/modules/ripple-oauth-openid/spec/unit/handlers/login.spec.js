@@ -51,12 +51,12 @@ describe('ripple-oauth-openid/lib/handlers/login', () => {
   });
 
   it('should return redirectURL', () => {
-    q.auth.getRedirectURL.and.returnValue('http://exanmple.org');
+    q.auth.getRedirectURL.and.returnValue('http://example.org');
 
     handler.call(q, args, finished);
 
     expect(finished).toHaveBeenCalledWith({
-      redirectURL: 'http://exanmple.org'
+      redirectURL: 'http://example.org'
     });
   });
 

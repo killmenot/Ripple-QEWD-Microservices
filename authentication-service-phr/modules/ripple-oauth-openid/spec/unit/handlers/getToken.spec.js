@@ -53,7 +53,10 @@ describe('ripple-oauth-openid/lib/handlers/getToken', () => {
     finished = jasmine.createSpy();
 
     data = {
-      nhsNumber: 'nhsNumber',
+      nhsNumber: '943-476-5919',
+      email: 'john.doe@examle.org',
+      iat: 1530107787,
+      exp: 1530143787
     };
 
     /*jshint camelcase: false */
@@ -90,18 +93,54 @@ describe('ripple-oauth-openid/lib/handlers/getToken', () => {
     handler.call(q, args, finished);
 
     setTimeout(() => {
-      expect(args.session.authenticated).toBeTruthy();
-      expect(args.session.timeout).toBe(1200);
-      expect(args.session.nhsNumber).toBe('nhsNumber');
-      expect(args.session.role).toBe('phrUser');
-      expect(args.session.uid).toBe('0000-000-00-0');
-
       /*jshint camelcase: false */
-      data.id_token = tokenSet.id_token;
+      expect(args.session).toEqual({
+        authenticated: true,
+        nhsNumber: '943-476-5919',
+        email: 'john.doe@examle.org',
+        timeout: 1200,
+        role: 'phrUser',
+        uid: '0000-000-00-0',
+        openid: {
+          nhsNumber: '943-476-5919',
+          email: 'john.doe@examle.org',
+          iat: 1530107787,
+          exp: 1530143787,
+          id_token: tokenSet.id_token
+        }
+      })
+      /*jshint camelcase: true */
+      done();
+    }, 100);
+  });
+
+  it('should set session vars when refresh_expires_in not returned', (done) => {
+    /*jshint camelcase: false */
+    delete tokenSet.refresh_expires_in;
+    /*jshint camelcase: true */
+
+    q.auth.client.authorizationCallback.and.returnValue(Promise.resolve(tokenSet));
+
+    handler.call(q, args, finished);
+
+    setTimeout(() => {
       /*jshint camelcase: false */
-
-      expect(args.session.openid).toEqual(data);
-
+      expect(args.session).toEqual({
+        authenticated: true,
+        nhsNumber: '943-476-5919',
+        email: 'john.doe@examle.org',
+        timeout: 36000,
+        role: 'phrUser',
+        uid: '0000-000-00-0',
+        openid: {
+          nhsNumber: '943-476-5919',
+          email: 'john.doe@examle.org',
+          iat: 1530107787,
+          exp: 1530143787,
+          id_token: tokenSet.id_token
+        }
+      })
+      /*jshint camelcase: true */
       done();
     }, 100);
   });

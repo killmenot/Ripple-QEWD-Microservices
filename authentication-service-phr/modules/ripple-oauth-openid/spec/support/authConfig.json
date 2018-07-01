@@ -1,6 +1,6 @@
 {
   "type": "OpenID Connect",
-  "client_id": "xxxxxxxxx",
+  "client_id": "s6BhdRkqt3",
   "client_secret": "yyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
   "callback_url": "http://example.org/api/auth/token",
   "scope": {

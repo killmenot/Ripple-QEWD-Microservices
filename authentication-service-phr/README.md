@@ -38,3 +38,24 @@ Note 3: You'll need to obtain an account on the Citizen Id service - you should 
 *~/ripple/authentication-service-phr/userDefined-openid.json*
 
 
+## Testing
+
+Running integration tests requires some additional steps
+
+You must ensure that auth0 testing endpoint works. To do it, just open [https://oauth-openid-testing.herokuapp.com/healthcheck](https://oauth-openid-testing.herokuapp.com/healthcheck) in the browser. You should the similar response:
+
+    {"ok":true,"timestamp":1530277721964}
+
+Next, you should start up this container as a foreground process using the *killmenot/qewd-server* Docker Container that created for integration testing purpose only:
+
+    sudo docker run -it --rm -p 8085:8080 -v ~/ripple/authentication-service-phr:/opt/qewd/mapped killmenot/qewd-server:tests
+
+Then you should start redis server at your local machine:
+
+    redis-server
+
+Now, you can run integration tests:
+
+    npm test
+
+

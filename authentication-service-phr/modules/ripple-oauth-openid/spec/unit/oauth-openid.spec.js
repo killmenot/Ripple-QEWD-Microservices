@@ -126,7 +126,7 @@ describe('ripple-oauth-openid/lib/oauth-openid', () => {
       setTimeout(() => {
         /*jshint camelcase: false */
         expect(clientSpy).toHaveBeenCalledWith({
-          client_id: 'xxxxxxxxx',
+          client_id: 's6BhdRkqt3',
           client_secret: 'yyyyyyyyyyyyyyyyyyyyyyyyyyyyy'
         });
         /*jshint camelcase: true */
