@@ -32,7 +32,7 @@
 
 const Worker = require('./mocks/worker');
 const rippleOAuthOpenid = require('../..');
-const oauthOpenid = require('../..');
+const oauthOpenid = require('../../lib/oauth-openid');
 
 describe('ripple-oauth-openid', () => {
   let q;
