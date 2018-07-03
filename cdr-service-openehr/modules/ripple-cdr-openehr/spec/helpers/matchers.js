@@ -28,4 +28,6 @@
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+require('jasmine-spy-matchers');

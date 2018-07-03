@@ -57,7 +57,7 @@ function edit(args, finished) {
   if (!doc.exists) return finished({error: 'Invalid sourceId'});
 
   var payload = args.req.body;
-  
+
   if (!payload.author || payload.author === '') {
     return finished({error: 'Author missing or empty'});
   }

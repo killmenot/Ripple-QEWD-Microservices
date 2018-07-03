@@ -34,7 +34,7 @@ var template = require('qewd-template');
 var getHeadingByJumper;
 
 try {
-  getHeadingByJumper = require('../../ripple-openehr-jumper/lib/getHeadingFromOpenEHRServer');
+  getHeadingByJumper = require('../../../ripple-openehr-jumper/lib/getHeadingFromOpenEHRServer');
 }
 catch(err) {
   console.log('!*!*!*!*! Error - unable to load ripple-openehr-jumper/lib/getHeadingFromOpenEHRServer');
@@ -103,7 +103,7 @@ function getHeading(nhsNo, heading, host, session, openEHRSession, callback) {
     logResponse: false
   };
 
-  params.queryString = getTransformedAQL.call(this, host, nhsNo, aql[heading]);  
+  params.queryString = getTransformedAQL.call(this, host, nhsNo, aql[heading]);
 
   params.processBody = function(body) {
     console.log(new Date().getTime() + ' response received from ' + host + ': ' + heading);
@@ -121,7 +121,7 @@ function getHeading(nhsNo, heading, host, session, openEHRSession, callback) {
     var headingCache = session.data.$('headings');
     var byPatientIdCache = headingCache.$(['byPatientId', nhsNo, heading]);
     var bySourceIdCache = headingCache.$(['bySourceId']);
-    
+
     body.resultSet.forEach(function(result) {
       if (heading === 'counts') {
         result.uid = result.ehrId + '::';

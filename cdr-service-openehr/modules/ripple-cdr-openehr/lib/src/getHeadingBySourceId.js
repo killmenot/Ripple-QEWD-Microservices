@@ -32,7 +32,7 @@ var headingHelpers = require('./headingHelpers');
 var transform = require('qewd-transform-json').transform;
 var headingMap = {};
 try {
-  getFormattedRecordFromCache = require('../../ripple-openehr-jumper/lib/getFormattedRecordFromCache');
+  getFormattedRecordFromCache = require('../../../ripple-openehr-jumper/lib/getFormattedRecordFromCache');
 }
 catch(err) {
   console.log('!*!*!*! unable to load module getFormattedRecordFromCache *!*!*!*!');
@@ -66,7 +66,7 @@ module.exports = function(sourceId, session, format) {
   }
 
   if (!synopsisField) synopsisField = headingMap[heading].textFieldName;
-  if (!summaryFields) summaryFields = headingMap[heading].headingTableFields.slice(0); 
+  if (!summaryFields) summaryFields = headingMap[heading].headingTableFields.slice(0);
 
   //console.log('getHeadingBySourceId: ');
   //console.log('sourceId: ' + sourceId);
