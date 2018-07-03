@@ -30,4 +30,4 @@
 
 'use strict';
 
-module.exports = require('./lib/ripple-conductor-phr');
+require('jasmine-spy-matchers');

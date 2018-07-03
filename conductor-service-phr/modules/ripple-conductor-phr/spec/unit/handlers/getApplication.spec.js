@@ -1,7 +1,7 @@
 /*
 
  ----------------------------------------------------------------------------
- | ripple-conductor-phr: Ripple PHR Conductor MicroService                  |
+ | ripple-admin: Ripple User Administration MicroService                    |
  |                                                                          |
  | Copyright (c) 2018 Ripple Foundation Community Interest Company          |
  | All rights reserved.                                                     |
@@ -24,15 +24,35 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  11 January 2018
+  3 July 2018
 
 */
 
-var routeDef = require('./routes.json');
-var routes = [];
-routeDef.forEach(function(route) {
-  route.handler = require('./handlers/' + route.use);
-  delete route.use;
-   routes.push(route);
+'use strict';
+const Worker = require('../../mocks/worker');
+const handler = require('../../../lib/handlers/getApplication');
+
+describe('ripple-conductor-phr/lib/handlers/getApplication', () => {
+  let q;
+  let args;
+  let finished;
+
+  beforeEach(() => {
+    q = new Worker();
+
+    args = {};
+    finished = jasmine.createSpy();
+  });
+
+  afterEach(() => {
+    q.db.reset();
+  });
+
+  it('should respond with correct response', () => {
+    handler.call(q, args, finished);
+
+    expect(finished).toHaveBeenCalledWith({
+      themeColor: ''
+    });
+  });
 });
-module.exports = routes;

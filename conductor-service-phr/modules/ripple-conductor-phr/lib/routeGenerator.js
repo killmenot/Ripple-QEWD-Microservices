@@ -24,10 +24,15 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  3 July 2018
+  11 January 2018
 
 */
 
-'use strict';
-
-module.exports = require('./lib/ripple-conductor-phr');
+var routeDef = require('../routes.json');
+var routes = [];
+routeDef.forEach(function(route) {
+  route.handler = require('./handlers/' + route.use);
+  delete route.use;
+   routes.push(route);
+});
+module.exports = routes;

@@ -24,10 +24,39 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  3 July 2018
+  31 January 2018
 
 */
 
-'use strict';
+var router = require('qewd-router');
+var routes = require('./routeGenerator');
 
-module.exports = require('./lib/ripple-conductor-phr');
+module.exports = {
+  restModule: true,
+  init: function() {
+    routes = router.initialise(routes, module.exports);
+  },
+
+  beforeMicroServiceHandler: function(req, finished) {
+    console.log('beforeMicroServiceHandler: ' + JSON.stringify(req));
+  },
+  /*
+  workerResponseHandlers: {
+    initialise: function(message) {
+
+      var client;
+      for (var url in this.u_services.clients) {
+        client = this.u_services.clients[url];
+        client.send({
+          type: 'test',
+          hello: 'from primary',
+          token: client.token
+        });
+      }
+
+      console.log('*** initialise worker response handler: ' + JSON.stringify(message));
+      return {hello: 'world'};
+    }
+  }
+  */
+};

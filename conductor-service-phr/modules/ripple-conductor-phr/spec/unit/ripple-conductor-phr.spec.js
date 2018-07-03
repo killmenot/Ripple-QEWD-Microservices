@@ -1,7 +1,7 @@
 /*
 
  ----------------------------------------------------------------------------
- | ripple-conductor-phr: Ripple PHR Conductor MicroService                  |
+ | ripple-admin: Ripple User Administration MicroService                    |
  |                                                                          |
  | Copyright (c) 2018 Ripple Foundation Community Interest Company          |
  | All rights reserved.                                                     |
@@ -30,4 +30,58 @@
 
 'use strict';
 
-module.exports = require('./lib/ripple-conductor-phr');
+const router = require('qewd-router');
+const Worker = require('../mocks/worker');
+const rippleConductorPhr = require('../..');
+
+describe('ripple-conductor-phr/lib/ripple-conductor-phr', () => {
+  let q;
+
+  beforeEach(() => {
+    q = new Worker();
+  });
+
+  afterEach(() => {
+    q.db.reset();
+  });
+
+  describe('restModule', () => {
+    it('should be true', () => {
+      expect(rippleConductorPhr.restModule).toBeTruthy();
+    });
+  });
+
+  describe('#init', () => {
+    it('should initialize routes using qewd-router', () => {
+      const routes = [
+        {
+          path: '/api/test',
+          method: 'GET',
+          handler: jasmine.any(Function)
+        },
+        {
+          path: '/api/application',
+          method: 'GET',
+          handler: jasmine.any(Function)
+        }
+      ];
+
+      spyOn(router, 'initialise');
+
+      rippleConductorPhr.init.call(q);
+
+      expect(router.initialise).toHaveBeenCalledWith(routes, rippleConductorPhr);
+    });
+  });
+
+  describe('#beforeMicroServiceHandler', () => {
+    it('should be defined', () => {
+      const args = {};
+      const finished = jasmine.createSpy();
+
+      rippleConductorPhr.beforeMicroServiceHandler.call(q, args, finished);
+
+      expect(rippleConductorPhr.beforeMicroServiceHandler).toBeDefined();
+    });
+  });
+});
