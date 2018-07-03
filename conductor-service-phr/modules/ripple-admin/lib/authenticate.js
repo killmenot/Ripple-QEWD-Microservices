@@ -28,8 +28,8 @@
 
 */
 
-var validation = require('../utilities/validation');
-var errorHandler = require('../utilities/errorHandler');
+var validation = require('./utilities/validation');
+var errorHandler = require('./utilities/errorHandler');
 var bcrypt = require('bcrypt');
 var emailValidator = require('email-validator');
 

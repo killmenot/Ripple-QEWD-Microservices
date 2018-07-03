@@ -117,7 +117,7 @@ module.exports = {
               }
             });
           }
-          
+
           deleteARecord(0);
 
           //finished(body);
@@ -140,7 +140,7 @@ module.exports = {
       if (this.userDefined.phr && this.userDefined.phr.homepage) {
         phr = this.userDefined.phr.homepage;
       }
-      
+
       finished({
         ripple: ripple,
         phr: phr
@@ -149,7 +149,7 @@ module.exports = {
 
     /*
     login: function(messageObj, session, send, finished) {
-       
+
       var username = messageObj.params.username;
       if (!username || username === '') {
         return finished({error: 'You must enter a username'});
