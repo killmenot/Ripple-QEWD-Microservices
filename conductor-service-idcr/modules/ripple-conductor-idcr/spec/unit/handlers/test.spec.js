@@ -1,7 +1,7 @@
 /*
 
  ----------------------------------------------------------------------------
- | ripple-phr-primary: Ripple MicroServices for Primary Server              |
+ | ripple-admin: Ripple User Administration MicroService                    |
  |                                                                          |
  | Copyright (c) 2018 Ripple Foundation Community Interest Company          |
  | All rights reserved.                                                     |
@@ -29,5 +29,31 @@
 */
 
 'use strict';
+const Worker = require('../../mocks/worker');
+const handler = require('../../../lib/handlers/test');
 
-module.exports = require('./lib/ripple-conductor-idcr');
+describe('ripple-conductor-idcr/lib/handlers/test', () => {
+  let q;
+  let args;
+  let finished;
+
+  beforeEach(() => {
+    q = new Worker();
+
+    args = {};
+    finished = jasmine.createSpy();
+  });
+
+  afterEach(() => {
+    q.db.reset();
+  });
+
+  it('should respond with correct response', () => {
+    handler.call(q, args, finished);
+
+    expect(finished).toHaveBeenCalledWith({
+      ok: true,
+      api: 'test'
+    });
+  });
+});

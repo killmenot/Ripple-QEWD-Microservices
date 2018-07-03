@@ -1,7 +1,7 @@
 /*
 
  ----------------------------------------------------------------------------
- | ripple-phr-primary: Ripple MicroServices for Primary Server              |
+ | ripple-admin: Ripple User Administration MicroService                    |
  |                                                                          |
  | Copyright (c) 2018 Ripple Foundation Community Interest Company          |
  | All rights reserved.                                                     |
@@ -30,4 +30,58 @@
 
 'use strict';
 
-module.exports = require('./lib/ripple-conductor-idcr');
+const router = require('qewd-router');
+const Worker = require('../mocks/worker');
+const rippleConductorIdcr = require('../..');
+
+describe('ripple-conductor-idcr/lib/ripple-conductor-idcr', () => {
+  let q;
+
+  beforeEach(() => {
+    q = new Worker();
+  });
+
+  afterEach(() => {
+    q.db.reset();
+  });
+
+  describe('restModule', () => {
+    it('should be true', () => {
+      expect(rippleConductorIdcr.restModule).toBeTruthy();
+    });
+  });
+
+  describe('#init', () => {
+    it('should initialize routes using qewd-router', () => {
+      const routes = [
+        {
+          path: '/api/test',
+          method: 'GET',
+          handler: jasmine.any(Function)
+        },
+        {
+          path: '/api/application',
+          method: 'GET',
+          handler: jasmine.any(Function)
+        }
+      ];
+
+      spyOn(router, 'initialise');
+
+      rippleConductorIdcr.init.call(q);
+
+      expect(router.initialise).toHaveBeenCalledWith(routes, rippleConductorIdcr);
+    });
+  });
+
+  describe('#beforeMicroServiceHandler', () => {
+    it('should be defined', () => {
+      const args = {};
+      const finished = jasmine.createSpy();
+
+      rippleConductorIdcr.beforeMicroServiceHandler.call(q, args, finished);
+
+      expect(rippleConductorIdcr.beforeMicroServiceHandler).toBeDefined();
+    });
+  });
+});

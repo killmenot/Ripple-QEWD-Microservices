@@ -30,4 +30,4 @@
 
 'use strict';
 
-module.exports = require('./lib/ripple-conductor-idcr');
+require('jasmine-spy-matchers');

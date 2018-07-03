@@ -24,15 +24,18 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  11 January 2018
+  3 July 2018
 
 */
 
-var routeDef = require('./routes.json');
-var routes = [];
-routeDef.forEach(function(route) {
-  route.handler = require('./handlers/' + route.use);
-  delete route.use;
-   routes.push(route);
-});
-module.exports = routes;
+'use strict';
+
+const SpecReporter = require('jasmine-spec-reporter').SpecReporter;
+
+jasmine.getEnv().clearReporters();
+jasmine.getEnv().addReporter(new SpecReporter({
+  spec: {
+    displayPending: true,
+    displayStacktrace: true
+  }
+}));
