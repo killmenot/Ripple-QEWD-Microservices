@@ -1,0 +1,16 @@
+{
+  "openehr": {
+    "marand": {
+      "url": "https://test.operon.systems",
+      "username": "foo",
+      "password": "123456",
+      "platform": "marand"
+    },
+    "ethercis": {
+      "url": "http://178.62.71.220:8080",
+      "username": "bar",
+      "password": "quux",
+      "platform": "ethercis"
+    }
+  }
+}

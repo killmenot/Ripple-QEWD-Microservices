@@ -24,40 +24,17 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  3 July 2018
+  6 July 2018
 
 */
 
 'use strict';
 
-const DocumentStore = require('ewd-document-store');
-const DbGlobals = require('ewd-memory-globals');
-const sessions = require('ewd-session');
-const userDefined = require('../support/userDefined.json');
+exports.clone = function (obj) {
+  return JSON.parse(JSON.stringify(obj));
+};
 
-module.exports = function (config) {
-  this.db = new DbGlobals();
-  this.documentStore = new DocumentStore(this.db);
-
-  userDefined.config = config || {};
-
-  sessions.init(this.documentStore);
-  this.sessions = sessions;
-
-  this.jwt = {};
-  this.userDefined = userDefined;
-
-  this.db.reset = () => this.db.store.reset();
-  this.db.use = (documentName, ...subscripts) => {
-    if (subscripts.length === 1 && Array.isArray(subscripts[0])) {
-      subscripts = subscripts[0];
-    }
-
-    return new this.documentStore.DocumentNode(documentName, subscripts);
-  };
-
-  this.qewdSessionByJWT = jasmine.createSpy();
-  this.jwt.handlers = {
-    validateRestRequest: jasmine.createSpy()
-  };
+exports.__revert__ = function (obj) {
+  obj.__revert__();
+  delete obj.__revert__;
 };

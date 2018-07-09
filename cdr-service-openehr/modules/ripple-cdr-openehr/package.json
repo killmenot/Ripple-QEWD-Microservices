@@ -32,11 +32,13 @@
     "coveralls": "^3.0.0",
     "ewd-document-store": "^1.23.0",
     "ewd-memory-globals": "^1.0.0",
+    "ewd-session": "^2.19.0",
     "jasmine": "^3.1.0",
     "jasmine-spec-reporter": "^4.1.1",
     "jasmine-spy-matchers": "^2.0.0",
     "jshint": "^2.9.5",
     "nock": "^9.4.1",
-    "nyc": "^12.0.2"
+    "nyc": "^12.0.2",
+    "rewire": "^4.0.1"
   }
 }

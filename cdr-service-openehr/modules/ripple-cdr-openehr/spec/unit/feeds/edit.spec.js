@@ -75,7 +75,7 @@ describe('ripple-cdr-openehr/lib/feeds/edit', () => {
   beforeEach(() => {
     const phrFeeds = new q.documentStore.DocumentNode('PHRFeeds');
     phrFeeds.$(['bySourceId', args.sourceId]).setDocument(feed);
-  })
+  });
 
   afterEach(() => {
     q.db.reset();
