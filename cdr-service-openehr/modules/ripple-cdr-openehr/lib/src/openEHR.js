@@ -217,7 +217,7 @@ function openEHRRequest(params, userObj) {
         // should be OK to use cached Session
         console.log(process.pid + ' ** using cached session for ' + host);
         userObj.id = cachedSession.$('id').value;
-        if (params.callback(userObj)) params.callback(userObj);
+        if (params.callback) params.callback(userObj);
         return;
       }
       else {
