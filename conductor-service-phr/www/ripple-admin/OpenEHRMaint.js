@@ -35,8 +35,7 @@ var createReactClass = require('create-react-class');
 var ReactBootstrap = require('react-bootstrap');
 
 var GetHeadingSummary = require('./GetHeadingSummary');
-var DeleteComposition = require('./DeleteComposition');
-var DeleteHeading = require('./DeleteHeading');
+//var PopulatePatient = require('./PopulatePatient');
 
 var {
   Tabs,
