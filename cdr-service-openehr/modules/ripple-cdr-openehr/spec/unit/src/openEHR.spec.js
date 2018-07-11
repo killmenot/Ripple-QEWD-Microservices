@@ -37,15 +37,9 @@ const openEHR = rewire('../../../lib/src/openEHR');
 
 describe('ripple-cdr-openehr/lib/src/openEHR', () => {
   let q;
-  let args;
-  let finished;
-  let params;
 
   beforeEach(() => {
     q = new Worker();
-
-    args = {};
-    finished = jasmine.createSpy();
   });
 
   afterEach(() => {
@@ -56,6 +50,7 @@ describe('ripple-cdr-openehr/lib/src/openEHR', () => {
   describe('#init', () => {});
 
   describe('#requests', () => {
+    let params;
     let userObj;
 
     beforeEach(() => {
@@ -833,6 +828,7 @@ describe('ripple-cdr-openehr/lib/src/openEHR', () => {
   });
 
   describe('#request', () => {
+    let params;
     let userObj;
 
     beforeEach(() => {
@@ -1351,8 +1347,185 @@ describe('ripple-cdr-openehr/lib/src/openEHR', () => {
     });
   });
 
-  describe('#startSessions', () => {});
-  describe('#stopSessions', () => {});
+  describe('#startSessions', () => {
+    let session;
+    let callback;
+    let data;
+
+    function httpMock(data) {
+      nock('https://test.operon.systems')
+        .post('/rest/v1/session?username=foo&password=123456')
+        .matchHeader('x-max-session', 75)
+        .matchHeader('x-session-timeout', 120000)
+        .reply(200, data.marand);
+
+      nock('http://178.62.71.220:8080')
+        .post('/rest/v1/session?username=bar&password=quux')
+        .matchHeader('x-max-session', 75)
+        .matchHeader('x-session-timeout', 120000)
+        .reply(200, data.ethercis);
+    }
+
+    beforeEach(() => {
+      openEHR.init.call(q);
+
+      session = q.sessions.create('app');
+      callback = jasmine.createSpy();
+
+      data = {
+        marand: {
+          sessionId: '2561c861-aa31-4f1b-be2a-a8a034027ee6'
+        },
+        ethercis: {
+          sessionId: '28eb4581-4bc1-4636-99c5-86cb4a388ac0'
+        }
+      };
+    });
+
+    it('should start and cache sessions', (done) => {
+      httpMock(data);
+
+      openEHR.startSessions(session, callback);
+
+      setTimeout(() => {
+        let actual;
+
+        expect(nock).toHaveBeenDone();
+        expect(callback).toHaveBeenCalledWith({
+          marand: '2561c861-aa31-4f1b-be2a-a8a034027ee6',
+          ethercis: '28eb4581-4bc1-4636-99c5-86cb4a388ac0'
+        });
+
+        actual = session.data.$(['openEHR', 'sessions', 'marand']).getDocument();
+        expect(actual).toEqual({
+          creationTime: jasmine.any(Number),
+          id: '2561c861-aa31-4f1b-be2a-a8a034027ee6'
+        });
+
+        actual = session.data.$(['openEHR', 'sessions', 'ethercis']).getDocument();
+        expect(actual).toEqual({
+          creationTime: jasmine.any(Number),
+          id: '28eb4581-4bc1-4636-99c5-86cb4a388ac0'
+        });
+
+        done();
+      }, 100);
+    });
+
+    it('should not start and cache sessions when no data returned', (done) => {
+      data = {
+        marand: {},
+        ethercis: null
+      };
+      httpMock(data);
+
+      openEHR.startSessions(session, callback);
+
+      setTimeout(() => {
+        let actual;
+
+        expect(nock).toHaveBeenDone();
+        expect(callback).toHaveBeenCalledWith({});
+
+        actual = session.data.$(['openEHR', 'sessions', 'marand']).getDocument();
+        expect(actual).toEqual({});
+
+        actual = session.data.$(['openEHR', 'sessions', 'ethercis']).getDocument();
+        expect(actual).toEqual({});
+
+        done();
+      }, 100);
+    });
+
+    it('should start and not cache sessions when no session passed', (done) => {
+      httpMock(data);
+
+      openEHR.startSessions(callback);
+
+      setTimeout(() => {
+        let actual;
+
+        expect(nock).toHaveBeenDone();
+        expect(callback).toHaveBeenCalledWith({
+          marand: '2561c861-aa31-4f1b-be2a-a8a034027ee6',
+          ethercis: '28eb4581-4bc1-4636-99c5-86cb4a388ac0'
+        });
+
+        actual = session.data.$(['openEHR', 'sessions', 'marand']).getDocument();
+        expect(actual).toEqual({});
+
+        actual = session.data.$(['openEHR', 'sessions', 'ethercis']).getDocument();
+        expect(actual).toEqual({});
+
+        done();
+      }, 100);
+    });
+  });
+
+  describe('#stopSessions', () => {
+    let sessions;
+    let session;
+    let callback;
+
+    function httpMock() {
+      nock('https://test.operon.systems')
+        .delete('/rest/v1/session')
+        .matchHeader('ehr-session', '2561c861-aa31-4f1b-be2a-a8a034027ee6')
+        .reply(204);
+
+      nock('http://178.62.71.220:8080')
+        .delete('/rest/v1/session')
+        .matchHeader('ehr-session', '28eb4581-4bc1-4636-99c5-86cb4a388ac0')
+        .reply(204);
+    }
+
+    function seeds(sessions) {
+      const now = new Date().getTime();
+
+      const marand = {
+        creationTime: now - 150000,
+        id: sessions.marand
+      };
+      session.data.$(['openEHR', 'sessions', 'marand']).setDocument(marand);
+
+      const ethercis = {
+        creationTime: now - 150000,
+        id: sessions.ethercis
+      };
+      session.data.$(['openEHR', 'sessions', 'ethercis']).setDocument(ethercis);
+    }
+
+    beforeEach(() => {
+      openEHR.init.call(q);
+
+      sessions = {
+        marand: '2561c861-aa31-4f1b-be2a-a8a034027ee6',
+        ethercis: '28eb4581-4bc1-4636-99c5-86cb4a388ac0'
+      };
+      session = q.sessions.create('app');
+      callback = jasmine.createSpy();
+    });
+
+    it('should stop sessions and delete them from cache', (done) => {
+      httpMock();
+      seeds(sessions);
+
+      openEHR.stopSessions(sessions, session, callback);
+
+      setTimeout(() => {
+        expect(nock).toHaveBeenDone();
+        expect(callback).toHaveBeenCalledWith({
+          marand: '2561c861-aa31-4f1b-be2a-a8a034027ee6',
+          ethercis: '28eb4581-4bc1-4636-99c5-86cb4a388ac0'
+        });
+
+        expect(session.data.$(['openEHR', 'sessions', 'marand']).getDocument()).toEqual({});
+        expect(session.data.$(['openEHR', 'sessions', 'ethercis']).getDocument()).toEqual({});
+
+        done();
+      }, 100);
+    });
+  });
 
   describe('#startSession', () => {
     let host;
@@ -1457,19 +1630,189 @@ describe('ripple-cdr-openehr/lib/src/openEHR', () => {
     });
   });
 
+  describe('#mapNHSNo', () => {
+    let nhsNo;
+    let sessions;
+    let callback;
 
-  // describe('#mapNHSNo', () => {
-  //   beforeEach(() => {
-  //     openEHR.init.call(q);
-  //   });
+    function httpMock(data) {
+      nock('https://test.operon.systems')
+        .get('/rest/v1/ehr')
+        .query({
+          subjectId: '00fa6812-9434-4455-9c7b-a956e1a17317',
+          subjectNamespace: 'uk.nhs.nhs_number',
+        })
+        .matchHeader('Ehr-Session', '03391e86-5085-4b99-89ff-79209f8d1f20')
+        .reply(200, data);
+    }
 
-  //   it('test', () => {
+    beforeEach(() => {
+      delete q.userDefined.openehr.ethercis;
 
-  //   });
-  // });
+      openEHR.init.call(q);
 
+      nhsNo = '00fa6812-9434-4455-9c7b-a956e1a17317';
+      sessions = {
+        marand: '03391e86-5085-4b99-89ff-79209f8d1f20'
+      };
+      callback = jasmine.createSpy();
+    });
 
-  describe('#mapNHSNoByHost', () => {});
-  describe('#idsAvailable', () => {});
-  describe('#getEhrId', () => {});
+    it('should send request to the server and build map', (done) => {
+      const data = {
+        ehrId: '03134cc0-3741-4d3f-916a-a279a24448e5'
+      };
+      httpMock(data);
+
+      openEHR.mapNHSNo(nhsNo, sessions, callback);
+
+      setTimeout(() => {
+        expect(nock).toHaveBeenDone();
+
+        const rippleNHSNoMap = new q.documentStore.DocumentNode('rippleNHSNoMap', [nhsNo, 'marand']);
+        expect(rippleNHSNoMap.value).toBe('03134cc0-3741-4d3f-916a-a279a24448e5');
+
+        const ehrIdMap = new q.documentStore.DocumentNode('rippleEhrIdMap', ['marand', data.ehrId]);
+        expect(ehrIdMap.value).toBe(nhsNo);
+
+        done();
+      }, 100);
+    });
+
+    it('should send request to the server and not build map when no data returned', (done) => {
+      const data = {};
+      httpMock(data);
+
+      openEHR.mapNHSNo(nhsNo, sessions, callback);
+
+      setTimeout(() => {
+        expect(nock).toHaveBeenDone();
+
+        const rippleNHSNoMap = new q.documentStore.DocumentNode('rippleNHSNoMap', [nhsNo, 'marand']);
+        expect(rippleNHSNoMap.exists).toBeFalsy();
+
+        done();
+      }, 100);
+    });
+
+    it('should not send request and rebuild map when map exists', () => {
+      const ehrId = '03134cc0-3741-4d3f-916a-a279a24448e5';
+      const host = 'marand';
+
+      const rippleNHSNoMap = new q.documentStore.DocumentNode('rippleNHSNoMap', [nhsNo, host]);
+      rippleNHSNoMap.value = ehrId;
+
+      const ehrIdMap = new q.documentStore.DocumentNode('rippleEhrIdMap', [host, ehrId]);
+      ehrIdMap.value = nhsNo;
+
+      openEHR.mapNHSNo(nhsNo, sessions);
+    });
+  });
+
+  describe('#mapNHSNoByHost', () => {
+    let nhsNo;
+    let host;
+    let sessionId;
+    let callback;
+
+    function httpMock(data) {
+      nock('https://test.operon.systems')
+        .get('/rest/v1/ehr')
+        .matchHeader('Ehr-Session', '03391e86-5085-4b99-89ff-79209f8d1f20')
+        .query({
+          subjectId: '00fa6812-9434-4455-9c7b-a956e1a17317',
+          subjectNamespace: 'uk.nhs.nhs_number'
+        })
+        .reply(200, data);
+    }
+
+    beforeEach(() => {
+      openEHR.init.call(q);
+
+      nhsNo = '00fa6812-9434-4455-9c7b-a956e1a17317';
+      host = 'marand';
+      sessionId = '03391e86-5085-4b99-89ff-79209f8d1f20';
+      callback = jasmine.createSpy();
+    });
+
+    it('should send request to the server and build map', (done) => {
+      const data = {
+        ehrId: '03134cc0-3741-4d3f-916a-a279a24448e5'
+      };
+      httpMock(data);
+
+      openEHR.mapNHSNoByHost(nhsNo, host, sessionId, callback);
+
+      setTimeout(() => {
+        expect(nock).toHaveBeenDone();
+
+        const rippleNHSNoMap = new q.documentStore.DocumentNode('rippleNHSNoMap', [nhsNo, host]);
+        expect(rippleNHSNoMap.value).toBe(data.ehrId);
+
+        const ehrIdMap = new q.documentStore.DocumentNode('rippleEhrIdMap', [host, data.ehrId]);
+        expect(ehrIdMap.value).toBe(nhsNo);
+
+        done();
+      }, 100);
+
+      //
+    });
+
+    it('should not send request and return cached value when map exists', () => {
+      const ehrId = '03134cc0-3741-4d3f-916a-a279a24448e5';
+
+      const nhsNoMap = new q.documentStore.DocumentNode('rippleNHSNoMap', [nhsNo, host]);
+      nhsNoMap.value = '03134cc0-3741-4d3f-916a-a279a24448e5';
+
+      openEHR.mapNHSNoByHost(nhsNo, host, sessionId, callback);
+
+      expect(callback).toHaveBeenCalledWith(ehrId);
+    });
+  });
+
+  describe('#idsAvailable', () => {
+    beforeEach(() => {
+      openEHR.init.call(q);
+    });
+
+    it('should return false', () => {
+      const nhsNo = '00fa6812-9434-4455-9c7b-a956e1a17317';
+
+      const actual = openEHR.idsAvailable(nhsNo);
+
+      expect(actual).toBeFalsy();
+    });
+
+    it('should return true', () => {
+      const nhsNo = '00fa6812-9434-4455-9c7b-a956e1a17317';
+
+      const data = {foo: 'bar'};
+      const rippleNHSNoMap = new q.documentStore.DocumentNode('rippleNHSNoMap', [nhsNo]);
+      rippleNHSNoMap.setDocument(data);
+
+      const actual = openEHR.idsAvailable(nhsNo);
+
+      expect(actual).toBeTruthy();
+    });
+  });
+
+  describe('#getEhrId', () => {
+    beforeEach(() => {
+      openEHR.init.call(q);
+    });
+
+    it('should return ehr id', () => {
+      const expected = 9999999018;
+
+      const nhsNo = '00fa6812-9434-4455-9c7b-a956e1a17317';
+      const host = 'marand';
+
+      const rippleNHSNoMap = new q.documentStore.DocumentNode('rippleNHSNoMap', [nhsNo, host]);
+      rippleNHSNoMap.value = 9999999018;
+
+      const actual = openEHR.getEhrId(nhsNo, host);
+
+      expect(actual).toEqual(expected);
+    });
+  });
 });
