@@ -33,12 +33,14 @@
     "ewd-document-store": "^1.23.0",
     "ewd-memory-globals": "^1.0.0",
     "ewd-session": "^2.19.0",
+    "glob": "^7.1.2",
     "jasmine": "^3.1.0",
     "jasmine-spec-reporter": "^4.1.1",
     "jasmine-spy-matchers": "^2.1.0",
     "jshint": "^2.9.5",
+    "mock-fs": "^4.5.0",
+    "mockery": "^2.1.0",
     "nock": "^9.4.1",
-    "nyc": "^12.0.2",
-    "rewire": "^4.0.1"
+    "nyc": "^12.0.2"
   }
 }

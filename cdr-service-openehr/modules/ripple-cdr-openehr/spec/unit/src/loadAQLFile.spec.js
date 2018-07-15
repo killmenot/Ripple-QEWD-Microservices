@@ -1,7 +1,7 @@
 /*
 
  ----------------------------------------------------------------------------
- | ripple-cdr-openehr: Ripple MicroServices for OpenEHR                     |
+ | ripple-admin: Ripple User Administration MicroService                    |
  |                                                                          |
  | Copyright (c) 2018 Ripple Foundation Community Interest Company          |
  | All rights reserved.                                                     |
@@ -11,14 +11,14 @@
  |                                                                          |
  | Author: Rob Tweed, M/Gateway Developments Ltd                            |
  |                                                                          |
- | Licensed under the Apache License, Version 2.0 (the "License");          |
+ | Licensed under the Apache License, Version 2.0 (the 'License');          |
  | you may not use this file except in compliance with the License.         |
  | You may obtain a copy of the License at                                  |
  |                                                                          |
  |     http://www.apache.org/licenses/LICENSE-2.0                           |
  |                                                                          |
  | Unless required by applicable law or agreed to in writing, software      |
- | distributed under the License is distributed on an "AS IS" BASIS,        |
+ | distributed under the License is distributed on an 'AS IS' BASIS,        |
  | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. |
  | See the License for the specific language governing permissions and      |
  |  limitations under the License.                                          |
@@ -28,21 +28,48 @@
 
 */
 
-var path = require('path');
-var fs = require('fs');
+'use strict';
 
-function getTextFromFile(fileName) {
-  var text = '';
-  if (fs.existsSync(fileName)) {
-    text = fs.readFileSync(fileName).toString().split(/\r?\n/).join(' ');
-  }
-  return text;
-}
+const path = require('path');
+const fs = require('fs');
+const glob = require('glob');
+const loadAQLFile = require('../../../lib/src/loadAQLFile');
 
-function loadAQLFile(headingName) {
-  var aqlFile = path.join(__dirname, '/../headings/' + headingName + '.aql');
-  console.log('loading aqlFile ' + aqlFile);
-  return getTextFromFile(aqlFile);
-}
+describe('ripple-cdr-openehr/lib/src/loadAQLFile', () => {
+  const db = {};
 
-module.exports = loadAQLFile;
+  beforeAll(() => {
+    glob.sync('lib/headings/**/*.aql').forEach(filename => {
+      const heading = path.basename(filename, '.aql');
+      const data = fs.readFileSync(filename).toString().split(/\r?\n/).join(' ');
+      db[heading] = data;
+    });
+  });
+
+  it('should return aql file', () => {
+    const headings = [
+      'allergies',
+      'contacts',
+      'counts',
+      'eolcareplans',
+      'events',
+      'laborders',
+      'labresults',
+      'medications',
+      'mdtreports',
+      'personalnotes',
+      'problems',
+      'procedures',
+      'proms',
+      'referrals',
+      'vaccinations',
+      'vitalsigns'
+    ];
+
+    headings.forEach(heading => {
+      const expected = db[heading];
+      const actual = loadAQLFile(heading);
+      expect(actual).toBe(expected);
+    });
+  });
+});

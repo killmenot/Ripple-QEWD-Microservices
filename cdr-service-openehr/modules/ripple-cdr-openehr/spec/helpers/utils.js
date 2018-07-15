@@ -38,3 +38,10 @@ exports.__revert__ = function (obj) {
   obj.__revert__();
   delete obj.__revert__;
 };
+
+exports.rfc3986 = function (str) {
+  return str.replace(/[!'()*]/g, function (c) {
+    return '%' + c.charCodeAt(0).toString(16).toUpperCase();
+  });
+};
+

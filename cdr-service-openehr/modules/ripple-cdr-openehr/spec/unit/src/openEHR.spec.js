@@ -30,10 +30,9 @@
 
 'use strict';
 
-const rewire = require('rewire');
 const nock = require('nock');
 const Worker = require('../../mocks/worker');
-const openEHR = rewire('../../../lib/src/openEHR');
+const openEHR = require('../../../lib/src/openEHR');
 
 describe('ripple-cdr-openehr/lib/src/openEHR', () => {
   let q;

@@ -12,5 +12,16 @@
       "password": "quux",
       "platform": "ethercis"
     }
+  },
+  "headings": {
+    "counts": true,
+    "procedures": true,
+    "vaccinations": {
+      "template": {
+        "name": "IDCR - Immunisation summary.v0"
+      },
+      "synopsisField": "vaccinationName",
+      "summaryTableFields": ["vaccinationName", "dateCreated"]
+    }
   }
 }
