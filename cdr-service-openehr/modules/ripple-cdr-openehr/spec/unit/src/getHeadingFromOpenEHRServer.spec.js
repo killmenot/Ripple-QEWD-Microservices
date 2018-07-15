@@ -36,7 +36,7 @@ const fsMock = require('mock-fs');
 const Worker = require('../../mocks/worker');
 const openEHR = require('../../../lib/src/openEHR');
 
-fdescribe('ripple-cdr-openehr/lib/src/getHeadingFromOpenEHRServer', () => {
+describe('ripple-cdr-openehr/lib/src/getHeadingFromOpenEHRServer', () => {
   let getHeadingFromOpenEHRServer;
   let getHeadingByJumper;
 
