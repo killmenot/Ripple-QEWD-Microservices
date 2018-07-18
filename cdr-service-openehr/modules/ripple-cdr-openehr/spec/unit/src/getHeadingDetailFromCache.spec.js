@@ -24,90 +24,59 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  11 July 2018
+  17 July 2018
 
 */
 
 'use strict';
 
-const nock = require('nock');
+const mockery = require('mockery');
 const Worker = require('../../mocks/worker');
-const deleteHeading = require('../../../lib/src/deleteHeading');
 
-describe('ripple-cdr-openehr/lib/src/deleteHeading', () => {
+describe('ripple-cdr-openehr/lib/src/getHeadingDetailFromCache', () => {
+  let getHeadingDetailFromCache;
+  let getHeadingBySourceId;
+
   let q;
-  let patientId;
-  let heading;
-  let compositionId;
-  let host;
+  let sourceId;
   let session;
-  let callback;
 
-  function startSessionHttpMock(data) {
-    nock('https://test.operon.systems')
-      .post('/rest/v1/session?username=foo&password=123456')
-      .matchHeader('x-max-session', 75)
-      .matchHeader('x-session-timeout', 120000)
-      .reply(200, data);
-  }
+  beforeAll(() => {
+    mockery.enable({
+      warnOnUnregistered: false
+    });
+  });
+
+  afterAll(() => {
+    mockery.disable();
+  });
 
   beforeEach(() => {
     q = new Worker();
 
-    patientId = 9999999000;
-    compositionId = '2db1f70d-5e62-4348-9935-9f799b2718dd';
-    heading = 'procedures';
-    host = 'marand';
+    sourceId = '2c9a7b22-4cdd-484e-a8b5-759a70443be3';
     session = q.sessions.create('app');
-    callback = jasmine.createSpy();
+
+    getHeadingBySourceId = jasmine.createSpy();
+    mockery.registerMock('./getHeadingBySourceId', getHeadingBySourceId);
+    delete require.cache[require.resolve('../../../lib/src/getHeadingDetailFromCache')];
+    getHeadingDetailFromCache = require('../../../lib/src/getHeadingDetailFromCache');
   });
 
   afterEach(() => {
+    mockery.deregisterAll();
     q.db.reset();
   });
 
-  it('should return unable to establish a session with host error', (done) => {
-    const data = {};
+  it('should call getHeadingBySourceId with correct parameters', () => {
+    const expected = {foo: 'bar'};
 
-    startSessionHttpMock(data);
+    const output = {foo: 'bar'};
+    getHeadingBySourceId.and.returnValue(output);
 
-    deleteHeading.call(q, patientId, heading, compositionId, host, session, callback);
+    const actual = getHeadingDetailFromCache.call(q, sourceId, session);
 
-    setTimeout(() => {
-      expect(nock).toHaveBeenDone();
-      expect(callback).toHaveBeenCalledWith({
-        error: 'Unable to establish a session with marand'
-      });
-
-      done();
-    }, 100);
-  });
-
-  it('should delete heading', (done) => {
-    const data = {
-      sessionId: '03134cc0-3741-4d3f-916a-a279a24448e5'
-    };
-
-    startSessionHttpMock(data);
-
-    nock('https://test.operon.systems')
-      .delete('/rest/v1/composition/2db1f70d-5e62-4348-9935-9f799b2718dd')
-      .matchHeader('Ehr-Session', data.sessionId)
-      .reply(204);
-
-    deleteHeading.call(q, patientId, heading, compositionId, host, session, callback);
-
-    setTimeout(() => {
-      expect(nock).toHaveBeenDone();
-      expect(callback).toHaveBeenCalledWith({
-        deleted: true,
-        patientId: 9999999000,
-        heading: 'procedures',
-        compositionId: '2db1f70d-5e62-4348-9935-9f799b2718dd',
-        host: 'marand'
-      });
-
-      done();
-    }, 100);
+    expect(getHeadingBySourceId).toHaveBeenCalledWithContext(q, sourceId, session, 'detail');
+    expect(actual).toEqual(expected);
   });
 });

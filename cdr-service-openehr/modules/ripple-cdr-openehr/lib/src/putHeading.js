@@ -34,7 +34,7 @@ var deleteSessionCaches = require('./deleteSessionCaches');
 var putHeadingData = require('./putHeadingData');
 
 try {
-  postHeadingByJumper = require('../../ripple-openehr-jumper/lib/postHeading');
+  postHeadingByJumper = require('../../../ripple-openehr-jumper/lib/postHeading');
 }
 catch(err) {
   console.log('Unable to load jumper version of postHeading: ' + err);

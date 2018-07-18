@@ -1,7 +1,7 @@
 /*
 
  ----------------------------------------------------------------------------
- | ripple-admin: Ripple User Administration MicroService                    |
+ | ripple-cdr-openehr: Ripple MicroServices for OpenEHR                     |
  |                                                                          |
  | Copyright (c) 2018 Ripple Foundation Community Interest Company          |
  | All rights reserved.                                                     |
@@ -129,7 +129,6 @@ describe('ripple-cdr-openehr/lib/src/getHeadingBySourceId', () => {
 
     getFormattedRecordFromCache = jasmine.createSpy();
     mockery.registerMock('../../../ripple-openehr-jumper/lib/getFormattedRecordFromCache', getFormattedRecordFromCache);
-
     delete require.cache[require.resolve('../../../lib/src/getHeadingBySourceId')];
     getHeadingBySourceId = require('../../../lib/src/getHeadingBySourceId');
 

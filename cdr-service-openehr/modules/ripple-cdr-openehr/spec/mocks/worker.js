@@ -34,6 +34,7 @@ const DocumentStore = require('ewd-document-store');
 const DbGlobals = require('ewd-memory-globals');
 const sessions = require('ewd-session');
 const userDefined = require('../support/userDefined.json');
+const { clone } = require('../helpers/utils');
 
 module.exports = function (config) {
   this.db = new DbGlobals();
@@ -45,7 +46,7 @@ module.exports = function (config) {
   this.sessions = sessions;
 
   this.jwt = {};
-  this.userDefined = userDefined;
+  this.userDefined = clone(userDefined);
 
   this.db.reset = () => this.db.store.reset();
   this.db.use = (documentName, ...subscripts) => {

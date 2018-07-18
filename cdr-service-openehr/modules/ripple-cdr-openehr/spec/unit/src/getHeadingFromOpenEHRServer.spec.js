@@ -1,7 +1,7 @@
 /*
 
  ----------------------------------------------------------------------------
- | ripple-admin: Ripple User Administration MicroService                    |
+ | ripple-cdr-openehr: Ripple MicroServices for OpenEHR                     |
  |                                                                          |
  | Copyright (c) 2018 Ripple Foundation Community Interest Company          |
  | All rights reserved.                                                     |
@@ -59,6 +59,11 @@ describe('ripple-cdr-openehr/lib/src/getHeadingFromOpenEHRServer', () => {
       .reply(200, data);
   }
 
+  function seeds() {
+    const nhsNoMap = q.db.use('RippleNHSNoMap', ['byNHSNo', nhsNo, host]);
+    nhsNoMap.value = ehrId;
+  }
+
   beforeAll(() => {
     mockery.enable();
   });
@@ -68,22 +73,7 @@ describe('ripple-cdr-openehr/lib/src/getHeadingFromOpenEHRServer', () => {
   });
 
   beforeEach(() => {
-    delete require.cache[require.resolve('../../../lib/src/getHeadingFromOpenEHRServer')];
-
-    getHeadingByJumper = jasmine.createSpy();
-    mockery.registerMock('../../../ripple-openehr-jumper/lib/getHeadingFromOpenEHRServer', getHeadingByJumper);
-    getHeadingFromOpenEHRServer = require('../../../lib/src/getHeadingFromOpenEHRServer');
-  });
-
-  beforeEach(() => {
     q = new Worker();
-
-    fsMock({
-      'lib/headings': {
-        'procedures.aql': 'START.{{ehrId}}.END',
-        'counts.aql': 'START.{{ehrId}}.END'
-      }
-    });
 
     nhsNo = 9999999000;
     heading = 'procedures';
@@ -94,9 +84,20 @@ describe('ripple-cdr-openehr/lib/src/getHeadingFromOpenEHRServer', () => {
     };
     callback = jasmine.createSpy();
 
+    getHeadingByJumper = jasmine.createSpy();
+    mockery.registerMock('../../../ripple-openehr-jumper/lib/getHeadingFromOpenEHRServer', getHeadingByJumper);
+    delete require.cache[require.resolve('../../../lib/src/getHeadingFromOpenEHRServer')];
+    getHeadingFromOpenEHRServer = require('../../../lib/src/getHeadingFromOpenEHRServer');
+
     ehrId = '74b6a24b-bd97-47f0-ac6f-a632d0cac60f';
-    const nhsNoMap = q.db.use('RippleNHSNoMap', ['byNHSNo', nhsNo, host]);
-    nhsNoMap.value = ehrId;
+    seeds();
+
+    fsMock({
+      'lib/headings': {
+        'procedures.aql': 'START.{{ehrId}}.END',
+        'counts.aql': 'START.{{ehrId}}.END'
+      }
+    });
   });
 
   afterEach(() => {

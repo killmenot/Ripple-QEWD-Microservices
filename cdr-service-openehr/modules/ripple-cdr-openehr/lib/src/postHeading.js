@@ -36,7 +36,7 @@ var postHeadingData = require('./postHeadingData');
 var postHeadingByJumper;
 
 try {
-  postHeadingByJumper = require('../../ripple-openehr-jumper/lib/postHeading');
+  postHeadingByJumper = require('../../../ripple-openehr-jumper/lib/postHeading');
 }
 catch(err) {}
 

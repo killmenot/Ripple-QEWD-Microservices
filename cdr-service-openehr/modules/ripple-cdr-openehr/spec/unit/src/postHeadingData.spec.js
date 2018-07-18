@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  11 July 2018
+  18 July 2018
 
 */
 
@@ -32,33 +32,32 @@
 
 const nock = require('nock');
 const Worker = require('../../mocks/worker');
-const deleteHeading = require('../../../lib/src/deleteHeading');
+const openEHR = require('../../../lib/src/openEHR');
+const postHeadingData = require('../../../lib/src/postHeadingData');
 
-describe('ripple-cdr-openehr/lib/src/deleteHeading', () => {
+describe('ripple-cdr-openehr/lib/src/postHeadingData', () => {
   let q;
-  let patientId;
-  let heading;
-  let compositionId;
-  let host;
-  let session;
+  let params;
   let callback;
 
-  function startSessionHttpMock(data) {
+  function httpMock(data) {
     nock('https://test.operon.systems')
-      .post('/rest/v1/session?username=foo&password=123456')
-      .matchHeader('x-max-session', 75)
-      .matchHeader('x-session-timeout', 120000)
+      .post('/rest/v1/composition', {
+        'ctx/composer_name': 'Dr Tony Shannon',
+        'foo/note': 'quux'
+      })
+      .query({
+        templateId: 'IDCR - Procedures List.v1',
+        ehrId: '43603203-ce0b-4470-ab19-8bc315f5da87',
+        format: 'FLAT'
+      })
+      .matchHeader('ehr-session', '61ee3e4e-b49e-431b-a34f-9f1fe6702b86')
       .reply(200, data);
   }
 
   beforeEach(() => {
     q = new Worker();
 
-    patientId = 9999999000;
-    compositionId = '2db1f70d-5e62-4348-9935-9f799b2718dd';
-    heading = 'procedures';
-    host = 'marand';
-    session = q.sessions.create('app');
     callback = jasmine.createSpy();
   });
 
@@ -66,45 +65,43 @@ describe('ripple-cdr-openehr/lib/src/deleteHeading', () => {
     q.db.reset();
   });
 
-  it('should return unable to establish a session with host error', (done) => {
-    const data = {};
-
-    startSessionHttpMock(data);
-
-    deleteHeading.call(q, patientId, heading, compositionId, host, session, callback);
-
-    setTimeout(() => {
-      expect(nock).toHaveBeenDone();
-      expect(callback).toHaveBeenCalledWith({
-        error: 'Unable to establish a session with marand'
-      });
-
-      done();
-    }, 100);
-  });
-
-  it('should delete heading', (done) => {
-    const data = {
-      sessionId: '03134cc0-3741-4d3f-916a-a279a24448e5'
+  it('should send request to post heading data to openEHR server', (done) => {
+    /*jshint camelcase: false */
+    params = {
+      headingPostMap: {
+        templateId: 'IDCR - Procedures List.v1',
+        transformTemplate: {
+          ctx: {
+            composer_name: '=> either(author, "Dr Tony Shannon")',
+          },
+          foo: {
+            note: '{{notes}}'
+          }
+        },
+      },
+      host: 'marand',
+      data: {
+        notes: 'quux'
+      },
+      ehrId: '43603203-ce0b-4470-ab19-8bc315f5da87',
+      openEhrSessionId: '61ee3e4e-b49e-431b-a34f-9f1fe6702b86'
     };
+    /*jshint camelcase: true */
 
-    startSessionHttpMock(data);
+    const data = {
+      baz: 'quux'
+    };
+    httpMock(data);
 
-    nock('https://test.operon.systems')
-      .delete('/rest/v1/composition/2db1f70d-5e62-4348-9935-9f799b2718dd')
-      .matchHeader('Ehr-Session', data.sessionId)
-      .reply(204);
-
-    deleteHeading.call(q, patientId, heading, compositionId, host, session, callback);
+    openEHR.init.call(q);
+    postHeadingData.call(q, params, callback);
 
     setTimeout(() => {
       expect(nock).toHaveBeenDone();
       expect(callback).toHaveBeenCalledWith({
-        deleted: true,
-        patientId: 9999999000,
-        heading: 'procedures',
-        compositionId: '2db1f70d-5e62-4348-9935-9f799b2718dd',
-        host: 'marand'
+        data: {
+          baz: 'quux'
+        }
       });
 
       done();

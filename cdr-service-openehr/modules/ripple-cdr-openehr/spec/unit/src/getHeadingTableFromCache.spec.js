@@ -24,90 +24,82 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  11 July 2018
+  17 July 2018
 
 */
 
 'use strict';
 
-const nock = require('nock');
+const mockery = require('mockery');
 const Worker = require('../../mocks/worker');
-const deleteHeading = require('../../../lib/src/deleteHeading');
 
-describe('ripple-cdr-openehr/lib/src/deleteHeading', () => {
+describe('ripple-cdr-openehr/lib/src/getHeadingTableFromCache', () => {
+  let getHeadingTableFromCache;
+  let getHeadingBySourceId;
+
   let q;
   let patientId;
   let heading;
-  let compositionId;
-  let host;
   let session;
-  let callback;
 
-  function startSessionHttpMock(data) {
-    nock('https://test.operon.systems')
-      .post('/rest/v1/session?username=foo&password=123456')
-      .matchHeader('x-max-session', 75)
-      .matchHeader('x-session-timeout', 120000)
-      .reply(200, data);
+  function seeds() {
+    const byHost = session.data.$(['headings', 'byPatientId', 9999999000, 'procedures', 'byHost']);
+    byHost.$(['marand', '41bc6370-33a4-4ae1-8b3d-d2d9cfe606a4']).value = '';
+    byHost.$(['ethercis', '74b6a24b-bd97-47f0-ac6f-a632d0cac60f']).value = '';
   }
+
+  beforeAll(() => {
+    mockery.enable({
+      warnOnUnregistered: false
+    });
+  });
+
+  afterAll(() => {
+    mockery.disable();
+  });
 
   beforeEach(() => {
     q = new Worker();
 
     patientId = 9999999000;
-    compositionId = '2db1f70d-5e62-4348-9935-9f799b2718dd';
     heading = 'procedures';
-    host = 'marand';
     session = q.sessions.create('app');
-    callback = jasmine.createSpy();
+
+    getHeadingBySourceId = jasmine.createSpy();
+    mockery.registerMock('./getHeadingBySourceId', getHeadingBySourceId);
+    delete require.cache[require.resolve('../../../lib/src/getHeadingTableFromCache')];
+    getHeadingTableFromCache = require('../../../lib/src/getHeadingTableFromCache');
+
+    seeds();
   });
 
   afterEach(() => {
+    mockery.deregisterAll();
     q.db.reset();
   });
 
-  it('should return unable to establish a session with host error', (done) => {
-    const data = {};
+  it('should return heading table', () => {
+    const expected = [
+      {
+        desc: 'foo',
+        source: 'ethercis',
+        sourceId: '74b6a24b-bd97-47f0-ac6f-a632d0cac60f'
+      },
+      {
+        desc: 'bar',
+        source: 'marand',
+        sourceId: '41bc6370-33a4-4ae1-8b3d-d2d9cfe606a4'
+      }
+    ];
 
-    startSessionHttpMock(data);
+    getHeadingBySourceId.withArgs('74b6a24b-bd97-47f0-ac6f-a632d0cac60f', session, 'summary').and.returnValue(expected[0]);
+    getHeadingBySourceId.withArgs('41bc6370-33a4-4ae1-8b3d-d2d9cfe606a4', session, 'summary').and.returnValue(expected[1]);
 
-    deleteHeading.call(q, patientId, heading, compositionId, host, session, callback);
+    const actual = getHeadingTableFromCache.call(q, patientId, heading, session);
 
-    setTimeout(() => {
-      expect(nock).toHaveBeenDone();
-      expect(callback).toHaveBeenCalledWith({
-        error: 'Unable to establish a session with marand'
-      });
-
-      done();
-    }, 100);
-  });
-
-  it('should delete heading', (done) => {
-    const data = {
-      sessionId: '03134cc0-3741-4d3f-916a-a279a24448e5'
-    };
-
-    startSessionHttpMock(data);
-
-    nock('https://test.operon.systems')
-      .delete('/rest/v1/composition/2db1f70d-5e62-4348-9935-9f799b2718dd')
-      .matchHeader('Ehr-Session', data.sessionId)
-      .reply(204);
-
-    deleteHeading.call(q, patientId, heading, compositionId, host, session, callback);
-
-    setTimeout(() => {
-      expect(nock).toHaveBeenDone();
-      expect(callback).toHaveBeenCalledWith({
-        deleted: true,
-        patientId: 9999999000,
-        heading: 'procedures',
-        compositionId: '2db1f70d-5e62-4348-9935-9f799b2718dd',
-        host: 'marand'
-      });
-
-      done();
-    }, 100);
+    expect(getHeadingBySourceId).toHaveBeenCalledTimes(2);
+    expect(getHeadingBySourceId.calls.argsFor(0)).toEqual(['74b6a24b-bd97-47f0-ac6f-a632d0cac60f', session, 'summary']);
+    expect(getHeadingBySourceId.calls.argsFor(1)).toEqual(['41bc6370-33a4-4ae1-8b3d-d2d9cfe606a4', session, 'summary']);
+    expect(actual).toEqual(expected);
   });
 });
