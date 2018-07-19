@@ -13,6 +13,14 @@
       "platform": "ethercis"
     }
   },
+  "synopsis": {
+    "headings": [
+      "procedures",
+      "vaccinations",
+      "top3Things"
+    ],
+    "maximum": 2
+  },
   "headings": {
     "counts": true,
     "procedures": true,
