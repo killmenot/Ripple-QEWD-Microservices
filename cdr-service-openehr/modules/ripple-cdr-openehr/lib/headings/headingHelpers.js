@@ -28,7 +28,7 @@
 
 */
 
-var dateTime = require('../dateTime');
+var dateTime = require('../src/dateTime');
 
 function helpers(host, heading, method) {
 
