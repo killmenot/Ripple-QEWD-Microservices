@@ -30,115 +30,91 @@
 
 'use strict';
 
-const mockery = require('mockery');
 const Worker = require('../../mocks/worker');
+const getTop3ThingsDetail = require('../../../lib/top3Things/getTop3ThingsDetail');
 
-describe('ripple-cdr-openehr/lib/handlers/getSummaryHeadingFields', () => {
-  let getSummaryHeadingFields;
-
+describe('ripple-cdr-openehr/lib/top3Things/getTop3ThingsDetail', () => {
   let q;
   let args;
   let finished;
 
-  function headingsMocks() {
-    mockery.registerMock('../headings/procedures', {
-      name: 'procedures',
-      textFieldName: 'name',
-      headingTableFields: ['desc'],
-      get: {
-        transformTemplate: {
-          name: '{{foo}}',
-          desc: '{{bar}}'
-        }
+  function seeds() {
+    const top3Things = q.db.use('Top3Things');
+
+    top3Things.$(['byPatient', 9999999000, 'latest']).value = 'ce437b97-4f6e-4c96-89bb-0b58b29a79cb';
+    top3Things.$(['byPatient', 9434765919, 'latest']).value = '';
+
+    top3Things.$(['bySourceId', 'ce437b97-4f6e-4c96-89bb-0b58b29a79cb']).setDocument({
+      date: 1519851600000,
+      data: {
+        name1: 'foo1',
+        description1: 'baz1',
+        name2: 'foo2',
+        description2: 'baz2',
+        name3: 'foo3',
+        description3: 'baz3'
       }
     });
   }
-
-  beforeAll(() => {
-    mockery.enable({
-      warnOnUnregistered: false
-    });
-  });
-
-  afterAll(() => {
-    mockery.disable();
-  });
 
   beforeEach(() => {
     q = new Worker();
 
     args = {
-      heading: 'procedures',
+      patientId: 9999999000,
       session: {
-        userMode: 'admin'
+        nhsNumber: 9434765919,
+        role: 'IDCR'
       }
     };
     finished = jasmine.createSpy();
 
-    delete require.cache[require.resolve('../../../lib/handlers/getSummaryHeadingFields')];
-    getSummaryHeadingFields = require('../../../lib/handlers/getSummaryHeadingFields');
-
-    headingsMocks();
+    seeds();
   });
 
   afterEach(() => {
-    mockery.deregisterAll();
     q.db.reset();
   });
 
-  it('should return invalid request error', () => {
-    args.session.userMode = 'idcr';
+  it('should return invalid or missing patientId error', () => {
+    args.patientId = 'foo';
 
-    getSummaryHeadingFields.call(q, args, finished);
+    getTop3ThingsDetail.call(q, args, finished);
 
     expect(finished).toHaveBeenCalledWith({
-      error: 'Invalid request'
+      error: 'patientId foo is invalid'
     });
   });
 
-  it('should return feeds records are not maintained error', () => {
-    args.heading = 'feeds';
+  it('should return emply list', () => {
+    args.patientId = 9434765919;
 
-    getSummaryHeadingFields.call(q, args, finished);
+    getTop3ThingsDetail.call(q, args, finished);
+
+    expect(finished).toHaveBeenCalledWith([]);
+  });
+
+  it('should return top 3 things detail', () => {
+    getTop3ThingsDetail.call(q, args, finished);
 
     expect(finished).toHaveBeenCalledWith({
-      error: 'feeds records are not maintained on OpenEHR'
+      source: 'QEWDDB',
+      sourceId: 'ce437b97-4f6e-4c96-89bb-0b58b29a79cb',
+      dateCreated: 1519851600000,
+      name1: 'foo1',
+      description1: 'baz1',
+      name2: 'foo2',
+      description2: 'baz2',
+      name3: 'foo3',
+      description3: 'baz3'
     });
   });
 
-  it('should return top3Things records are not maintained error', () => {
-    args.heading = 'top3Things';
+  it('should override patientId for PHR users', () => {
+    args.session.role = 'phrUser';
 
-    getSummaryHeadingFields.call(q, args, finished);
+    getTop3ThingsDetail.call(q, args, finished);
 
-    expect(finished).toHaveBeenCalledWith({
-      error: 'top3Things records are not maintained on OpenEHR'
-    });
+    expect(finished).toHaveBeenCalledWith([]);
   });
-
-  it('should return invalid or missing heading error', () => {
-    args.heading = 'bar';
-
-    getSummaryHeadingFields.call(q, args, finished);
-
-    expect(finished).toHaveBeenCalledWith({
-      error: 'Invalid or missing heading: bar'
-    });
-  });
-
-  it('should return summary heading fields from heading definition', () => {
-    getSummaryHeadingFields.call(q, args, finished);
-
-    expect(finished).toHaveBeenCalledWith(['desc']);
-  });
-
-  it('should return summary heading fields from config', () => {
-    args.heading = 'vaccinations';
-
-    getSummaryHeadingFields.call(q, args, finished);
-
-    expect(finished).toHaveBeenCalledWith(['vaccinationName', 'dateCreated']);
-  });
-
-
 });
