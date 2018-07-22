@@ -189,12 +189,13 @@ describe('ripple-openehr-jumper/lib/postHeading', () => {
       postHeading.call(q, params, callback);
 
       /*jshint camelcase: false */
-      const flatJsonPath = path.join(q.userDefined.paths.jumper_templates, 'allergies/Pulsetile_to_OpenEHR.json');
-      mockery.registerSubstitute(flatJsonPath, 'baz');
+      const pulseToOpenEhrPath = path.join(q.userDefined.paths.jumper_templates, 'allergies/Pulsetile_to_OpenEHR.json');
+      mockery.registerSubstitute(pulseToOpenEhrPath, 'baz');
       /*jshint camelcase: true */
 
       expect(() => {
         postHeading.call(q, params, callback);
+        mockery.deregisterSubstitute(pulseToOpenEhrPath);
       }).not.toThrowError();
     });
   });
@@ -209,6 +210,7 @@ describe('ripple-openehr-jumper/lib/postHeading', () => {
 
     expect(() => {
       postHeading.call(q, params, callback);
+      mockery.deregisterSubstitute(flatJsonPath);
     }).not.toThrowError();
   });
 
@@ -216,12 +218,13 @@ describe('ripple-openehr-jumper/lib/postHeading', () => {
     postHeading.call(q, params, callback);
 
     /*jshint camelcase: false */
-    const flatJsonPath = path.join(q.userDefined.paths.jumper_templates, 'allergies/schema.json');
-    mockery.registerSubstitute(flatJsonPath, 'baz');
+    const schemaPath = path.join(q.userDefined.paths.jumper_templates, 'allergies/schema.json');
+    mockery.registerSubstitute(schemaPath, 'baz');
     /*jshint camelcase: true */
 
     expect(() => {
       postHeading.call(q, params, callback);
+      mockery.deregisterSubstitute(schemaPath);
     }).not.toThrowError();
   });
 });
