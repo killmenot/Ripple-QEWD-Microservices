@@ -32,7 +32,7 @@
 
 const mockery = require('mockery');
 const router = require('qewd-router');
-const Worker = require('./mocks/worker');
+const Worker = require('../mocks/worker');
 const rippleAuth = require('../..');
 const adminLoginHandler = require('../../lib/admin/login');
 const adminRegisterHandler = require('../../lib/admin/register');

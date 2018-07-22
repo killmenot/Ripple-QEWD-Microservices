@@ -31,7 +31,7 @@
 'use strict';
 
 const nock = require('nock');
-const Worker = require('../mocks/worker');
+const Worker = require('../../mocks/worker');
 const authConfig = require('../../support/authConfig.json');
 const handler = require('../../../lib/handlers/logout');
 const { clone } = require('../../helpers/utils');

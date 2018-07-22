@@ -31,7 +31,7 @@
 'use strict';
 
 const handler = require('../../../lib/handlers/demo');
-const Worker = require('../mocks/worker');
+const Worker = require('../../mocks/worker');
 
 describe('ripple-auth0/lib/handlers/demo', () => {
   let q;

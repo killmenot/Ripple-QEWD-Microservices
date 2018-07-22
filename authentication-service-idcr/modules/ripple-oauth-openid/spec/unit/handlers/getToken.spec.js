@@ -32,8 +32,8 @@
 
 const jwt = require('jwt-simple');
 const handler = require('../../../lib/handlers/getToken');
-const Worker = require('../mocks/worker');
-const authMock = require('../mocks/auth');
+const Worker = require('../../mocks/worker');
+const authMock = require('../../mocks/auth');
 
 describe('ripple-oauth-openid/lib/handlers/getToken', () => {
   let q;

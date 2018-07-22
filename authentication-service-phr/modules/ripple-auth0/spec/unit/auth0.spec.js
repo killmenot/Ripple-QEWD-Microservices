@@ -30,7 +30,7 @@
 
 'use strict';
 
-const Worker = require('./mocks/worker');
+const Worker = require('../mocks/worker');
 const auth0 = require('../../lib/auth0');
 
 describe('ripple-auth0/lib/auth0', () => {

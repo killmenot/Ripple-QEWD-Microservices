@@ -1,7 +1,7 @@
 'use strict';
 
-const authConfig = require('../../support/authConfig.json');
-const clone = require('../../helpers/utils').clone;
+const authConfig = require('../support/authConfig.json');
+const clone = require('../helpers/utils').clone;
 
 module.exports = {
   mock: function () {

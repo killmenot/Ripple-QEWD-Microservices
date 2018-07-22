@@ -31,7 +31,7 @@
 'use strict';
 
 const bcrypt = require('bcrypt');
-const Worker = require('../mocks/worker');
+const Worker = require('../../mocks/worker');
 const handler = require('../../../lib/admin/register');
 
 describe('ripple-auth/lib/admin/register', () => {

@@ -32,8 +32,8 @@
 
 const nock = require('nock');
 const rewire = require('rewire');
-const Worker = require('./mocks/worker');
-const openidClientMock = require('./mocks/openid-client');
+const Worker = require('../mocks/worker');
+const openidClientMock = require('../mocks/openid-client');
 const authConfig = require('../support/authConfig.json');
 const { __revert__, clone } = require('../helpers/utils');
 
