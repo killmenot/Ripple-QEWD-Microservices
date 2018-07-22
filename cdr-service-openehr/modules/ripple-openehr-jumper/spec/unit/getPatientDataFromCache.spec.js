@@ -172,7 +172,8 @@ describe('ripple-openehr-jumper/lib/getPatientDataFromCache', () => {
             name: 'quux'
           },
           {
-            name: 'bar2'
+            name: 'bar2',
+            desc: 'quuxx'
           }
         ]
       });
