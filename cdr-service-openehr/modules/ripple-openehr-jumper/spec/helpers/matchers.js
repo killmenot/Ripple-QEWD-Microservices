@@ -1,9 +1,9 @@
 /*
 
  ----------------------------------------------------------------------------
- | ripple-openehr-jumper: Automated OpenEHR Template Access                 |
+ | ripple-cdr-openehr: Ripple MicroServices for OpenEHR                     |
  |                                                                          |
- | Copyright (c) 2016-18 Ripple Foundation Community Interest Company       |
+ | Copyright (c) 2018 Ripple Foundation Community Interest Company          |
  | All rights reserved.                                                     |
  |                                                                          |
  | http://rippleosi.org                                                     |
@@ -24,8 +24,10 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  20 July 2018
+  3 July 2018
 
 */
 
-module.exports = require('./lib');
+'use strict';
+
+require('jasmine-spy-matchers');

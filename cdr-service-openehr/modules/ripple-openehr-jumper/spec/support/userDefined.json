@@ -1,0 +1,44 @@
+{
+  "openehr": {
+    "marand": {
+      "url": "https://test.operon.systems",
+      "username": "foo",
+      "password": "123456",
+      "platform": "marand"
+    },
+    "ethercis": {
+      "url": "http://178.62.71.220:8080",
+      "username": "bar",
+      "password": "quux",
+      "platform": "ethercis"
+    }
+  },
+  "paths": {
+    "jumper_templates": "/path/to/ripple-openehr-jumper/templates/",
+    "openEHR_modules": "/path/to/ripple-cdr-openehr/lib/src/"
+  },
+  "headings": {
+    "allergies": {
+      "template": {
+        "name": "IDCR - Adverse Reaction List.v1"
+      },
+      "fhir": {
+        "name": "AllergyIntolerance"
+      },
+      "synopsisField": "cause",
+      "summaryTableFields": ["cause", "reaction"]
+    },
+    "counts": true,
+    "problems": {
+      "template": {
+        "name": "IDCR - Problem List.v1"
+      },
+      "fhir": {
+        "name": "Condition"
+      },
+      "synopsisField": "problem",
+      "summaryTableFields": ["problem", "dateOfOnset"]
+    },
+    "procedures": true
+  }
+}

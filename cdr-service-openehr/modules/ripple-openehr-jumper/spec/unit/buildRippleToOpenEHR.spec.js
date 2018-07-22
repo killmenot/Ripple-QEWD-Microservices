@@ -24,47 +24,49 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  5 June 2018
+  22 July 2018
 
 */
 
-function addPatientDataToCache(results, patientId, host, heading, qewdSession) {
-  //console.log('** adding data to session cache');
-  //console.log('patientId: ' + patientId);
-  //console.log('host: ' + host);
-  //console.log('templateId: ' + templateId);
-  //console.log('heading: ' + heading);
-  //console.log('-------');
+'use strict';
 
-  var headingCache = qewdSession.data.$('headings');
-  var cacheBySourceId = headingCache.$('bySourceId');
-  var cacheByPatientId = headingCache.$(['byPatientId', patientId, heading]);
-  var cacheByHeading = headingCache.$('byHeading');
+const mockery = require('mockery');
 
-  results.forEach(function(result) {
-    //console.log('*** result = ' + JSON.stringify(result, null, 2));
-    var sourceId = host + '-' + result.uid.split('::')[0];
-    //console.log('cacheing result for ' + sourceId);
-    var date;
-    if (result.context && result.context.start_time) { 
-      date = result.context.start_time.value;
-      if (date.indexOf('UTC') !== -1) date = date.split('UTC')[0];
-      date = new Date(date).getTime();
-      cacheByPatientId.$(['byDate', date, sourceId]).value = '';
-    }
-    cacheByPatientId.$(['byHost', host, sourceId]).value = '';
-    cacheByHeading.$([heading, sourceId]).value = '';
+describe('ripple-openehr-jumper/lib/buildRippleToOpenEHR', () => {
+  let buildRippleToOpenEHR;
+  let buildInverse;
+  let jumperPath;
 
-    var cacheBySourceId = headingCache.$(['bySourceId', sourceId]);
-    if (date) cacheBySourceId.$('date').value = date;
-    cacheBySourceId.$('heading').value = heading;
-    cacheBySourceId.$('patientId').value = patientId;
-    cacheBySourceId.$('uid').value = result.uid;
-    cacheBySourceId.$('host').value = host;
-    cacheBySourceId.$('jumperFormatData').setDocument(result);
-    cacheBySourceId.$('data').delete(); // temporary - get rid of standard data cache
+  beforeAll(() => {
+    mockery.enable({
+      warnOnUnregistered: false
+    });
   });
-  //console.log('results cached');
-}
 
-module.exports = addPatientDataToCache;
+  afterAll(() => {
+    mockery.disable();
+  });
+
+  beforeEach(() => {
+    jumperPath = '/path/to/ripple-openehr-jumper/templates/allergies';
+
+    buildInverse = jasmine.createSpy();
+    mockery.registerMock('./buildInverse', buildInverse);
+
+    delete require.cache[require.resolve('../../lib/buildRippleToOpenEHR')];
+    buildRippleToOpenEHR = require('../../lib/buildRippleToOpenEHR');
+  });
+
+  afterEach(() => {
+    mockery.deregisterAll();
+  });
+
+  it('should build inverse with correct parameters', () => {
+    buildRippleToOpenEHR(jumperPath);
+    expect(buildInverse).toHaveBeenCalledWith(
+      'openEHR_to_Ripple.json',
+      'Ripple_to_OpenEHR.json',
+      jumperPath
+    );
+  });
+});

@@ -28,7 +28,7 @@
   },
   "paths": {
     "jumper_templates": "/opt/qewd/mapped/modules/ripple-openehr-jumper/templates/",
-    "openEHR_modules": "/opt/qewd/mapped/modules/ripple-cdr-openehr/src/"
+    "openEHR_modules": "/opt/qewd/mapped/modules/ripple-cdr-openehr/lib/src/"
   },
   "headings": {
     "allergies": {

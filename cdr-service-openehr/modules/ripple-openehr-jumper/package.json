@@ -4,7 +4,44 @@
   "description": "Automated OpenEHR Template Access",
   "author": "Rob Tweed <rtweed@mgateway.com>",
   "main": "index.js",
+  "license": "Apache-2.0",
+  "scripts": {
+    "lint": "jshint lib spec index.js",
+    "test": "jasmine --config=spec/support/jasmine.json",
+    "coverage": "nyc --reporter=html --reporter=text jasmine --config=spec/support/jasmine.json",
+    "coveralls": "nyc report --reporter=text-lcov | coveralls"
+  },
+  "nyc": {
+    "all": true,
+    "include": [
+      "lib/**/*.js"
+    ],
+    "exclude": [
+      "coverage",
+      "node_modules",
+      "spec/**/*.js"
+    ]
+  },
   "dependencies": {
-    "traverse": ""
+    "fs-extra": "^7.0.0",
+    "jsonschema": "^1.2.4",
+    "moment-timezone": "^0.5.21",
+    "qewd-router": "^1.13.1",
+    "qewd-transform-json": "^1.10.0",
+    "traverse": "^0.6.6"
+  },
+  "devDependencies": {
+    "coveralls": "^3.0.0",
+    "ewd-document-store": "^1.23.0",
+    "ewd-memory-globals": "^1.0.0",
+    "ewd-session": "^2.19.0",
+    "jasmine": "^3.1.0",
+    "jasmine-spec-reporter": "^4.1.1",
+    "jasmine-spy-matchers": "^2.1.0",
+    "jshint": "^2.9.5",
+    "mock-fs": "^4.5.0",
+    "mockery": "^2.1.0",
+    "nyc": "^12.0.2",
+    "stat-mode": "^0.2.2"
   }
 }

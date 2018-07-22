@@ -24,47 +24,48 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  5 June 2018
+  23 March 2018
 
 */
 
-function addPatientDataToCache(results, patientId, host, heading, qewdSession) {
-  //console.log('** adding data to session cache');
-  //console.log('patientId: ' + patientId);
-  //console.log('host: ' + host);
-  //console.log('templateId: ' + templateId);
-  //console.log('heading: ' + heading);
-  //console.log('-------');
+var router = require('qewd-router');
 
-  var headingCache = qewdSession.data.$('headings');
-  var cacheBySourceId = headingCache.$('bySourceId');
-  var cacheByPatientId = headingCache.$(['byPatientId', patientId, heading]);
-  var cacheByHeading = headingCache.$('byHeading');
+var build = require('./build');
+var getPatientTemplateData = require('./getPatientTemplateData');
 
-  results.forEach(function(result) {
-    //console.log('*** result = ' + JSON.stringify(result, null, 2));
-    var sourceId = host + '-' + result.uid.split('::')[0];
-    //console.log('cacheing result for ' + sourceId);
-    var date;
-    if (result.context && result.context.start_time) { 
-      date = result.context.start_time.value;
-      if (date.indexOf('UTC') !== -1) date = date.split('UTC')[0];
-      date = new Date(date).getTime();
-      cacheByPatientId.$(['byDate', date, sourceId]).value = '';
+var routes = {
+  '/api/openehr/jumper/build': {
+    GET: build
+  },
+  '/api/openehr/jumper/patient/:patientId/template/:templateName': {
+    GET: getPatientTemplateData
+  }
+
+};
+
+module.exports = {
+  init: function() {
+    router.addMicroServiceHandler(routes, module.exports);
+  },
+
+  beforeMicroServiceHandler: function(req, finished) {
+    var authorised = this.jwt.handlers.validateRestRequest.call(this, req, finished);
+
+    if (authorised) {
+      var userMode = req.session.userMode;
+      console.log('*** userMode = ' + userMode + ' *****');
+      if (req.path === '/api/openehr/jumper/build') {
+        if (userMode !== 'admin' && userMode !== 'primary_startup' && userMode !== 'openehr_startup') {
+          finished({error: 'Unauthorised request'});
+          console.log('**** attempt to use /api/openehr/jumper/build path by a non-admin user ******');
+          return false;
+        }
+      }
+      else {
+        req.qewdSession = this.qewdSessionByJWT.call(this, req);
+      }
     }
-    cacheByPatientId.$(['byHost', host, sourceId]).value = '';
-    cacheByHeading.$([heading, sourceId]).value = '';
 
-    var cacheBySourceId = headingCache.$(['bySourceId', sourceId]);
-    if (date) cacheBySourceId.$('date').value = date;
-    cacheBySourceId.$('heading').value = heading;
-    cacheBySourceId.$('patientId').value = patientId;
-    cacheBySourceId.$('uid').value = result.uid;
-    cacheBySourceId.$('host').value = host;
-    cacheBySourceId.$('jumperFormatData').setDocument(result);
-    cacheBySourceId.$('data').delete(); // temporary - get rid of standard data cache
-  });
-  //console.log('results cached');
-}
-
-module.exports = addPatientDataToCache;
+    return authorised;
+  }
+};

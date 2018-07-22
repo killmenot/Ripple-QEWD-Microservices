@@ -24,47 +24,44 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  5 June 2018
+  22 July 2018
 
 */
 
-function addPatientDataToCache(results, patientId, host, heading, qewdSession) {
-  //console.log('** adding data to session cache');
-  //console.log('patientId: ' + patientId);
-  //console.log('host: ' + host);
-  //console.log('templateId: ' + templateId);
-  //console.log('heading: ' + heading);
-  //console.log('-------');
+'use strict';
 
-  var headingCache = qewdSession.data.$('headings');
-  var cacheBySourceId = headingCache.$('bySourceId');
-  var cacheByPatientId = headingCache.$(['byPatientId', patientId, heading]);
-  var cacheByHeading = headingCache.$('byHeading');
+const path = require('path');
+const fsMock = require('mock-fs');
+const fs = require('fs-extra');
+const StatMode = require('stat-mode');
+const buildJsonFile = require('../../lib/buildJsonFile');
 
-  results.forEach(function(result) {
-    //console.log('*** result = ' + JSON.stringify(result, null, 2));
-    var sourceId = host + '-' + result.uid.split('::')[0];
-    //console.log('cacheing result for ' + sourceId);
-    var date;
-    if (result.context && result.context.start_time) { 
-      date = result.context.start_time.value;
-      if (date.indexOf('UTC') !== -1) date = date.split('UTC')[0];
-      date = new Date(date).getTime();
-      cacheByPatientId.$(['byDate', date, sourceId]).value = '';
-    }
-    cacheByPatientId.$(['byHost', host, sourceId]).value = '';
-    cacheByHeading.$([heading, sourceId]).value = '';
+describe('ripple-openehr-jumper/lib/buildJsonFile', () => {
+  let contentsObj;
+  let rootPath;
+  let fileName;
 
-    var cacheBySourceId = headingCache.$(['bySourceId', sourceId]);
-    if (date) cacheBySourceId.$('date').value = date;
-    cacheBySourceId.$('heading').value = heading;
-    cacheBySourceId.$('patientId').value = patientId;
-    cacheBySourceId.$('uid').value = result.uid;
-    cacheBySourceId.$('host').value = host;
-    cacheBySourceId.$('jumperFormatData').setDocument(result);
-    cacheBySourceId.$('data').delete(); // temporary - get rid of standard data cache
+  beforeEach(() => {
+    contentsObj = '{"foo":"bar"}';
+    rootPath = path.join(__dirname, '../templates/allergies');
+    fileName = 'openEHR_to_Pulsetile.json';
+
+    fsMock();
   });
-  //console.log('results cached');
-}
 
-module.exports = addPatientDataToCache;
+  afterEach(() => {
+    fsMock.restore();
+  });
+
+  it('should build json file', () => {
+    const fp = path.join(rootPath, fileName);
+
+    buildJsonFile(contentsObj, rootPath, fileName);
+
+    const actualContent = fs.readJsonSync(fp).toString();
+    expect(actualContent).toBe('{"foo":"bar"}');
+
+    const stat = new StatMode(fs.statSync(fp));
+    expect(stat.toString()).toBe('-rw-rw-r--');
+  });
+});
