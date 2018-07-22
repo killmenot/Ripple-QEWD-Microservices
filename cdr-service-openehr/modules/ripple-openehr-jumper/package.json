@@ -18,6 +18,7 @@
     ],
     "exclude": [
       "coverage",
+      "lib/templateTest.js",
       "node_modules",
       "spec/**/*.js"
     ]

@@ -32,7 +32,6 @@
 
 const path = require('path');
 const nock = require('nock');
-const mockery = require('mockery');
 const Worker = require('../mocks/worker');
 const sendHeadingToOpenEHR = require('../../lib/sendHeadingToOpenEHR');
 
@@ -134,16 +133,6 @@ describe('ripple-openehr-jumper/lib/sendHeadingToOpenEHR', () => {
     expect(bySourceIdCache.getDocument()).toEqual(expected);
   }
 
-  beforeAll(() => {
-    mockery.enable({
-      warnOnUnregistered: false
-    });
-  });
-
-  afterAll(() => {
-    mockery.disable();
-  });
-
   beforeEach(() => {
     q = new Worker();
 
@@ -163,7 +152,6 @@ describe('ripple-openehr-jumper/lib/sendHeadingToOpenEHR', () => {
   });
 
   afterEach(() => {
-    mockery.deregisterAll();
     q.db.reset();
   });
 

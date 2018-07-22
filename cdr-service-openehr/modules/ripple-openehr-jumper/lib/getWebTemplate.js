@@ -61,7 +61,7 @@ function getWebTemplate(templateName, headingPath, callback) {
       openEHR.stopSession(host, openEHRSession.id);
 
       if (body.status === 404) {
-        return finished({
+        return callback({
           error: body.developerMessage
         });
       }
