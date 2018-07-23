@@ -28,7 +28,7 @@
 
 */
 
-function addPatientDataToCache(results, patientId, host, heading, qewdSession) {
+function addPatientDataToCache(results, patientId, host, heading, qewdSessionData) {
   //console.log('** adding data to session cache');
   //console.log('patientId: ' + patientId);
   //console.log('host: ' + host);
@@ -36,7 +36,7 @@ function addPatientDataToCache(results, patientId, host, heading, qewdSession) {
   //console.log('heading: ' + heading);
   //console.log('-------');
 
-  var headingCache = qewdSession.data.$('headings');
+  var headingCache = qewdSessionData.$('headings');
   var cacheBySourceId = headingCache.$('bySourceId');
   var cacheByPatientId = headingCache.$(['byPatientId', patientId, heading]);
   var cacheByHeading = headingCache.$('byHeading');
@@ -46,7 +46,7 @@ function addPatientDataToCache(results, patientId, host, heading, qewdSession) {
     var sourceId = host + '-' + result.uid.split('::')[0];
     //console.log('cacheing result for ' + sourceId);
     var date;
-    if (result.context && result.context.start_time) { 
+    if (result.context && result.context.start_time) {
       date = result.context.start_time.value;
       if (date.indexOf('UTC') !== -1) date = date.split('UTC')[0];
       date = new Date(date).getTime();

@@ -41,7 +41,16 @@ describe('ripple-openehr-jumper/lib/addPatientDataToCache', () => {
   let heading;
 
   let qewdSession;
+  let qewdSessionData;
   let headingCache;
+
+  function seeds() {
+    headingCache.$(['bySourceId', 'ethercis-188a6bbe-d823-4fca-a79f-11c64af5c2e6']).setDocument({
+      data: {
+        foo: 'bar'
+      }
+    });
+  }
 
   beforeEach(() => {
     q = new Worker();
@@ -63,7 +72,10 @@ describe('ripple-openehr-jumper/lib/addPatientDataToCache', () => {
     heading = 'allergies';
 
     qewdSession = q.sessions.create('app');
+    qewdSessionData = qewdSession.data;
     headingCache = qewdSession.data.$('headings');
+
+    seeds();
   });
 
   afterEach(() => {
@@ -74,7 +86,7 @@ describe('ripple-openehr-jumper/lib/addPatientDataToCache', () => {
     const sourceId = 'ethercis-188a6bbe-d823-4fca-a79f-11c64af5c2e6';
     const date = 1516009631000;
 
-    addPatientDataToCache.call(q, results, patientId, host, heading, qewdSession);
+    addPatientDataToCache.call(q, results, patientId, host, heading, qewdSessionData);
 
     /*jshint camelcase: false */
     const cacheBySourceId = headingCache.$(['bySourceId', sourceId]);
@@ -103,6 +115,14 @@ describe('ripple-openehr-jumper/lib/addPatientDataToCache', () => {
     expect(cacheByHeading.$([heading, sourceId]).value).toBe('');
   });
 
+  it('should get rid of standard data cache (temporary)', () => {
+    const sourceId = 'ethercis-188a6bbe-d823-4fca-a79f-11c64af5c2e6';
+
+    addPatientDataToCache.call(q, results, patientId, host, heading, qewdSessionData);
+
+    expect(headingCache.$(['bySourceId', sourceId, 'data']).exists).toBeFalsy();
+  });
+
   it('should add patient data to cache when date is not UTC', () => {
     /*jshint camelcase: false */
     results = [
@@ -120,7 +140,7 @@ describe('ripple-openehr-jumper/lib/addPatientDataToCache', () => {
     const sourceId = 'ethercis-188a6bbe-d823-4fca-a79f-11c64af5c2e6';
     const date = 1514808000000;
 
-    addPatientDataToCache.call(q, results, patientId, host, heading, qewdSession);
+    addPatientDataToCache.call(q, results, patientId, host, heading, qewdSessionData);
 
     /*jshint camelcase: false */
     const cacheBySourceId = headingCache.$(['bySourceId', sourceId]);
@@ -158,7 +178,7 @@ describe('ripple-openehr-jumper/lib/addPatientDataToCache', () => {
 
     const sourceId = 'ethercis-188a6bbe-d823-4fca-a79f-11c64af5c2e6';
 
-    addPatientDataToCache.call(q, results, patientId, host, heading, qewdSession);
+    addPatientDataToCache.call(q, results, patientId, host, heading, qewdSessionData);
 
     const cacheBySourceId = headingCache.$(['bySourceId', sourceId]);
     expect(cacheBySourceId.getDocument()).toEqual({
@@ -178,6 +198,4 @@ describe('ripple-openehr-jumper/lib/addPatientDataToCache', () => {
     const cacheByHeading = headingCache.$('byHeading');
     expect(cacheByHeading.$([heading, sourceId]).value).toBe('');
   });
-
-  xit('temporary - get rid of standard data cache');
 });
