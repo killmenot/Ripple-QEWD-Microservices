@@ -13,6 +13,7 @@
       "platform": "ethercis"
     }
   },
+  "chowner": "rtweed",
   "paths": {
     "jumper_templates": "/path/to/ripple-openehr-jumper/templates/",
     "openEHR_modules": "/path/to/ripple-cdr-openehr/lib/src/"
@@ -40,5 +41,8 @@
       "summaryTableFields": ["problem", "dateOfOnset"]
     },
     "procedures": true
+  },
+  "documentNames": {
+    "jumperTemplateFields": "CustomOpenEHRJumper"
   }
 }

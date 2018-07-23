@@ -73,7 +73,6 @@ describe('ripple-openehr-jumper/lib/getWebTemplate', () => {
       .reply(200, data || {});
   }
 
-
   function rewritePaths(q) {
     /*jshint camelcase: false */
     q.userDefined.paths.jumper_templates = path.join(__dirname, '../templates/');
@@ -114,7 +113,7 @@ describe('ripple-openehr-jumper/lib/getWebTemplate', () => {
     q.db.reset();
   });
 
-  it('should return template Name not defined or empty error', () => {
+  it('should return template name not defined or empty error', () => {
     templateName = '';
 
     getWebTemplate.call(q, templateName, headingPath, callback);
