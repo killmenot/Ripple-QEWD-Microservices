@@ -38,7 +38,8 @@ describe('ripple-cdr-openehr/lib/headings', () => {
   const host = 'marand';
   const headings = [
     'allergies',
-    'counts'
+    'counts',
+    'appointments'
   ];
 
   function loadConfig(heading) {
