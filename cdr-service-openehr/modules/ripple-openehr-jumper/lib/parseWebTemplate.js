@@ -150,16 +150,18 @@ function parse(obj, path, info, platform, flatJSONPath) {
                   if (typeof min === 'undefined' && occurrence.min) min = occurrence.min;
                   if (occurrence.max) max = occurrence.max;
                 }
+
+                if (node.constraints[0].constraint.defining_code) {
+                  codes = node.constraints[0].constraint.defining_code;
+                }
               }
               if (node.constraints[0].type) type = node.constraints[0].type;
-              if (node.constraints[0].constraint.defining_code) {
-                codes = node.constraints[0].constraint.defining_code;
-              }
             }
           }
           if (min > 0) required = true;
         }
-        info.push({
+
+        var result = {
           id: nodeId,
           name: node.name,
           path: currentPath,
@@ -170,7 +172,11 @@ function parse(obj, path, info, platform, flatJSONPath) {
           max: max,
           codes: codes,
           flatJSONPath: newFlatJSONPath
-        });
+        };
+
+        if (!result.codes) delete result.codes;
+
+        info.push(result);
       }
     }
   });
