@@ -39,7 +39,10 @@ describe('ripple-cdr-openehr/lib/headings', () => {
   const headings = [
     'allergies',
     'counts',
-    'appointments'
+    'appointments',
+    'clinicalnotes',
+    'contacts',
+    'eolcareplans'
   ];
 
   function loadConfig(heading) {
