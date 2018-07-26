@@ -92,6 +92,15 @@ describe('ripple-admin/lib/ripple-admin', () => {
       expect(finished).not.toHaveBeenCalled();
     });
 
+    it('should pass when messageObj type is getHomePageURLs', () => {
+      messageObj.type = 'getHomePageURLs';
+
+      const actual = rippleAdmin.beforeHandler.call(q, messageObj, session, send, finished);
+
+      expect(actual).toBeUndefined();
+      expect(finished).not.toHaveBeenCalled();
+    });
+
     it('should pass when user authenticated', () => {
       session.authenticated = true;
 

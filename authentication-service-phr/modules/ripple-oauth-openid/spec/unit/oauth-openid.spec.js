@@ -157,7 +157,7 @@ describe('ripple-oauth-openid/lib/oauth-openid', () => {
   });
 
   describe('#auth.getRedirectURL', () => {
-    it('should return correct url', (done) => {
+    it('should return correct url with passing scope', (done) => {
       const expected = 'AUTHORIZATION_URL';
 
       const client = {
@@ -168,14 +168,39 @@ describe('ripple-oauth-openid/lib/oauth-openid', () => {
       oAuthOpenid.init.call(q);
 
       setTimeout(() => {
-        const scope = ['scope'];
+        const scope = 'scope;value';
 
         const actual = q.auth.getRedirectURL(scope);
 
         /*jshint camelcase: false */
         expect(client.authorizationUrl).toHaveBeenCalledWith({
           redirect_uri: 'http://example.org/api/auth/token',
-          scope: ['scope'],
+          scope: 'scope;value',
+        });
+        /*jshint camelcase: true */
+
+        expect(actual).toBe(expected);
+        done();
+      }, 100);
+    });
+
+    it('should return correct url without passing scope', (done) => {
+      const expected = 'AUTHORIZATION_URL';
+
+      const client = {
+        authorizationUrl: jasmine.createSpy().and.returnValue('AUTHORIZATION_URL')
+      };
+      clientSpy.and.returnValue(client);
+
+      oAuthOpenid.init.call(q);
+
+      setTimeout(() => {
+        const actual = q.auth.getRedirectURL();
+
+        /*jshint camelcase: false */
+        expect(client.authorizationUrl).toHaveBeenCalledWith({
+          redirect_uri: 'http://example.org/api/auth/token',
+          scope: 'openid',
         });
         /*jshint camelcase: true */
 

@@ -47,7 +47,9 @@ describe('ripple-oauth-openid/lib/handlers/getToken', () => {
     q.auth = authMock.mock();
 
     args = {
-      req: {},
+      req: {
+        query: {}
+      },
       session: {}
     };
     finished = jasmine.createSpy();
@@ -66,6 +68,39 @@ describe('ripple-oauth-openid/lib/handlers/getToken', () => {
       id_token: jwt.encode(data, 'secret')
     };
     /*jshint camelcase: true */
+  });
+
+  it('should return error when query contains error', (done) => {
+    args.req.query.error = 'ERROR_CODE';
+
+    handler.call(q, args, finished);
+
+    setTimeout(() => {
+      expect(finished).toHaveBeenCalledWith({
+        error: 'ERROR_CODE'
+      });
+
+      done();
+    }, 100);
+  });
+
+  it('should return error with description when query contains error and error description', (done) => {
+    /*jshint camelcase: false */
+    args.req.query = {
+      error: 'ERROR_CODE',
+      error_description: 'ERROR_DESC'
+    };
+    /*jshint camelcase: true */
+
+    handler.call(q, args, finished);
+
+    setTimeout(() => {
+      expect(finished).toHaveBeenCalledWith({
+        error: 'ERROR_CODE: ERROR_DESC'
+      });
+
+      done();
+    }, 100);
   });
 
   it('should return correct response', (done) => {
@@ -108,7 +143,7 @@ describe('ripple-oauth-openid/lib/handlers/getToken', () => {
           exp: 1530143787,
           id_token: tokenSet.id_token
         }
-      })
+      });
       /*jshint camelcase: true */
       done();
     }, 100);
@@ -139,7 +174,7 @@ describe('ripple-oauth-openid/lib/handlers/getToken', () => {
           exp: 1530143787,
           id_token: tokenSet.id_token
         }
-      })
+      });
       /*jshint camelcase: true */
       done();
     }, 100);

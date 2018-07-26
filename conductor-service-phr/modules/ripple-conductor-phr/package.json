@@ -26,7 +26,7 @@
   "devDependencies": {
     "coveralls": "^3.0.0",
     "ewd-document-store": "^1.23.0",
-    "ewd-memory-globals": "^1.0.2",
+    "ewd-memory-globals": "killmenot/ewd-memory-globals",
     "jasmine": "^3.1.0",
     "jasmine-spec-reporter": "^4.1.1",
     "jasmine-spy-matchers": "^2.1.0",
