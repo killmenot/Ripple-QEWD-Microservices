@@ -43,8 +43,10 @@ module.exports = {
   },
   msAfterMidnight: function(date) {
     var e = new Date(date);
-    console.log('\n msAfterMidnight: e.setHours(0,0,0,0) = ' + e.setHours(0,0,0,0) + '; e = ' + e.getTime());
-    return e.getTime() - e.setHours(0,0,0,0);
+    var time = e.getTime();
+    var midnight = e.setHours(0,0,0,0);
+    console.log('\n msAfterMidnight: midnight = ' + midnight + '; e = ' + time);
+    return time - midnight;
   },
   getNarrative: function(name, route, doseAmount, doseTiming) {
     return name + 'Route: ' + route + '; Dose: ' + doseAmount + '; Timing: ' + doseTiming;
@@ -64,7 +66,7 @@ module.exports = {
     return dose;
   },
   toInteger: function(input) {
-    return parseInt(input);
+    return parseInt(input, 10);
   },
   trueOnly: function(input) {
     if (input === true) return true;

@@ -33,6 +33,10 @@ var logging = {
   host: 'ethercis'
 };
 
+function log() {
+  if (logging.on) console.log.apply(console, arguments)
+}
+
 function isEmpty(obj) {
   for (var index in obj) {
     return false;
@@ -47,50 +51,56 @@ function getByAQLPath(data, fieldInfo) {
   var found = true;
   var pathArr = fieldInfo.pathArr;
   var archetypeNodeId;
+
   for (var i = 0; i < pathArr.length; i++) {
       fullPath = pathArr[i];
-      if (logging.on) console.log('i = ' + i + '; fullPath = ' + fullPath);
+      log('i = ' + i + '; fullPath = ' + fullPath);
+
       archetypeNodeId = false;
+
       var pieces;
       if (fullPath.indexOf('[') !== -1) {
         pieces = fullPath.split('[');
         archetypeNodeId = pieces[1].split(']')[0];
         path = pieces[0];
-        if (logging.on) console.log('** ' + path + ' : ' + archetypeNodeId);
+        log('** ' + path + ' : ' + archetypeNodeId);
       }
       else {
         path = fullPath;
       }
+
       subTree = subTree[path];
+
       if (subTree) {
-        if (logging.on) console.log('data found for path: ' + path);
-        if (logging.on) console.log('archetypeNodeId = ' + archetypeNodeId);
+        log('data found for path: ' + path);
+        log('archetypeNodeId = ' + archetypeNodeId);
+
         if (archetypeNodeId) {
           if (Array.isArray(subTree)) {
-            if (logging.on) console.log('subTree is an array');
+            log('subTree is an array', JSON.stringify(subTree));
             var matching = [];
             subTree.forEach(function(tree) {
-              if (logging.on) console.log('tree.archetype_node_id = ' + tree.archetype_node_id);
-              if (logging.on) console.log('expecting ' + archetypeNodeId);
+              log('tree.archetype_node_id = ' + tree.archetype_node_id);
+              log('expecting ' + archetypeNodeId);
               if (tree.archetype_node_id === archetypeNodeId) {
-                if (logging.on) console.log('match found');
+                log('match found');
                 matching.push(tree);
               }
             });
             if (matching.length === 0) {
-              if (logging.on) console.log('** no matching data found in array');
+              log('** no matching data found in array');
               found = false;
               break;
             }
             else {
               // just use first one for now
-              if (logging.on) console.log('** match found in array');
+              log('** match found in array');
               subTree = matching[0];
             }
           }
           else {
            if (subTree.archetype_node_id !== archetypeNodeId) {
-             if (logging.on) console.log('archetype_node_id value of ' + archetypeNodeId + ' not found');
+             log('archetype_node_id value of ' + archetypeNodeId + ' not found');
              found = false;
              break;
            }
@@ -99,17 +109,19 @@ function getByAQLPath(data, fieldInfo) {
         //if (logging.on) console.log('subTree now ' + JSON.stringify(subTree, null, 2));
       }
       else {
-        if (logging.on) console.log('no data found for path ' + path);
+        log('no data found for path ' + path);
         found = false;
         break;
       }
   }
+
   if (found) {
-    if (logging.on) console.log(fieldInfo.id + '; type: ' + fieldInfo.type);
-    if (logging.on) console.log('subTree: ' + JSON.stringify(subTree, null, 2));
+    log(fieldInfo.id + '; type: ' + fieldInfo.type);
+    log('subTree: ' + JSON.stringify(subTree, null, 2));
 
     return subTree;
   }
+
   return;
 }
 
@@ -163,21 +175,21 @@ module.exports = function(params) {
     metadata.forEach(function(fieldInfo) {
       var parsedData = output;
       var aqlPath = fieldInfo.aqlPath;
-      if (logging.on) {
-        console.log('\n' + aqlPath);
-        console.log('\n' + JSON.stringify(fieldInfo));
-      }
+
+      log('\n' + aqlPath);
+      log('\n' + JSON.stringify(fieldInfo));
+
       var fieldObj = getByAQLPath(data, fieldInfo);
       if (!fieldObj) return;
 
-      if (logging.on) console.log('** fieldObj = ' + JSON.stringify(fieldObj));
+      log('** fieldObj = ' + JSON.stringify(fieldObj));
 
       var fieldData = {};
 
       if (fieldObj['@class'] === 'ELEMENT') {
-        if (logging.on) console.log('ELEMENT found');
+        log('ELEMENT found');
         fieldObj = fieldObj.value;
-        if (logging.on) console.log('fieldObj = ' + JSON.stringify(fieldObj, null, 2));
+        log('fieldObj = ' + JSON.stringify(fieldObj, null, 2));
       }
 
       if (typeof fieldObj === 'string') fieldData.value = fieldObj;
@@ -192,7 +204,7 @@ module.exports = function(params) {
         if (fieldObj.defining_code) {
           if (fieldObj.defining_code.code_string) fieldData.code = fieldObj.defining_code.code_string;
           if (fieldObj.defining_code.codeString) fieldData.code = fieldObj.defining_code.codeString;
-          if (fieldObj.defining_code.terminology_id && fieldObj.defining_code.terminology_id.value) {    
+          if (fieldObj.defining_code.terminology_id && fieldObj.defining_code.terminology_id.value) {
             fieldData.terminology = fieldObj.defining_code.terminology_id.value;
           }
         }
@@ -242,7 +254,7 @@ module.exports = function(params) {
           if (fieldObj.current_state.defining_code) {
             if (fieldObj.current_state.defining_code.code_string) fieldData.code = fieldObj.current_state.defining_code.code_string;
             if (fieldObj.current_state.defining_code.codeString) fieldData.code = fieldObj.current_state.defining_code.codeString;
-            if (fieldObj.current_state.defining_code.terminology_id && fieldObj.current_state.defining_code.terminology_id.value) {    
+            if (fieldObj.current_state.defining_code.terminology_id && fieldObj.current_state.defining_code.terminology_id.value) {
               fieldData.terminology = fieldObj.current_state.defining_code.terminology_id.value;
             }
           }
@@ -254,12 +266,13 @@ module.exports = function(params) {
       var path;
       for (var i = 0; i < fieldInfo.path.length; i++) {
         path = fieldInfo.path[i];
-        if (logging.on) console.log('path = ' + path);
+        log('path = ' + path);
         if (!parsedData[path]) parsedData[path] = {};
-        if (logging.on) console.log('i = ' + i + '; max: ' + fieldInfo.path.length);
+        log('i = ' + i + '; max: ' + fieldInfo.path.length);
         if (i === (fieldInfo.path.length - 1)) {
           parsedData[path] = fieldData;
         }
+
         parsedData = parsedData[path];
       }
     });
