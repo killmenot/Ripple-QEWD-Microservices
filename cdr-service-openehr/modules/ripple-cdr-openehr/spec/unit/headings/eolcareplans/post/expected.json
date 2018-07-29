@@ -14,9 +14,9 @@
   "end_of_life_patient_preferences/legal_information:0/preferred_priorities_of_care:0/comment": "some priority comment",
   "end_of_life_patient_preferences/legal_information:0/advance_decision_to_refuse_treatment/decision_status|value": "some treatment decision",
   "end_of_life_patient_preferences/legal_information:0/advance_decision_to_refuse_treatment/decision_status|code": "at0005",
-  "end_of_life_patient_preferences/legal_information:0/advance_decision_to_refuse_treatment/date_of_decision": "2018-01-01T12:00:00Z",
+  "end_of_life_patient_preferences/legal_information:0/advance_decision_to_refuse_treatment/date_of_decision": "2018-03-01T12:00:00Z",
   "end_of_life_patient_preferences/legal_information:0/cpr_decision/cpr_decision|value": "some cpr decision",
   "end_of_life_patient_preferences/legal_information:0/cpr_decision/cpr_decision|code": "at0005",
-  "end_of_life_patient_preferences/legal_information:0/cpr_decision/date_of_cpr_decision": "2018-01-01T12:00:00Z",
+  "end_of_life_patient_preferences/legal_information:0/cpr_decision/date_of_cpr_decision": "2018-02-01T12:00:00Z",
   "end_of_life_patient_preferences/legal_information:0/cpr_decision/comment": "some cpr comment"
 }

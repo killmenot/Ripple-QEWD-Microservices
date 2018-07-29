@@ -9,11 +9,11 @@
 	},
 	"treatmentDecision": {
   	"decisionToRefuseTreatment": "some treatment decision",
-  	"dateOfDecision": "2018-01-01T12:00:00Z"
+  	"dateOfDecision": "2018-03-01T12:00:00Z"
 	},
 	"cprDecision": {
   	"cprDecision": "some cpr decision",
-  	"dateOfDecision": "2018-01-01T12:00:00Z",
+  	"dateOfDecision": "2018-02-01T12:00:00Z",
   	"comment": "some cpr comment"
 	}
 }

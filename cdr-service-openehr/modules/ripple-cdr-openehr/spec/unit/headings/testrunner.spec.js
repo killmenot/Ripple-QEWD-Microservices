@@ -42,7 +42,9 @@ describe('ripple-cdr-openehr/lib/headings', () => {
     'appointments',
     'clinicalnotes',
     'contacts',
-    'eolcareplans'
+    'eolcareplans',
+    'events',
+    'laborders'
   ];
 
   function loadConfig(heading) {
