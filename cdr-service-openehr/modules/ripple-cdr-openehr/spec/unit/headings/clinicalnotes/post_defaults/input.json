@@ -1,4 +1,4 @@
 {
-	"note":									"some note",
-	"clinicalNotesType": 		"some type"
+  "note": "some note",
+  "clinicalNotesType": "some type"
 }
