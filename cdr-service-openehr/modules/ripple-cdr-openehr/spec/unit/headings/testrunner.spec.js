@@ -52,7 +52,10 @@ describe('ripple-cdr-openehr/lib/headings', () => {
     'problems',
     'procedures',
     'procedures',
-    'proms'
+    'proms',
+    'referrals',
+    'vaccinations',
+    'vitalsigns'
   ];
 
   function loadConfig(heading) {
