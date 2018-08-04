@@ -30,4 +30,37 @@
 
 'use strict';
 
-module.exports = require('./lib/ripple-mpi');
+const DocumentStore = require('ewd-document-store');
+const DbGlobals = require('ewd-memory-globals');
+const sessions = require('ewd-session');
+
+module.exports = function (config) {
+  this.db = new DbGlobals();
+  this.documentStore = new DocumentStore(this.db);
+
+  sessions.init(this.documentStore);
+  this.sessions = sessions;
+
+  this.jwt = {};
+  this.userDefined = {
+    config: config
+  };
+
+  this.db.reset = () => this.db.store.reset();
+  this.db.use = (documentName, ...subscripts) => {
+    if (subscripts.length === 1 && Array.isArray(subscripts[0])) {
+      subscripts = subscripts[0];
+    }
+
+    return new this.documentStore.DocumentNode(documentName, subscripts);
+  };
+
+  // this.sessions = {
+  //   create: jasmine.createSpy()
+  // };
+
+  this.qewdSessionByJWT = jasmine.createSpy();
+  this.jwt.handlers = {
+    validateRestRequest: jasmine.createSpy()
+  };
+};

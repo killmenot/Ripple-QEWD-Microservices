@@ -53,7 +53,7 @@ describe('ripple-oauth-openid/lib/handlers/getToken', () => {
     finished = jasmine.createSpy();
 
     data = {
-      nhsNumber: 'nhsNumber',
+      nhsNumber: '9999999000',
     };
 
     /*jshint camelcase: false */
@@ -92,7 +92,7 @@ describe('ripple-oauth-openid/lib/handlers/getToken', () => {
     setTimeout(() => {
       expect(args.session.authenticated).toBeTruthy();
       expect(args.session.timeout).toBe(1200);
-      expect(args.session.nhsNumber).toBe('nhsNumber');
+      expect(args.session.nhsNumber).toBe('9999999000');
       expect(args.session.role).toBe('phrUser');
       expect(args.session.uid).toBe('0000-000-00-0');
 

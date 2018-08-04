@@ -190,7 +190,7 @@ describe('ripple-auth/lib/admin/login', () => {
   it('should authenticate user', () => {
     args.session = {
       auth0: 'auth0',
-      nhsNumber: 'nhsNumber'
+      nhsNumber: '9999999000'
     };
 
     handler.call(q, args, finished);

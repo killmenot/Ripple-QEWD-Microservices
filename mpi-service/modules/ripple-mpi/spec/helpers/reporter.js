@@ -27,7 +27,14 @@
   3 August 2018
 
 */
-
 'use strict';
 
-module.exports = require('./lib/ripple-mpi');
+const SpecReporter = require('jasmine-spec-reporter').SpecReporter;
+
+jasmine.getEnv().clearReporters();
+jasmine.getEnv().addReporter(new SpecReporter({
+  spec: {
+    displayPending: true,
+    displayStacktrace: true
+  }
+}));

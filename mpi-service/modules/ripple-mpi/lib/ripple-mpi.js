@@ -24,83 +24,72 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  12 March 2018
+  8 May 2018
 
 */
 
-module.exports = function(args, finished) {
+var router = require('qewd-router');
+var loadPatients = require('./loadPatients');
 
-  var jwt = args.session;
-  var nhsNumber = jwt.nhsNumber;
-  var role = jwt.role;
+var getDemographics = require('./handlers/getDemographics');
+var getPatients = require('./handlers/getPatients');
+var getUser = require('./handlers/getUser');
+var advancedSearch = require('./handlers/advancedSearch');
+var clinicalSearch = require('./handlers/clinicalSearch');
 
-  console.log('args: ' + JSON.stringify(args));
-
-  var patientsDoc = this.db.use('RipplePHRPatients', 'byId');
-  var patientList = args.req.qewdSession.data.$('patientList');
-
-  if (!nhsNumber && role === 'IDCR') {
-
-    // create this user's patient list in QEWD session
-    //  for now it will be all patients in the database
-    //  but in time will be just those the user has access to
-
-
-    patientsDoc.forEachChild(function(id) {
-      patientList.$(id).value = id;
-    });
-
-    return finished({
-      given_name: jwt.given_name,
-      family_name: jwt.family_name,
-      email: jwt.email,
-      tenant: '',
-      role: role,
-      roles: [role]
-    });
+var routes = {
+  '/api/my/demographics': {
+    GET: getDemographics
+  },
+  '/api/patients': {
+    GET: getPatients
+  },
+  '/api/patients/advancedSearch': {
+    POST: advancedSearch
+  },
+  '/api/patients/querySearch': {
+    POST: clinicalSearch
+  },
+  '/api/demographics/:patientId': {
+    GET: getDemographics
+  },
+  '/api/patients/:patientId': {
+    GET: getDemographics
+  },
+  '/api/user': {
+    GET: getUser
   }
+};
 
-  var patient = patientsDoc.$(nhsNumber);
-  if (!patient.exists) return finished({error: 'No such NHS Number: ' + nhsNumber});
+module.exports = {
+  init: function() {
+    router.addMicroServiceHandler(routes, module.exports);
+    loadPatients.call(this);
+  },
 
-  var sub;
-  var givenName;
-  var familyName;
-  var email;
+  beforeMicroServiceHandler: function(req, finished) {
+    var authorised = this.jwt.handlers.validateRestRequest.call(this, req, finished);
 
-  if (jwt.openid) {
-    sub = jwt.openid.sub;
-    var pieces = patient.$('name').value.split(' ');
-    givenName = pieces[0];
-    familyName = pieces[pieces.length - 1];
-    email = '';
-  }
+    if (authorised) {
+      var role = req.session.role;
+      console.log('*** role = ' + role + ' *****');
+      if (req.path.startsWith('/api/my/') && role !== 'phrUser') {
+        finished({error: 'Unauthorised request'});
+        console.log('**** attempt to use an /api/my/ path by a non-PHR user ******');
+        return false;
+      }
 
-  if (jwt.auth0) {
-    var auth0 = jwt.auth0;
-    sub = auth0.sub;
-    givenName = auth0.given_name;
-    familyName = auth0.family_name;
-    email = auth0.email;
-  }
+      if (req.path.startsWith('/api/patient/') && role === 'phrUser') {
+        finished({error: 'Unauthorised request'});
+        console.log('**** attempt to use an /api/patient/ path by a PHR user ******');
+        return false;
+      }
+      // get QEWD Session for this user's JWT, or create a new one
 
-  var role = 'IDCR';
-  if (jwt.role === 'phrUser') role = 'PHR';
+      req.qewdSession = this.qewdSessionByJWT.call(this, req);
 
-  if (role === 'IDCR') {
-    if (!patientList.$(nhsNumber).exists) {
-      return finished({error: 'You have no access to this patient'});
     }
-  }
 
-  finished({
-    sub: sub,
-    given_name: givenName,
-    family_name: familyName,
-    email: email,
-    tenant: '',
-    role: role,
-    roles: [role],
-    nhsNumber: nhsNumber
-  });
+    return authorised;
+  }
 };

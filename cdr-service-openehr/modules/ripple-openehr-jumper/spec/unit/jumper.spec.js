@@ -109,8 +109,6 @@ describe('ripple-openehr-jumper/lib/jumper', () => {
       fsMock.restore();
     });
 
-    xit('chowner');
-
     it('should not create template folder for heading when no template defined', () => {
       headings = {
         procedures: true

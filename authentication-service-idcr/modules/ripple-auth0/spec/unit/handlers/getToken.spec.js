@@ -65,7 +65,7 @@ describe('ripple-auth0/lib/handlers/getToken', () => {
 
     /*jshint camelcase: false */
     data = {
-      nhs_number: 'nhsNumber'
+      nhs_number: '9999999000'
     };
     /*jshint camelcase: true */
 
@@ -175,7 +175,7 @@ describe('ripple-auth0/lib/handlers/getToken', () => {
 
     setTimeout(() => {
       expect(args.session.timeout).toBe(1200);
-      expect(args.session.nhsNumber).toBe('nhsNumber');
+      expect(args.session.nhsNumber).toBe('9999999000');
       expect(args.session.role).toBe('IDCR');
       expect(args.session.uid).toMatch(/^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i);
       expect(args.session.auth0).toEqual(data);
@@ -187,8 +187,8 @@ describe('ripple-auth0/lib/handlers/getToken', () => {
   it('should set session role to phrUser', (done) => {
     /*jshint camelcase: false */
     data = {
-      nhs_number: 'nhsNumber',
-      role: 'PHR'
+      role: 'PHR',
+      nhs_number: '9999999000',
     };
     /*jshint camelcase: true */
 

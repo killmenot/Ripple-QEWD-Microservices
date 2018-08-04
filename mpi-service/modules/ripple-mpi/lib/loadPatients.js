@@ -24,10 +24,19 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  3 August 2018
+  11 January 2018
 
 */
 
-'use strict';
+var data = require('../data/patients.json');
 
-module.exports = require('./lib/ripple-mpi');
+module.exports = function() {
+  var patients = this.db.use('RipplePHRPatients');
+  if (patients.exists) return false;
+  patients.$('byId').setDocument(data);
+  for (var id in data) {
+    patients.$(['byName', data[id].name, id]).value = id;
+  }
+  return true;
+};
+

@@ -24,19 +24,10 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  11 January 2018
+  3 August 2018
 
 */
 
-var data = require('./patients.json');
+'use strict';
 
-module.exports = function() {
-  var patients = this.db.use('RipplePHRPatients');
-  if (patients.exists) return false;
-  patients.$('byId').setDocument(data);
-  for (var id in data) {
-    patients.$(['byName', data[id].name, id]).value = id;
-  }
-  return true;
-};
-
+require('jasmine-spy-matchers');

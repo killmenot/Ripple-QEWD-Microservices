@@ -73,6 +73,7 @@ module.exports = function(args, finished) {
     var pieces = patientName.split(' ');
     var fname = pieces[0];
     var sname = pieces[1];
+
     if (sname === surname && fname.startsWith(forename)) {
       match = true;
       var dob = body.dateOfBirth;
@@ -94,6 +95,7 @@ module.exports = function(args, finished) {
         from = new Date(from).getTime();
         to = new Date(to).getTime();
         var patDob = patient.$('dateOfBirth').value;
+
         if (patDob >= from && patDob <= to) match = true;
       }
 
@@ -106,11 +108,10 @@ module.exports = function(args, finished) {
           if (patient.$('gender').value.toLowerCase() === gender) match = true;
         }
       }
-
     }
+
     if (match) matches.push(patient.getDocument());
   });
-
 
   finished(matches);
 

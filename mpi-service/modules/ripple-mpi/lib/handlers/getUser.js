@@ -24,10 +24,83 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  3 August 2018
+  12 March 2018
 
 */
 
-'use strict';
+module.exports = function(args, finished) {
 
-module.exports = require('./lib/ripple-mpi');
+  var jwt = args.session;
+  var nhsNumber = jwt.nhsNumber;
+  var role = jwt.role;
+
+  //console.log('args: ' + JSON.stringify(args));
+
+  var patientsDoc = this.db.use('RipplePHRPatients', 'byId');
+  var patientList = args.req.qewdSession.data.$('patientList');
+
+  if (!nhsNumber && role === 'IDCR') {
+
+    // create this user's patient list in QEWD session
+    //  for now it will be all patients in the database
+    //  but in time will be just those the user has access to
+
+
+    patientsDoc.forEachChild(function(id) {
+      patientList.$(id).value = id;
+    });
+
+    return finished({
+      given_name: jwt.given_name,
+      family_name: jwt.family_name,
+      email: jwt.email,
+      tenant: '',
+      role: role,
+      roles: [role]
+    });
+  }
+
+  var patient = patientsDoc.$(nhsNumber);
+  if (!patient.exists) return finished({error: 'No such NHS Number: ' + nhsNumber});
+
+  var sub;
+  var givenName;
+  var familyName;
+  var email;
+
+  if (jwt.openid) {
+    sub = jwt.openid.sub;
+    var pieces = patient.$('name').value.split(' ');
+    givenName = pieces[0];
+    familyName = pieces[pieces.length - 1];
+    email = '';
+  }
+
+  if (jwt.auth0) {
+    var auth0 = jwt.auth0;
+    sub = auth0.sub;
+    givenName = auth0.given_name;
+    familyName = auth0.family_name;
+    email = auth0.email;
+  }
+
+  var role = 'IDCR';
+  if (jwt.role === 'phrUser') role = 'PHR';
+
+  if (role === 'IDCR') {
+    if (!patientList.$(nhsNumber).exists) {
+      return finished({error: 'You have no access to this patient'});
+    }
+  }
+
+  finished({
+    sub: sub,
+    given_name: givenName,
+    family_name: familyName,
+    email: email,
+    tenant: '',
+    role: role,
+    roles: [role],
+    nhsNumber: nhsNumber
+  });
+};

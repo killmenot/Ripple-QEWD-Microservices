@@ -1,9 +1,9 @@
 /*
 
  ----------------------------------------------------------------------------
- | ripple-mpi: Ripple Master Patient Index / PAS MicroService               |
+ | ripple-admin: Ripple User Administration MicroService                    |
  |                                                                          |
- | Copyright (c) 2017-18 Ripple Foundation Community Interest Company       |
+ | Copyright (c) 2018 Ripple Foundation Community Interest Company          |
  | All rights reserved.                                                     |
  |                                                                          |
  | http://rippleosi.org                                                     |
@@ -30,4 +30,26 @@
 
 'use strict';
 
-module.exports = require('./lib/ripple-mpi');
+const Worker = require('../../mocks/worker');
+const clinicalSearch = require('../../../lib/handlers/clinicalSearch');
+
+describe('ripple-mpi/lib/handlers/clinicalSearch', () => {
+  let q;
+  let args;
+  let finished;
+
+  beforeEach(() => {
+    q = new Worker();
+
+    args = {};
+    finished = jasmine.createSpy();
+  });
+
+  afterEach(() => {
+    q.db.reset();
+  });
+
+  it('should do nothing', () => {
+    clinicalSearch.call(q, args, finished);
+  });
+});
