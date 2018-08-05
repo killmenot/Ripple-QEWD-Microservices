@@ -17,6 +17,8 @@ test:
 	(cd conductor-service-phr/modules/ripple-conductor-phr && yarn && yarn test)
 	# mpi-service
 	(cd mpi-service/modules/ripple-mpi && yarn && yarn test)
+	# openid-connect-server
+	(cd openid-connect-server/modules/qewd-openid-connect && yarn && yarn test)
 
 lint:
 	# authentication-service-idcr
@@ -37,5 +39,7 @@ lint:
 	(cd conductor-service-phr/modules/ripple-conductor-phr && yarn && yarn lint)
 	# mpi-service
 	(cd mpi-service/modules/ripple-mpi && yarn && yarn lint)
+	# openid-connect-server
+	(cd openid-connect-server/modules/qewd-openid-connect && yarn && yarn lint)
 
 .PHONY: test lint
