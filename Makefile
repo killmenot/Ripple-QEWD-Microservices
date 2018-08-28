@@ -20,6 +20,16 @@ test:
 	# openid-connect-server
 	(cd openid-connect-server/modules/qewd-openid-connect && yarn && yarn test)
 
+clean:
+	# authentication-service-idcr
+	(cd authentication-service-idcr/modules/ripple-auth && rm -rf node_modules && rm -rf .nyc_output && rm -rf coverage && rm -f yarn.lock && rm -f package-lock.json)
+	(cd authentication-service-idcr/modules/ripple-auth0 && rm -rf node_modules && rm -rf .nyc_output && rm -rf coverage && rm -f yarn.lock && rm -f package-lock.json)
+	(cd authentication-service-idcr/modules/ripple-oauth-openid && rm -rf node_modules && rm -rf .nyc_output && rm -rf coverage && rm -f yarn.lock && rm -f package-lock.json)
+	# authentication-service-phr
+	(cd authentication-service-phr/modules/ripple-auth && rm -rf node_modules && rm -rf .nyc_output && rm -rf coverage && rm -f yarn.lock && rm -f package-lock.json)
+	(cd authentication-service-phr/modules/ripple-auth0 && rm -rf node_modules && rm -rf .nyc_output && rm -rf coverage && rm -f yarn.lock && rm -f package-lock.json)
+	(cd authentication-service-phr/modules/ripple-oauth-openid && rm -rf node_modules && rm -rf .nyc_output && rm -rf coverage && rm -f yarn.lock && rm -f package-lock.json)
+
 lint:
 	# authentication-service-idcr
 	(cd authentication-service-idcr/modules/ripple-auth && yarn && yarn lint)
@@ -42,4 +52,4 @@ lint:
 	# openid-connect-server
 	(cd openid-connect-server/modules/qewd-openid-connect && yarn && yarn lint)
 
-.PHONY: test lint
+.PHONY: test lint clean
