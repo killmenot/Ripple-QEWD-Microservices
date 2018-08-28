@@ -48,7 +48,7 @@ module.exports = async function () {
     //message.application = 'openid-server';
     //message.expressType = message.type;
     //message.type = 'ewd-qoper8-express';
-    debug('sendAsync: openid_server = %s', JSON.stringify(this.openid_server, null, 2));
+    debug('sendAsync: openid_server = %j', this.openid_server);
     if (this.openid_server.token) message.token = this.openid_server.token;
 
     return await handleMessagePromise.call(this, message);

@@ -48,46 +48,63 @@ function start(app, bodyParser, params) {
 
   qewd_interface.call(this);
 
-  // start the QEWD session for database interactions
-  this.send_promise({
-    type: 'ewd-register',
-    application: 'qewd-openid-connect'
-  }).then((result) => {
-    debug('ewd-register|result = %j', result);
+  function registerAsync() {
+    return this.send_promise({
+      type: 'ewd-register',
+      application: 'qewd-openid-connect'
+    });
+  }
 
-    this.openid_server.token = result.message.token;
-    this.send_promise({
+  function loginAsync() {
+    return this.send_promise({
       type: 'login',
       params: {
         password: this.userDefined.config.managementPassword
       }
-    }).then((result) => {
-      debug('login|result = %j', result);
-
-      // fetch or generate the keystore & config params
-      const msg = {
-        type: 'getParams'
-      };
-
-      if (documents) {
-        msg.params = {
-          documents: documents,
-          documentsPath: DOCUMENTS_PATH
-        };
-      }
-
-      this.send_promise(msg).then((result) => {
-        debug('getParams|result = %j', result);
-
-        // start up the OpenID Connect Server
-        Object.keys(result.message).forEach((name) => {
-          params[name] = result.message[name];
-        });
-
-        load.call(this, app, bodyParser, params);
-      });
     });
-  });
+  }
+
+  function getParamsAsync() {
+    const message = {
+      type: 'getParams'
+    };
+
+    if (documents) {
+      message.params = {
+        documents: documents,
+        documentsPath: DOCUMENTS_PATH
+      };
+    }
+
+    return this.send_promise(message);
+  }
+
+  function handleError(err) {
+    /*eslint-disable no-console*/
+    console.error(err);
+    /*eslint-enable no-console*/
+  }
+
+  // start the QEWD session for database interactions
+  registerAsync.call(this).then(result => {
+    debug('ewd-register|result = %j', result);
+
+    this.openid_server.token = result.message.token;
+
+    return loginAsync.call(this);
+  }).then(result => {
+    debug('login|result = %j', result);
+
+    return getParamsAsync.call(this);
+  }).then(result => {
+    debug('getParams|result = %j', result);
+
+    // start up the OpenID Connect Server
+    Object.keys(result.message).forEach((name) => {
+      params[name] = result.message[name];
+    });
+    load.call(this, app, bodyParser, params);
+  }).catch(handleError);
 }
 
 module.exports = start;

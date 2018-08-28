@@ -28,12 +28,13 @@
 
 */
 
-var config = require('./startup_config.json');
-var local_routes = require('./local_routes.json');
-var oidc_config = require('./oidc-config.json');
+const config = require('./startup_config.json');
+const local_routes = require('./local_routes.json');
+const oidc_config = require('./oidc-config.json');
+const debug = '*ewd*';
 
-var bodyParser;
-var app;
+let app;
+let bodyParser;
 
 config.addMiddleware = function(bp, express) {
   bodyParser = bp;
@@ -41,16 +42,17 @@ config.addMiddleware = function(bp, express) {
 };
 
 function onStarted() {
-  var self = this;
-  var deleteDocuments = (config.delete_documents === true);
+  const deleteDocuments = (config.delete_documents === true);
   console.log('Wait a couple of seconds for oidc-provider to be available');
-  setTimeout(function() {
-    var oidcServer = require('./modules/qewd-openid-connect');
-    oidcServer.call(self, app, bodyParser, oidc_config);
-  },2000);
+
+  setTimeout(() => {
+    const oidcServer = require('./modules/qewd-openid-connect');
+    oidcServer.call(this, app, bodyParser, oidc_config);
+  }, 2000);
 }
 
 module.exports = {
+  debug: debug,
   config: config,
   routes: local_routes,
   onStarted: onStarted

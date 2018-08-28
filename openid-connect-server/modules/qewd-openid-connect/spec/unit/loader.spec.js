@@ -453,7 +453,7 @@ describe('qewd-openid-connect/lib/loader', () => {
       it('should initialize /openid route', async () => {
         await loaderAsync(q, app, bodyParser, params);
 
-        expect(app.use).toHaveBeenCalledWith('/openid', oidc.callback);
+        expect(app.use).toHaveBeenCalledWith('/openid', jasmine.any(Function), oidc.callback);
       });
     });
   });

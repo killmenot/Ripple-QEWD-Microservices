@@ -1,5 +1,4 @@
 [
-  "debug",
   "lru-cache",
   "oidc-provider"
 ]

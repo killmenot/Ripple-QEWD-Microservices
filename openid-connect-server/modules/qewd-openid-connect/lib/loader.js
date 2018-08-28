@@ -36,7 +36,6 @@ const adapter = require('./adapter');
 const logoutSource = require('./logoutSource');
 const debug = require('debug')('qewd-openid-connect:loader');
 const path = require('path');
-const util = require('util');
 
 module.exports = function(app, bodyParser, params) {
 
@@ -44,6 +43,21 @@ module.exports = function(app, bodyParser, params) {
   async function postLogoutRedirectUri(ctx) {
     debug('postLogoutRedirectUri function returning: %s', params.postLogoutRedirectUri);
     return params.postLogoutRedirectUri;
+  }
+
+  function reqLogger(req) {
+    debug('%s %s', req.method, req.originalUrl);
+    debug('params: %j', req.params);
+    debug('query: %j', req.query);
+    debug('body: %j', req.body);
+    debug('headers: %j', req.headers);
+  }
+
+  function logger() {
+    return (req, res, next) => {
+      reqLogger(req);
+      next();
+    };
   }
 
   const qewd_adapter = adapter(this);
@@ -129,7 +143,7 @@ module.exports = function(app, bodyParser, params) {
 
     app.post('/interaction/:grant/login', parse, async (req, res, next) => {
       debug('interaction login function');
-      debug('req = %j', util.inspect(req));
+      reqLogger(req);
 
       Account.authenticate(req.body.email, req.body.password).then((account) => {
         if (account.error) {
@@ -159,7 +173,7 @@ module.exports = function(app, bodyParser, params) {
       }).catch(next);
     });
 
-    app.use('/openid', oidc.callback);
+    app.use('/openid', logger(), oidc.callback);
   });
 
   const keepAliveTimer = setInterval(() => {
