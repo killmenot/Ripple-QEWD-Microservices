@@ -69,11 +69,13 @@ describe('integration/authentication-service-phr:', () => {
         set('authorization', `Bearer ${token}`).
         expect(200).
         expect(res => {
-          expect(res.body).toEqual({
-            ok: true,
-            api: 'oauth/test',
-            token: jasmine.any(String)
-          });
+          expect(res.body).toEqual(
+            jasmine.objectContaining({
+              ok: true,
+              api: 'oauth/test',
+              token: jasmine.any(String),
+            })
+          );
         }).
         end(err => err ? done.fail(err) : done());
     });
@@ -85,16 +87,18 @@ describe('integration/authentication-service-phr:', () => {
         get('/api/auth/login').
         expect(200).
         expect(res => {
-          expect(res.body).toEqual({
-            redirectURL: [
-              'https://oauth-openid-testing.herokuapp.com/cicauth/realms/NHS/protocol/openid-connect/auth',
-              '?redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fapi%2Fauth%2Ftoken',
-              '&scope=openid',
-              '&client_id=s6BhdRkqt3',
-              '&response_type=code'
-            ].join(''),
-            token: jasmine.any(String)
-          });
+          expect(res.body).toEqual(
+            jasmine.objectContaining({
+              redirectURL: [
+                'https://oauth-openid-testing.herokuapp.com/cicauth/realms/NHS/protocol/openid-connect/auth',
+                '?client_id=s6BhdRkqt3',
+                '&scope=openid',
+                '&response_type=code',
+                '&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fapi%2Fauth%2Ftoken'
+              ].join(''),
+              token: jasmine.any(String),
+            })
+          );
         }).
         end(err => err ? done.fail(err) : done());
     });
@@ -107,31 +111,35 @@ describe('integration/authentication-service-phr:', () => {
         set('authorization', `Bearer ${token}`).
         expect(200).
         expect(res => {
-          expect(res.body).toEqual({
-            ok: true,
-            redirectURL: 'http://localhost:8080',
-            token: jasmine.any(String)
-          });
+          expect(res.body).toEqual(
+            jasmine.objectContaining({
+              ok: true,
+              redirectURL: 'http://localhost:8080',
+              token: jasmine.any(String)
+            })
+          );
         }).
         end(err => err ? done.fail(err) : done());
     });
   });
 
-  xdescribe('POST /api/auth/token', () => {
+  describe('POST /api/auth/token', () => {
     it('should respond with correct response', (done) => {
       request.
-        get('/api/auth/token').
+        get('/api/auth/token?code=mzgybGPAr4tGi9fd').
         set('authorization', `Bearer ${token}`).
-        //expect(200).
+        expect(200).
         expect(res => {
-          console.log(res.body)
-          expect(res.body).toEqual({
-            ok: true,
-            qewd_redirect: '/index.html',
-            cookiePath: '/',
-            cookieName: 'JSESSIONID',
-            token: jasmine.any(String)
-          });
+          /*jshint camelcase: false */
+          expect(res.body).toEqual(
+            jasmine.objectContaining({
+              ok: true,
+              qewd_redirect: '/index.html',
+              cookiePath: '/',
+              cookieName: 'JSESSIONID',
+              token: jasmine.any(String)
+            })
+          );
         }).
         end(err => err ? done.fail(err) : done());
     });
@@ -158,11 +166,13 @@ describe('integration/authentication-service-phr:', () => {
             }).
             expect(200).
             expect(res => {
-              expect(res.body).toEqual({
-                ok: true,
-                mode: 'idcr',
-                token: jasmine.any(String)
-              });
+              expect(res.body).toEqual(
+                jasmine.objectContaining({
+                  ok: true,
+                  mode: 'idcr',
+                  token: jasmine.any(String)
+                })
+              );
             }).
             end(err => err ? done.fail(err) : done());
         });
@@ -188,11 +198,13 @@ describe('integration/authentication-service-phr:', () => {
             }).
             expect(200).
             expect(res => {
-              expect(res.body).toEqual({
-                ok: true,
-                mode: 'admin',
-                token: jasmine.any(String)
-              });
+              expect(res.body).toEqual(
+                jasmine.objectContaining({
+                  ok: true,
+                  mode: 'admin',
+                  token: jasmine.any(String)
+                })
+              );
             }).
             end(err => err ? done.fail(err) : done());
         });
@@ -209,11 +221,13 @@ describe('integration/authentication-service-phr:', () => {
         send(data).
         expect(200).
         expect(res => {
-          expect(res.body).toEqual({
-            ok: true,
-            id: jasmine.any(Number),
-            token: jasmine.any(String)
-          });
+          expect(res.body).toEqual(
+            jasmine.objectContaining({
+              ok: true,
+              id: jasmine.any(Number),
+              token: jasmine.any(String)
+            })
+          );
         }).
         end(err => err ? done.fail(err) : done());
     });
@@ -227,11 +241,13 @@ describe('integration/authentication-service-phr:', () => {
         send(data).
         expect(200).
         expect(res => {
-          expect(res.body).toEqual({
-            ok: true,
-            id: jasmine.any(Number),
-            token: jasmine.any(String)
-          });
+          expect(res.body).toEqual(
+            jasmine.objectContaining({
+              ok: true,
+              id: jasmine.any(Number),
+              token: jasmine.any(String)
+            })
+          );
         }).
         end(err => err ? done.fail(err) : done());
     });
@@ -243,10 +259,12 @@ describe('integration/authentication-service-phr:', () => {
         get('/api/auth/admin/docStatus').
         expect(200).
         expect(res => {
-          expect(res.body).toEqual({
-            status: jasmine.any(String),
-            token: jasmine.any(String)
-          });
+          expect(res.body).toEqual(
+            jasmine.objectContaining({
+              status: jasmine.any(String),
+              token: jasmine.any(String)
+            })
+          );
         }).
         end(err => err ? done.fail(err) : done());
     });
