@@ -28,6 +28,8 @@
 
 */
 
+'use strict';
+
 module.exports = async function(ctx, form) {
 
   //console.log('&& logoutSource - this = ' + util.inspect(this));

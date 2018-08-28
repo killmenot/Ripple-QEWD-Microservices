@@ -28,60 +28,66 @@
 
 */
 
-var documentsPath = '/opt/qewd/mapped/documents.json';
+'use strict';
 
-var load = require('./loader');
-var qewd_interface = require('./qewd_interface');
+const DOCUMENTS_PATH = '/opt/qewd/mapped/documents.json';
+const load = require('./loader');
+const qewd_interface = require('./qewd_interface');
+const debug = require('debug')('qewd-openid-connect:qewd-openid-connect');
 
-var documents;
+let documents;
 try {
-  documents = require(documentsPath);
+  documents = require(DOCUMENTS_PATH);
+  debug('documents loaded: %j', documents);
 }
-catch(err) {};
+catch(err) {
+  debug('error during loading documents: %s', err);
+}
 
 function start(app, bodyParser, params) {
 
   qewd_interface.call(this);
 
-  var self = this;
-
   // start the QEWD session for database interactions
-
   this.send_promise({
     type: 'ewd-register',
     application: 'qewd-openid-connect'
-  })
-    .then (function(result) {
-      self.openid_server.token = result.message.token;
+  }).then((result) => {
+    debug('ewd-register|result = %j', result);
 
-      self.send_promise({
-        type: 'login',
-        params: {
-          password: self.userDefined.config.managementPassword
-        }
-      })
-        .then (function(result) {
-  
-          // fetch or generate the keystore & config params
+    this.openid_server.token = result.message.token;
+    this.send_promise({
+      type: 'login',
+      params: {
+        password: this.userDefined.config.managementPassword
+      }
+    }).then((result) => {
+      debug('login|result = %j', result);
 
-          var msg = {type: 'getParams'};
-          if (documents) msg.params = {
-            documents: documents,
-            documentsPath: documentsPath
-          };
-          self.send_promise(msg)
-            .then (function(result) {
+      // fetch or generate the keystore & config params
+      const msg = {
+        type: 'getParams'
+      };
 
-              // start up the OpenID Connect Server
+      if (documents) {
+        msg.params = {
+          documents: documents,
+          documentsPath: DOCUMENTS_PATH
+        };
+      }
 
-              for (var name in result.message) {
-                params[name] = result.message[name];
-              }
+      this.send_promise(msg).then((result) => {
+        debug('getParams|result = %j', result);
 
-              load.call(self, app, bodyParser, params);
-          });
+        // start up the OpenID Connect Server
+        Object.keys(result.message).forEach((name) => {
+          params[name] = result.message[name];
+        });
+
+        load.call(this, app, bodyParser, params);
       });
+    });
   });
-};
+}
 
 module.exports = start;

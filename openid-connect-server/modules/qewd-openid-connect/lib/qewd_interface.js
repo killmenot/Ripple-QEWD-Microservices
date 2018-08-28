@@ -28,14 +28,17 @@
 
 */
 
-module.exports = async function() {
+'use strict';
+
+const debug = require('debug')('qewd-openid-connect:qewd-interface');
+
+module.exports = async function () {
 
   this.openid_server = {};
 
-  var handleMessagePromise = function(messageObj) {
-    var self = this;
+  const handleMessagePromise = function (messageObj) {
     return new Promise((resolve) => {
-      self.handleMessage(messageObj, function(responseObj) {
+      this.handleMessage(messageObj, function (responseObj) {
         resolve(responseObj);
       });
     });
@@ -45,10 +48,10 @@ module.exports = async function() {
     //message.application = 'openid-server';
     //message.expressType = message.type;
     //message.type = 'ewd-qoper8-express';
-    console.log('*** send_promise - sendAsync - this.openid_server = ' + JSON.stringify(this.openid_server, null, 2));
+    debug('sendAsync: openid_server = %s', JSON.stringify(this.openid_server, null, 2));
     if (this.openid_server.token) message.token = this.openid_server.token;
-    var self = this;
-    return await handleMessagePromise.call(self, message);
+
+    return await handleMessagePromise.call(this, message);
   }
 
   this.send_promise = sendAsync.bind(this);

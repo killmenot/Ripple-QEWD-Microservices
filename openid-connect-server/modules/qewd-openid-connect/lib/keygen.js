@@ -28,18 +28,22 @@
 
 */
 
+'use strict';
+
 const { createKeyStore } = require('oidc-provider');
+const debug = require('debug')('qewd-openid-connect:keygen');
 
 async function generate() {
   const keystore = createKeyStore();
+
   return await keystore.generate('RSA', 2048, {
     alg: 'RS256',
     use: 'sig',
   }).then(function () {
-    console.log('this is the full private JWKS:\n', keystore.toJSON(true));
+    debug('this is the full private JWKS:\n', keystore.toJSON(true));
+
     return keystore.toJSON(true);
   });
-};
-
+}
 
 module.exports = generate;

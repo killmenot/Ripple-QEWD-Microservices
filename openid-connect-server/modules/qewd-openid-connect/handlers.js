@@ -28,23 +28,16 @@
 
 */
 
+'use strict';
+
 const { createKeyStore } = require('oidc-provider');
 const fs = require('fs');
-
-async function generate_keys() {
-  const keystore = createKeyStore();
-  return await keystore.generate('RSA', 2048, {
-    alg: 'RS256',
-    use: 'sig',
-  }).then(function () {
-    console.log('this is the full private JWKS:\n', keystore.toJSON(true));
-    return keystore.toJSON(true);
-  });
-};
+const generate_keys = require('./lib/keygen');
+const debug = require('debug')('qewd-openid-connect:handlers');
 
 module.exports = {
 
-  beforeHandler: function(messageObj, session, send, finished) {
+  beforeHandler: function (messageObj, session, send, finished) {
     if (messageObj.type === 'login') return;
     if (!session.authenticated) {
       finished({error: 'User MUST be authenticated'});
@@ -53,7 +46,9 @@ module.exports = {
   },
 
   handlers: {
-    login: function(messageObj, session, send, finished) {
+    login: function (messageObj, session, send, finished) {
+      debug('login');
+
       if (messageObj.params.password === this.userDefined.config.managementPassword) {
         session.timeout = 20 * 60;
         session.updateExpiry();
@@ -66,51 +61,63 @@ module.exports = {
         finished({ok: false});
       }
     },
-    getParams: function(messageObj, session, send, finished) {
 
-      var self = this;
-
-      // load up data if it's available
+    getParams: function (messageObj, session, send, finished) {
+      debug('getParams');
 
       if (messageObj.params && messageObj.params.documents) {
-        var documents = messageObj.params.documents;
+        const documents = messageObj.params.documents;
+
         if (documents.delete) {
-          documents.delete.forEach(function(docName) {
-            self.db.use(docName).delete();
+          debug('delete documents: %j', documents.delete);
+          documents.delete.forEach((docName) => {
+            this.db.use(docName).delete();
           });
         }
+
         if (documents.documents) {
-          var doc;
-          for (var docName in documents.documents) {
-            self.db.use(docName).setDocument(documents.documents[docName]);
+          debug('add documents: %j', documents.documents);
+          for (let docName in documents.documents) {
+            this.db.use(docName).setDocument(documents.documents[docName]);
           }
         }
+
         if (documents.removeThisFile) {
+          debug('removing documents file');
           fs.unlinkSync(messageObj.params.documentsPath);
         }
       }
 
-      var openidDoc = this.db.use('OpenId');
-      var params = openidDoc.getDocument(true);
+      const openidDoc = this.db.use('OpenId');
+      const params = openidDoc.getDocument(true);
+
       if (params.keystore) {
         finished(params);
       }
       else {
-        generate_keys()
-        .then (function(keystore) {
+        generate_keys().then ((keystore) => {
           openidDoc.$('keystore').setDocument(keystore);
           params.keystore = keystore;
           finished(params);
         });
       }
     },
-    getClient: function(messageObj, session, send, finished) {
-      var id;
-      if (messageObj.params) id = messageObj.params.id;
+
+    getClient: function (messageObj, session, send, finished) {
+      debug('getClient');
+
+      let id;
+
+      if (messageObj.params) {
+        id = messageObj.params.id;
+      }
+
       if (!id || id === '') {
         return finished({error: 'Missing or empty id'});
       }
-      var clientDoc = this.db.use('OpenId', 'Clients', messageObj.params.id);
+
+      const clientDoc = this.db.use('OpenId', 'Clients', messageObj.params.id);
+
       if (clientDoc.exists) {
         finished(clientDoc.getDocument(true));
       }
@@ -118,13 +125,22 @@ module.exports = {
         finished({error: 'No such Client'});
       }
     },
-    getUser: function(messageObj, session, send, finished) {
-      var id;
-      if (messageObj.params) id = messageObj.params.id;
+
+    getUser: function (messageObj, session, send, finished) {
+      debug('getUser');
+
+      let id;
+
+      if (messageObj.params) {
+        id = messageObj.params.id;
+      }
+
       if (!id || id === '') {
         return finished({error: 'Missing or empty id'});
       }
-      var userDoc = this.db.use('OpenId', 'Users', messageObj.params.id);
+
+      const userDoc = this.db.use('OpenId', 'Users', messageObj.params.id);
+
       if (userDoc.exists) {
         finished({
           email: id,
@@ -135,25 +151,42 @@ module.exports = {
         finished({error: 'No such User'});
       }
     },
-    validateUser: function(messageObj, session, send, finished) {
-      if (!messageObj.params) return finished({error: 'Neither email nor password was sent'});
-      var email = messageObj.params.email;
-      if (!email || email === '') return finished({error: 'Missing or blank email'});
-      var password = messageObj.params.password;
-      if (!password || password === '') return finished({error: 'Missing or blank password'});
-      var userDoc = this.db.use('OpenId', 'Users', email);
+
+    validateUser: function (messageObj, session, send, finished) {
+      debug('validateUser');
+
+      if (!messageObj.params) {
+        return finished({error: 'Neither email nor password was sent'});
+      }
+
+      const email = messageObj.params.email;
+      if (!email || email === '') {
+        return finished({error: 'Missing or blank email'});
+      }
+
+      const password = messageObj.params.password;
+      if (!password || password === '') {
+        return finished({error: 'Missing or blank password'});
+      }
+
+      const userDoc = this.db.use('OpenId', 'Users', email);
+
       if (!userDoc.exists) {
         return finished({error: 'No such user'});
       }
+
       if (userDoc.$('password').value !== password) {
         return finished({error: 'Invalid login attempt'});
       }
+
       finished({
         email: email,
         nhsNumber: userDoc.$('nhsNumber').value
       });
     },
-    keepAlive: function(messageObj, session, send, finished) {
+
+    keepAlive: function (messageObj, session, send, finished) {
+      debug('keepAlive');
       finished({ok: true});
     }
   }

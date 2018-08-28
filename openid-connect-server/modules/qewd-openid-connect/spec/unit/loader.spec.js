@@ -385,16 +385,16 @@ describe('qewd-openid-connect/lib/loader', () => {
         expect(app.post).toHaveBeenCalledWith('/interaction/:grant/login', parser, jasmine.any(Function));
       });
 
-      xit('should call next callback when authenticate rejected', async () => {
+      it('should call next callback when authenticate rejected', async () => {
         Account.authenticate.and.returnValue(Promise.reject('some error'));
 
         await loaderAsync(q, app, bodyParser, params);
         const fn = resolveHandlerByUrl(app.post, '/interaction/:grant/login');
 
-        fn(req, res, next);
+        await fn(req, res, next);
 
         expect(oidc.interactionFinished).not.toHaveBeenCalled();
-        expect(oidc.render).not.toHaveBeenCalled();
+        expect(res.render).not.toHaveBeenCalled();
         expect(next).toHaveBeenCalledWith('some error');
       });
 

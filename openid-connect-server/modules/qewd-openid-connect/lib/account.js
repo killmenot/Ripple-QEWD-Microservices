@@ -28,10 +28,14 @@
 
 */
 
+'use strict';
+
+const debug = require('debug')('qewd-openid-connect:account');
 
 function initialise_account(qoper8) {
+  debug('initialise account');
 
-  var q = qoper8;
+  const q = qoper8;
 
   class Account {
     constructor(id, userObj) {
@@ -44,7 +48,7 @@ function initialise_account(qoper8) {
     // what your OP supports, oidc-provider will cherry-pick the requested ones automatically
 
     claims() {
-      console.log('**** claims called for ' + this.accountId);
+      debug('claims: for account id = %s', this.accountId);
 
       return {
         sub: this.accountId,
@@ -54,25 +58,26 @@ function initialise_account(qoper8) {
     }
 
     static async findById(ctx, id) {
-      console.log('Account findbyId: ' + id);
+      debug('findById: %s', id);
 
-      var results = await q.send_promise({
+      const results = await q.send_promise({
         type: 'getUser',
         params: {
           id: id
         }
       })
       .then (function(result) {
-        console.log('findbyId result = ' + JSON.stringify(result, null, 2));
+        debug('result = %j', result);
         if (result.message.error) return undefined;
         delete result.message.ewd_application;
-        console.log('*** returned ' + JSON.stringify(result.message, null, 2));
+        debug('returned message = %j', result.message);
         return result.message;
       });
-      console.log('*!*!*! results = ' + results);
-      
-      var record = new Account(id, results);
-      console.log('findById: ' + JSON.stringify(record));
+
+      debug('results = %j', results);
+      const record = new Account(id, results);
+      debug('account = %j', record);
+
       return record;
     }
 
@@ -81,21 +86,23 @@ function initialise_account(qoper8) {
       if (!password || password === '') return {error: 'Password must be provided'};
       const lowercased = String(email).toLowerCase();
 
-      var results = await q.send_promise({
+      debug('validating user');
+      const results = await q.send_promise({
         type: 'validateUser',
         params: {
-          email: email,
+          email: lowercased,
           password: password
         }
       })
       .then (function(result) {
-        console.log('validateUser result = ' + JSON.stringify(result, null, 2));
+        debug('result = %j', result);
         delete result.message.ewd_application;
         if (result.message.error) return result.message;
-        console.log('*** returned ' + JSON.stringify(result.message, null, 2));
+        debug('returned message = %j', result.message);
         return result.message;
       });
-      console.log('*!*!*! results = ' + JSON.stringify(results, null, 2));
+
+      debug('results = %j', results);
 
       if (results.error) return results;
 
@@ -110,11 +117,13 @@ function initialise_account(qoper8) {
       //    return {error: 'Invalid login attempt (2)'};
       //  }
       //}
-      var response = new this(email, results);
-      console.log('record matched: ' + JSON.stringify(response));
+      const response = new this(email, results);
+      debug('account = %j', response);
+
       return response;
     }
   }
+
   return Account;
 }
 

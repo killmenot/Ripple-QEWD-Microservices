@@ -28,18 +28,26 @@
 
 */
 
+'use strict';
+
 const Provider = require('/opt/qewd/node_modules/oidc-provider');
 const account = require('./account');
 const adapter = require('./adapter');
 const logoutSource = require('./logoutSource');
-
-var path = require('path');
-var util = require('util');
+const debug = require('debug')('qewd-openid-connect:loader');
+const path = require('path');
+const util = require('util');
 
 module.exports = function(app, bodyParser, params) {
 
-  var qewd_adapter = adapter(this);
-  var Account = account(this);
+  /* eslint-disable-next-line no-unused-vars */
+  async function postLogoutRedirectUri(ctx) {
+    debug('postLogoutRedirectUri function returning: %s', params.postLogoutRedirectUri);
+    return params.postLogoutRedirectUri;
+  }
+
+  const qewd_adapter = adapter(this);
+  const Account = account(this);
 
   const configuration = {
     claims: params.Claims,
@@ -69,18 +77,11 @@ module.exports = function(app, bodyParser, params) {
   }
 
   if (params.postLogoutRedirectUri) {
-
-    console.log('loading postLogoutRedirectUri: ' + params.postLogoutRedirectUri)
-
-    async function postLogoutRedirectUri(ctx) {
-      console.log('postLogoutRedirectUri function returning ' + params.postLogoutRedirectUri);
-      return params.postLogoutRedirectUri;
-    }
-
+    debug('loading postLogoutRedirectUri: %s', params.postLogoutRedirectUri);
     configuration.postLogoutRedirectUri = postLogoutRedirectUri;
   }
 
-  var issuer = params.issuer.host;
+  let issuer = params.issuer.host;
   if (params.issuer.port) issuer = issuer + ':' + params.issuer.port;
   issuer = issuer + '/openid';
 
@@ -98,13 +99,13 @@ module.exports = function(app, bodyParser, params) {
     const parse = bodyParser.urlencoded({ extended: false });
 
     app.get('/interaction/logout', async (req, res) => {
-      //console.log('*** logout redirection page');
+      debug('logout redirection page');
       res.render('logout');
     });
 
     app.get('/interaction/:grant', async (req, res) => {
       oidc.interactionDetails(req).then((details) => {
-        console.log('see what else is available to you for interaction views', details);
+        debug('see what else is available to you for interaction views: %j', details);
 
         const view = (() => {
           switch (details.interaction.reason) {
@@ -120,28 +121,30 @@ module.exports = function(app, bodyParser, params) {
       });
     });
 
-    app.post('/interaction/:grant/confirm', parse, (req, res) => {
+    app.post('/interaction/:grant/confirm', parse, async (req, res) => {
       oidc.interactionFinished(req, res, {
         consent: {},
       });
     });
 
-    app.post('/interaction/:grant/login', parse, (req, res, next) => {
-      console.log('*** interaction login function');
-      console.log('req = ' + util.inspect(req));
+    app.post('/interaction/:grant/login', parse, async (req, res, next) => {
+      debug('interaction login function');
+      debug('req = %j', util.inspect(req));
+
       Account.authenticate(req.body.email, req.body.password).then((account) => {
         if (account.error) {
-          var details = {
+          const details = {
             params: {
               error: account.error
             },
             uuid: req.params.grant
           };
-          res.render('login', {details});
-          return;
+
+          return res.render('login', { details });
         }
 
-        console.log('** account: ' + JSON.stringify(account));
+        debug('account: %j', account);
+
         oidc.interactionFinished(req, res, {
           login: {
             account: account.accountId,
@@ -151,24 +154,22 @@ module.exports = function(app, bodyParser, params) {
           },
           consent: {
             // TODO: remove offline_access from scopes if remember is not checked
-          },
+          }
         });
       }).catch(next);
     });
 
-
     app.use('/openid', oidc.callback);
   });
 
-  var self = this;
-  var keepAliveTimer = setInterval(function() {
-    self.send_promise({
+  const keepAliveTimer = setInterval(() => {
+    this.send_promise({
       type: 'keepAlive'
     });
   }, 1000000);
 
   this.on('stop', function() {
-    console.log('Stopping keepAliveTimer');
+    debug('Stopping keepAliveTimer');
     clearInterval(keepAliveTimer);
   });
 
