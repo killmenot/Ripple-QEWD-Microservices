@@ -28,10 +28,10 @@
 
 */
 
+const requireJson = require('qewd-require-json')({ cwd: '/opt/qewd/mapped' });
 const config = require('./startup_config.json');
 const local_routes = require('./local_routes.json');
-const oidc_config = require('./oidc-config.json');
-const debug = '*ewd*';
+const debug = '*';
 
 let app;
 let bodyParser;
@@ -47,7 +47,8 @@ function onStarted() {
 
   setTimeout(() => {
     const oidcServer = require('./modules/qewd-openid-connect');
-    oidcServer.call(this, app, bodyParser, oidc_config);
+    const oidcConfig = requireJson('./oidc-config.json');
+    oidcServer.call(this, app, bodyParser, oidcConfig);
   }, 2000);
 }
 

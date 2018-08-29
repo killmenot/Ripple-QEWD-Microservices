@@ -1,4 +1,5 @@
 [
+  "qewd-require-json",
   "lru-cache",
   "oidc-provider"
 ]

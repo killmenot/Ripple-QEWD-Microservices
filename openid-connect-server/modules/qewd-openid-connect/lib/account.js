@@ -84,13 +84,12 @@ function initialise_account(qoper8) {
     static async authenticate(email, password) {
       if (!email || email === '') return {error: 'Email must be provided'};
       if (!password || password === '') return {error: 'Password must be provided'};
-      const lowercased = String(email).toLowerCase();
 
       debug('validating user');
       const results = await q.send_promise({
         type: 'validateUser',
         params: {
-          email: lowercased,
+          email: email,
           password: password
         }
       })
@@ -106,17 +105,6 @@ function initialise_account(qoper8) {
 
       if (results.error) return results;
 
-      //const id = _.findKey(USERS, { email: lowercased });
-      //if (!id) return {error: 'Invalid login attempt'};
-
-      // this is usually a db lookup, so let's just wrap the thing in a promise
-
-      //var userPassword = USERS[id].password;
-      //if (userPassword && userPassword !== '') {
-      //  if (password !== userPassword) {
-      //    return {error: 'Invalid login attempt (2)'};
-      //  }
-      //}
       const response = new this(email, results);
       debug('account = %j', response);
 
