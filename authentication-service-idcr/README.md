@@ -43,7 +43,7 @@ You must ensure that auth0 testing endpoint works. To do it, just open [https://
 
     {"ok":true,"timestamp":1530277721964}
 
-Next, you should start up this container as a foreground process using the *killmenot/qewd-server* Docker Container that created for integration testing purpose only:
+Next, you should start up this container as a foreground process using the *killmenot/qewd-server:tests* Docker Container that created for integration testing purpose only:
 
     sudo docker run -it --rm -p 8085:8080 -v ~/ripple/authentication-service-idcr:/opt/qewd/mapped killmenot/qewd-server:tests
 

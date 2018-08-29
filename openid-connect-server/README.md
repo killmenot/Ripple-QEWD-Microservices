@@ -67,3 +67,13 @@ The *qewd-server* container always uses port 8080 internally.
 Note 1: if you're using a Raspberry Pi (RPi), use the RPi-specific Container: *rtweed/qewd-server-rpi*
 
 
+## Testing
+
+First, you should start up this container as a foreground process using the *killmenot/qewd-server:tests* Docker Container that created for integration testing purpose only:
+
+    sudo docker run -it --rm -p 8080:8080 -v ~/ripple/openid-connect-server:/opt/qewd/mapped killmenot/qewd-server:tests
+
+Then, you can run integration tests:
+
+    npm test
+

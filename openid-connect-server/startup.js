@@ -24,11 +24,13 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  4 July 2018
+  29 August 2018
 
 */
 
-const requireJson = require('qewd-require-json')({ cwd: '/opt/qewd/mapped' });
+'use strict';
+
+const requireJson = require('qewd-require-json')('/opt/qewd/mapped');
 const config = require('./startup_config.json');
 const local_routes = require('./local_routes.json');
 const debug = '*';
