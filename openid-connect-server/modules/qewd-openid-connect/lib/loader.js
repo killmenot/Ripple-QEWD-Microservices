@@ -174,6 +174,13 @@ module.exports = function(app, bodyParser, params) {
     });
 
     app.use('/openid', logger(), oidc.callback);
+
+    app.get('/healthcheck', async (req, res) => {
+      res.json({
+        ok: true,
+        timestamp: Date.now()
+      });
+    });
   });
 
   const keepAliveTimer = setInterval(() => {

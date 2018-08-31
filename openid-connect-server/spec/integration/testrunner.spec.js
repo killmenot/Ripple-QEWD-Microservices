@@ -6,7 +6,7 @@ const request = require('supertest');
 const cheerio = require('cheerio');
 
 describe('integration/openid-connect-server:', () => {
-  const BASE_URL = 'http://localhost:8080';
+  const BASE_URL = 'http://10.5.0.2:8080';
 
   function parseQueryString(uri) {
     const parsed = url.parse(uri);
