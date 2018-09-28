@@ -4,9 +4,14 @@ const url = require('url');
 const querystring = require('querystring');
 const request = require('supertest');
 const cheerio = require('cheerio');
+const utils = require('../helpers/utils');
 
 describe('integration/openid-connect-server:', () => {
   const BASE_URL = 'http://10.5.0.2:8080';
+
+  afterAll((done) => {
+    utils.stop(process.env.CONTAINER_NAME, done);
+  });
 
   function parseQueryString(uri) {
     const parsed = url.parse(uri);

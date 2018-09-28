@@ -1,6 +1,7 @@
 version: '3'
 services:
   openid-connect-server:
+    container_name: openid-connect-server-container
     image: killmenot/qewd-server:tests
     ports:
       - "8080:8080"
@@ -13,9 +14,13 @@ services:
   sut:
     build:
       context: .
-      dockerfile: Dockerfile.test
+      dockerfile: spec/Dockerfile
+    environment:
+      - CONTAINER_NAME=openid-connect-server-container
     depends_on:
       - openid-connect-server
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock
     networks:
       ripple:
         ipv4_address: 10.5.0.3
@@ -26,6 +31,3 @@ networks:
     ipam:
      config:
        - subnet: 10.5.0.0/16
-
-# docker-compose -f docker-compose.test.yml up
-# docker-compose -f docker-compose.test.yml down --rmi local
