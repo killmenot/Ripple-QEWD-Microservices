@@ -11,4 +11,4 @@ COPY ./ /opt/src
 WORKDIR /opt/src
 RUN npm install
 
-CMD wait-on --verbose http-get://10.5.0.2:8080/healthcheck && npm test
+CMD wait-on --timeout 60000 http-get://10.5.0.2:8080/healthcheck && npm test

@@ -31,16 +31,18 @@
 'use strict';
 
 const DOCUMENTS_PATH = '/opt/qewd/mapped/documents.json';
+const requireJson = require('qewd-require-json')();
 const load = require('./loader');
 const qewd_interface = require('./qewd_interface');
 const debug = require('debug')('qewd-openid-connect:qewd-openid-connect');
 
 let documents;
 try {
-  documents = require(DOCUMENTS_PATH);
+  documents = requireJson(DOCUMENTS_PATH);
   debug('documents loaded: %j', documents);
 }
 catch(err) {
+  console.log(err)
   debug('error during loading documents: %s', err);
 }
 

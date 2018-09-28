@@ -386,11 +386,10 @@ describe('qewd-openid-connect/lib/loader', () => {
       });
 
       it('should call next callback when authenticate rejected', async () => {
-        Account.authenticate.and.returnValue(Promise.reject('some error'));
-
         await loaderAsync(q, app, bodyParser, params);
         const fn = resolveHandlerByUrl(app.post, '/interaction/:grant/login');
 
+        Account.authenticate.and.returnValue(Promise.reject('some error'));
         await fn(req, res, next);
 
         expect(oidc.interactionFinished).not.toHaveBeenCalled();
@@ -399,13 +398,14 @@ describe('qewd-openid-connect/lib/loader', () => {
       });
 
       it('should render "login" view with error details when authenticate failed', async () => {
+        await loaderAsync(q, app, bodyParser, params);
+        const fn = resolveHandlerByUrl(app.post, '/interaction/:grant/login');
+
         const account = {
           error: 'some error'
         };
         Account.authenticate.and.returnValue(Promise.resolve(account));
 
-        await loaderAsync(q, app, bodyParser, params);
-        const fn = resolveHandlerByUrl(app.post, '/interaction/:grant/login');
         await fn(req, res, next);
 
         expect(oidc.interactionFinished).not.toHaveBeenCalled();

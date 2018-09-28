@@ -8,11 +8,11 @@ module.exports = {
 
     nc.unixSocket('/tmp/docker.sock').enc('utf8')
       .on('data', (msg) => {
-        console.log(msg)
+        console.log(msg);
       })
       .on('close', callback)
       .on('error', callback)
       .connect()
-      .send(`POST /containers/${name}/stop HTTP/1.0\r\n\r\n`)
+      .send(`POST /containers/${name}/stop HTTP/1.0\r\n\r\n`);
   }
 };

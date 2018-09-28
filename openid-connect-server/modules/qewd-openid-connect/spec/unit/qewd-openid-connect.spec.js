@@ -38,6 +38,8 @@ const documents = require('../support/documents.json');
 
 describe('qewd-openid-connect/lib/qewd-openid-connect', () => {
   let oidcServer;
+  let requireJson;
+  let requireJsonFactory;
   let qewdInterface;
   let load;
   let q;
@@ -71,7 +73,9 @@ describe('qewd-openid-connect/lib/qewd-openid-connect', () => {
 
   function registerMocks(documents) {
     if (documents) {
-      mockery.registerMock('/opt/qewd/mapped/documents.json', documents);
+      requireJson = jasmine.createSpy().and.returnValue(documents);
+      requireJsonFactory = jasmine.createSpy().and.returnValue(requireJson);
+      mockery.registerMock('qewd-require-json', requireJsonFactory);
     }
 
     qewdInterface = jasmine.createSpy();
@@ -165,12 +169,14 @@ describe('qewd-openid-connect/lib/qewd-openid-connect', () => {
 
   it('should fetch or generate the keystore and config params when documents are loaded', (done) => {
     clean();
+
     registerMocks(documents);
     oidcServer = require('../../lib/qewd-openid-connect');
 
     oidcServer.call(q, app, bodyParser, params);
 
     setTimeout(() => {
+      expect(requireJson).toHaveBeenCalledWith('/opt/qewd/mapped/documents.json');
       expect(q.send_promise.calls.argsFor(2)[0]).toEqual({
         type: 'getParams',
         params: {

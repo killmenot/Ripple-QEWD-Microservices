@@ -33,7 +33,7 @@
 const requireJson = require('qewd-require-json')('/opt/qewd/mapped');
 const config = require('./startup_config.json');
 const local_routes = require('./local_routes.json');
-const debug = '*';
+const debug = '*ewd*';
 
 let app;
 let bodyParser;
