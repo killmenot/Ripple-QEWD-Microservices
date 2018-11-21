@@ -56,7 +56,14 @@ describe('ripple-cdr-openehr/lib/ripple-cdr-openehr', () => {
 
   describe('#init', () => {
     it('should init microservice handler', () => {
+
+      // TODO: check specific handlers instead of generic
+      // TODO: split on different test cases
+
       const routes = {
+        '/api/openehr/check': {
+          GET: jasmine.any(Function)
+        },
         '/api/heading/:heading/fields/summary': {
           GET: jasmine.any(Function)
         },
@@ -100,6 +107,15 @@ describe('ripple-cdr-openehr/lib/ripple-cdr-openehr', () => {
         '/api/feeds/:sourceId': {
           GET: jasmine.any(Function),
           PUT: jasmine.any(Function)
+        },
+        '/discovery/merge/:heading': {
+          GET: jasmine.any(Function)
+        },
+        '/api/discovery/revert/:patientId/:heading': {
+          DELETE: jasmine.any(Function)
+        },
+        '/api/discovery/revert/all': {
+          DELETE: jasmine.any(Function)
         }
       };
 

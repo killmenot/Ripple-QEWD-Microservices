@@ -42,7 +42,6 @@ describe('ripple-cdr-openehr/lib/handlers/getPatientSynopsis', () => {
 
   let fetchAndCacheHeading;
   let getHeadingBySourceId;
-  let getTop3ThingsSummary;
 
   let qewdSession;
 
@@ -74,19 +73,6 @@ describe('ripple-cdr-openehr/lib/handlers/getPatientSynopsis', () => {
     };
   }
 
-  function getTop3ThingsSummaryFake() {
-    return [
-      {
-        source: 'QEWDDB',
-        sourceId: 'ad9015f9-b7ed-4b49-bd24-83f51b6b387d',
-        dateCreated: 1519851600000,
-        name1: 'foo',
-        name2: 'bar',
-        name3: 'baz'
-      }
-    ];
-  }
-
   beforeAll(() => {
     mockery.enable({
       warnOnUnregistered: false
@@ -114,9 +100,6 @@ describe('ripple-cdr-openehr/lib/handlers/getPatientSynopsis', () => {
 
     getHeadingBySourceId = jasmine.createSpy().and.callFake(getHeadingBySourceIdFake);
     mockery.registerMock('../src/getHeadingBySourceId', getHeadingBySourceId);
-
-    getTop3ThingsSummary = jasmine.createSpy().and.callFake(getTop3ThingsSummaryFake);
-    mockery.registerMock('../top3Things/getTop3ThingsSummarySync', getTop3ThingsSummary);
 
     delete require.cache[require.resolve('../../../lib/handlers/getPatientSynopsis')];
     getPatientSynopsis = require('../../../lib/handlers/getPatientSynopsis');
@@ -153,9 +136,6 @@ describe('ripple-cdr-openehr/lib/handlers/getPatientSynopsis', () => {
       expect(fetchAndCacheHeading.calls.argsFor(i)).toEqual([9999999000, heading, qewdSession, jasmine.any(Function)]);
     });
 
-    // getTop3ThingsSummary
-    expect(getTop3ThingsSummary).toHaveBeenCalledWithContext(q, 9999999000);
-
     // getHeadingBySourceId
     [
       'ethercis-ae3886df-21e2-4249-97d6-d0612ae8f8be',
@@ -191,25 +171,12 @@ describe('ripple-cdr-openehr/lib/handlers/getPatientSynopsis', () => {
           source: 'ethercis',
           text: 'quux'
         }
-      ],
-      top3Things: [
-        [
-          {
-            source: 'QEWDDB',
-            sourceId: 'ad9015f9-b7ed-4b49-bd24-83f51b6b387d',
-            dateCreated: 1519851600000,
-            name1: 'foo',
-            name2: 'bar',
-            name3: 'baz'
-          }
-        ]
       ]
     });
   });
 
   it('should return patient synopsis with another order of headings in config', () => {
     q.userDefined.synopsis.headings = [
-      'top3Things',
       'procedures',
       'vaccinations'
     ];
@@ -226,9 +193,6 @@ describe('ripple-cdr-openehr/lib/handlers/getPatientSynopsis', () => {
       expect(fetchAndCacheHeading.calls.argsFor(i)).toEqual([9999999000, heading, qewdSession, jasmine.any(Function)]);
     });
 
-    // getTop3ThingsSummary
-    expect(getTop3ThingsSummary).toHaveBeenCalledWithContext(q, 9999999000);
-
     // getHeadingBySourceId
     [
       'ethercis-ae3886df-21e2-4249-97d6-d0612ae8f8be',
@@ -264,18 +228,6 @@ describe('ripple-cdr-openehr/lib/handlers/getPatientSynopsis', () => {
           source: 'ethercis',
           text: 'quux'
         }
-      ],
-      top3Things: [
-        [
-          {
-            source: 'QEWDDB',
-            sourceId: 'ad9015f9-b7ed-4b49-bd24-83f51b6b387d',
-            dateCreated: 1519851600000,
-            name1: 'foo',
-            name2: 'bar',
-            name3: 'baz'
-          }
-        ]
       ]
     });
   });
@@ -295,9 +247,6 @@ describe('ripple-cdr-openehr/lib/handlers/getPatientSynopsis', () => {
       expect(fetchAndCacheHeading.calls.argsFor(i)).toEqual([9999999000, heading, qewdSession, jasmine.any(Function)]);
     });
 
-    // getTop3ThingsSummary
-    expect(getTop3ThingsSummary).toHaveBeenCalledWithContext(q, 9999999000);
-
     // getHeadingBySourceId
     [
       'ethercis-ae3886df-21e2-4249-97d6-d0612ae8f8be',
@@ -321,18 +270,6 @@ describe('ripple-cdr-openehr/lib/handlers/getPatientSynopsis', () => {
           source: 'marand',
           text: 'quux'
         }
-      ],
-      top3Things: [
-        [
-          {
-            source: 'QEWDDB',
-            sourceId: 'ad9015f9-b7ed-4b49-bd24-83f51b6b387d',
-            dateCreated: 1519851600000,
-            name1: 'foo',
-            name2: 'bar',
-            name3: 'baz'
-          }
-        ]
       ]
     });
   });

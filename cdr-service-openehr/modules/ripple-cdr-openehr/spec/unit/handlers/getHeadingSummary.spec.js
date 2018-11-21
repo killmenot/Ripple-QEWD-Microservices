@@ -43,6 +43,15 @@ describe('ripple-cdr-openehr/lib/handlers/getHeadingSummary', () => {
   let fetchAndCacheHeading;
   let getHeadingTableFromCache;
 
+  let qewdSession;
+
+  function seeds() {
+    const patientId = args.patientId;
+    const heading = args.heading;
+
+    qewdSession.data.$(['headings', 'byPatientId', patientId, heading, 'fetch_count']).value = 7;
+  }
+
   beforeAll(() => {
     mockery.enable({
       warnOnUnregistered: false
@@ -76,6 +85,9 @@ describe('ripple-cdr-openehr/lib/handlers/getHeadingSummary', () => {
 
     delete require.cache[require.resolve('../../../lib/handlers/getHeadingSummary')];
     getHeadingSummary = require('../../../lib/handlers/getHeadingSummary');
+
+    qewdSession = args.req.qewdSession
+    seeds();
   });
 
   afterEach(() => {
@@ -143,6 +155,9 @@ describe('ripple-cdr-openehr/lib/handlers/getHeadingSummary', () => {
     );
     expect(finished).toHaveBeenCalledWith({
       responseFrom: 'phr_service',
+      patientId: 9999999000,
+      heading: 'procedures',
+      fetch_count: 8,
       results: results
     });
   });

@@ -40,8 +40,11 @@ var postMyHeading = require('./handlers/postMyHeading');
 var postPatientHeading = require('./handlers/postPatientHeading');
 var editPatientHeading = require('./handlers/editPatientHeading');
 var deletePatientHeading = require('./handlers/deletePatientHeading');
-
 var getHeadingSummaryFields = require('./handlers/getSummaryHeadingFields');
+var revertDiscoveryData = require('./handlers/revertDiscoveryData');
+var revertAllDiscoveryData = require('./handlers/revertAllDiscoveryData');
+var checkNHSNumber = require('./handlers/checkNHSNumber');
+var mergeDiscoveryData = require('./handlers/mergeDiscoveryData');
 
 var getTop3ThingsSummary = require('./top3Things/getTop3ThingsSummary');
 var getTop3ThingsDetail = require('./top3Things/getTop3ThingsDetail');
@@ -51,13 +54,6 @@ var getFeedSummary = require('./feeds/getSummary');
 var getFeedDetail = require('./feeds/getDetail');
 var postFeed = require('./feeds/post');
 var editFeed = require('./feeds/edit');
-
-var revertDiscoveryData = require('./handlers/revertDiscoveryData');
-var revertAllDiscoveryData = require('./handlers/revertAllDiscoveryData');
-
-var checkNHSNumber = require('./handlers/checkNHSNumber');
-
-var mergeDiscoveryData = require('./handlers/mergeDiscoveryData');
 
 var getDiscoveryHeadingData = require('./src/getDiscoveryHeadingData');
 var mergeDiscoveryDataInWorker = require('./src/mergeDiscoveryDataInWorker');
@@ -118,7 +114,7 @@ var routes = {
   },
   '/api/discovery/revert/all': {
     DELETE: revertAllDiscoveryData
-  },
+  }
 };
 
 module.exports = {

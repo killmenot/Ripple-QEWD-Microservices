@@ -42,7 +42,6 @@ describe('ripple-cdr-openehr/lib/handlers/getPatientHeadingSynopsis', () => {
 
   let fetchAndCacheHeading;
   let getHeadingBySourceId;
-  let getTop3ThingsSummary;
 
   let qewdSession;
 
@@ -67,19 +66,6 @@ describe('ripple-cdr-openehr/lib/handlers/getPatientHeadingSynopsis', () => {
       source: host,
       text: 'quux'
     };
-  }
-
-  function getTop3ThingsSummaryFake() {
-    return [
-      {
-        source: 'QEWDDB',
-        sourceId: 'ad9015f9-b7ed-4b49-bd24-83f51b6b387d',
-        dateCreated: 1519851600000,
-        name1: 'foo',
-        name2: 'bar',
-        name3: 'baz'
-      }
-    ];
   }
 
   beforeAll(() => {
@@ -115,9 +101,6 @@ describe('ripple-cdr-openehr/lib/handlers/getPatientHeadingSynopsis', () => {
     getHeadingBySourceId = jasmine.createSpy().and.callFake(getHeadingBySourceIdFake);
     mockery.registerMock('../src/getHeadingBySourceId', getHeadingBySourceId);
 
-    getTop3ThingsSummary = jasmine.createSpy();
-    mockery.registerMock('../top3Things/getTop3ThingsSummarySync', getTop3ThingsSummary);
-
     delete require.cache[require.resolve('../../../lib/handlers/getPatientHeadingSynopsis')];
     getPatientHeadingSynopsis = require('../../../lib/handlers/getPatientHeadingSynopsis');
 
@@ -147,49 +130,6 @@ describe('ripple-cdr-openehr/lib/handlers/getPatientHeadingSynopsis', () => {
 
     expect(finished).toHaveBeenCalledWith({
       error: 'Heading missing or empty'
-    });
-  });
-
-  describe('top3Things', () => {
-    beforeEach(() => {
-      args.heading = 'top3Things';
-    });
-
-    it('should return patient synopsis for top3Things when no data returned', () => {
-      getTop3ThingsSummary.and.returnValue([]);
-
-      getPatientHeadingSynopsis.call(q, args, finished);
-
-      expect(getTop3ThingsSummary).toHaveBeenCalledWithContext(q, 9999999000);
-      expect(finished).toHaveBeenCalledWith({
-        heading: 'top3Things',
-        synopsis: []
-      });
-    });
-
-    it('should return patient synopsis for top3Things', () => {
-      getTop3ThingsSummary.and.callFake(getTop3ThingsSummaryFake);
-
-      getPatientHeadingSynopsis.call(q, args, finished);
-
-      expect(getTop3ThingsSummary).toHaveBeenCalledWithContext(q, 9999999000);
-      expect(finished).toHaveBeenCalledWith({
-        heading: 'top3Things',
-        synopsis: [
-          {
-            sourceId: 'ad9015f9-b7ed-4b49-bd24-83f51b6b387d',
-            text: 'foo'
-          },
-          {
-            sourceId: 'ad9015f9-b7ed-4b49-bd24-83f51b6b387d',
-            text: 'bar'
-          },
-          {
-            sourceId: 'ad9015f9-b7ed-4b49-bd24-83f51b6b387d',
-            text: 'baz'
-          }
-        ]
-      });
     });
   });
 
