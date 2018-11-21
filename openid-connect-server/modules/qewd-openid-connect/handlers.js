@@ -24,16 +24,23 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  4 July 2018
+  04 October 2018
 
 */
 
 'use strict';
 
-const { createKeyStore } = require('oidc-provider');
-const fs = require('fs');
-const generate_keys = require('./lib/keygen');
-const debug = require('debug')('qewd-openid-connect:handlers');
+const login = require('./lib/handlers/login');
+const getParams = require('./lib/handlers/getParams');
+const getClient = require('./lib/handlers/getClient');
+const getUser = require('./lib/handlers/getUser');
+const validateUser = require('./lib/handlers/validateUser');
+const confirmCode = require('./lib/handlers/confirmCode');
+const changePassword = require('./lib/handlers/changePassword');
+const requestNewPassword = require('./lib/handlers/requestNewPassword');
+const saveGrant = require('./lib/handlers/saveGrant');
+const deleteGrant = require('./lib/handlers/deleteGrant');
+const keepAlive = require('./lib/handlers/keepAlive');
 
 module.exports = {
 
@@ -46,148 +53,16 @@ module.exports = {
   },
 
   handlers: {
-    login: function (messageObj, session, send, finished) {
-      debug('login');
-
-      if (messageObj.params.password === this.userDefined.config.managementPassword) {
-        session.timeout = 20 * 60;
-        session.updateExpiry();
-        session.authenticated = true;
-        finished({
-          ok: true
-        });
-      }
-      else {
-        finished({ok: false});
-      }
-    },
-
-    getParams: function (messageObj, session, send, finished) {
-      debug('getParams');
-
-      if (messageObj.params && messageObj.params.documents) {
-        const documents = messageObj.params.documents;
-
-        if (documents.delete) {
-          debug('delete documents: %j', documents.delete);
-          documents.delete.forEach((docName) => {
-            this.db.use(docName).delete();
-          });
-        }
-
-        if (documents.documents) {
-          debug('add documents: %j', documents.documents);
-          for (let docName in documents.documents) {
-            this.db.use(docName).setDocument(documents.documents[docName]);
-          }
-        }
-
-        if (documents.removeThisFile) {
-          debug('removing documents file');
-          fs.unlinkSync(messageObj.params.documentsPath);
-        }
-      }
-
-      const openidDoc = this.db.use('OpenId');
-      const params = openidDoc.getDocument(true);
-
-      if (params.keystore) {
-        finished(params);
-      }
-      else {
-        generate_keys().then ((keystore) => {
-          openidDoc.$('keystore').setDocument(keystore);
-          params.keystore = keystore;
-          finished(params);
-        });
-      }
-    },
-
-    getClient: function (messageObj, session, send, finished) {
-      debug('getClient');
-
-      let id;
-
-      if (messageObj.params) {
-        id = messageObj.params.id;
-      }
-
-      if (!id || id === '') {
-        return finished({error: 'Missing or empty id'});
-      }
-
-      const clientDoc = this.db.use('OpenId', 'Clients', messageObj.params.id);
-
-      if (clientDoc.exists) {
-        finished(clientDoc.getDocument(true));
-      }
-      else {
-        finished({error: 'No such Client'});
-      }
-    },
-
-    getUser: function (messageObj, session, send, finished) {
-      debug('getUser');
-
-      let id;
-
-      if (messageObj.params) {
-        id = messageObj.params.id;
-      }
-
-      if (!id || id === '') {
-        return finished({error: 'Missing or empty id'});
-      }
-
-      const userDoc = this.db.use('OpenId', 'Users', messageObj.params.id);
-
-      if (userDoc.exists) {
-        finished({
-          email: id,
-          nhsNumber: userDoc.$('nhsNumber').value
-        });
-      }
-      else {
-        finished({error: 'No such User'});
-      }
-    },
-
-    validateUser: function (messageObj, session, send, finished) {
-      debug('validateUser');
-
-      if (!messageObj.params) {
-        return finished({error: 'Neither email nor password was sent'});
-      }
-
-      const email = messageObj.params.email;
-      if (!email || email === '') {
-        return finished({error: 'Missing or blank email'});
-      }
-
-      const password = messageObj.params.password;
-      if (!password || password === '') {
-        return finished({error: 'Missing or blank password'});
-      }
-
-      const userDoc = this.db.use('OpenId', 'Users', email);
-
-      if (!userDoc.exists) {
-        return finished({error: 'No such user'});
-      }
-
-      if (userDoc.$('password').value !== password) {
-        return finished({error: 'Invalid login attempt'});
-      }
-
-      finished({
-        email: email,
-        nhsNumber: userDoc.$('nhsNumber').value
-      });
-    },
-
-    keepAlive: function (messageObj, session, send, finished) {
-      debug('keepAlive');
-      finished({ok: true});
-    }
+    login: login,
+    getParams: getParams,
+    getClient: getClient,
+    getUser: getUser,
+    validateUser: validateUser,
+    confirmCode: confirmCode,
+    changePassword: changePassword,
+    requestNewPassword: requestNewPassword,
+    saveGrant: saveGrant,
+    deleteGrant: deleteGrant,
+    keepAlive: keepAlive
   }
 };

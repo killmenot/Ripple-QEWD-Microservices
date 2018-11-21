@@ -34,6 +34,10 @@ var jwt = require('jwt-simple');
 var adminLogin = require('./admin/login');
 var adminRegister = require('./admin/register');
 var adminDocStatus = require('./admin/docStatus');
+var getUserFromJWT = require('./api/getUserFromJWT');
+
+var path_to_auth;
+var auth_module_name;
 
 function getJWTFromCookie(headers) {
   var cookie = headers.cookie;
@@ -60,9 +64,6 @@ function getJWTFromCookie(headers) {
 
 module.exports = {
   init: function() {
-    var auth_module_name;
-    var path_to_auth;
-
     //console.log('*** running ripple-auth init() function');
     //console.log('userDefined: ' + JSON.stringify(this.userDefined));
     if (this.userDefined.auth && this.userDefined.auth.type) {
@@ -70,13 +71,12 @@ module.exports = {
       if (type === 'Auth0') auth_module_name = 'ripple-auth0';
       if (type === 'OpenID Connect') auth_module_name = 'ripple-oauth-openid';
     }
-
     if (auth_module_name) {
-      path_to_auth = '../../' + auth_module_name;
-      var login = require(path_to_auth + '/lib/handlers/login');
-      var logout = require(path_to_auth + '/lib/handlers/logout');
-      var getToken = require(path_to_auth + '/lib/handlers/getToken');
-      var test = require(path_to_auth + '/lib/handlers/test');
+      path_to_auth = '../' + auth_module_name;
+      var login = require(path_to_auth + '/handlers/login');
+      var logout = require(path_to_auth + '/handlers/logout');
+      var getToken = require(path_to_auth + '/handlers/getToken');
+      var test = require(path_to_auth + '/handlers/test');
       var auth_module = require(path_to_auth);
 
       var routes = {
@@ -101,11 +101,14 @@ module.exports = {
         '/api/auth/admin/docStatus': {
           GET: adminDocStatus
         },
+        '/api/user': {
+          GET: getUserFromJWT
+        },
       };
 
       if (auth_module_name === 'ripple-auth0') {
          routes['/api/auth/demo'] = {
-           GET: require(path_to_auth + '/lib/handlers/demo')
+           GET: require(path_to_auth + '/handlers/demo')
          };
       }
 
@@ -146,7 +149,7 @@ module.exports = {
       }
       if (validJWT) {
         if (req.path === '/api/auth/login') {
-          // Valid JWT / QEWD Session, so bypass the login and signal to the browser not to redirect
+          // Valid JWT & QEWD Session, so bypass the login and signal to the browser not to redirect
           finished({
             authenticated: true
           });

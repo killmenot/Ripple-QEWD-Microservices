@@ -88,8 +88,10 @@ describe('qewd-openid-connect/lib/account', () => {
     account = new Account(id, userObj);
 
     expect(account.accountId).toBe('google-oauth2|11112222333344455556');
-    expect(account.nhsNumber).toBe(9999999000);
-    expect(account.email).toBe('john.doe@example.org');
+    expect(account._claims).toEqual({
+      nhsNumber: 9999999000,
+      email: 'john.doe@example.org'
+    });
   });
 
   describe('#claims', () => {
@@ -131,54 +133,54 @@ describe('qewd-openid-connect/lib/account', () => {
     });
   });
 
-  describe('authenticate', () => {
-    let email;
-    let password;
+  // describe('authenticate', () => {
+  //   let email;
+  //   let password;
 
-    beforeEach(() => {
-      email = 'jane.doe@example.org';
-      password = 'test1234';
+  //   beforeEach(() => {
+  //     email = 'jane.doe@example.org';
+  //     password = 'test1234';
 
-      q.send_promise.and.callFake(validateUserFake);
-    });
+  //     q.send_promise.and.callFake(validateUserFake);
+  //   });
 
-    it('should return email must be provided error', async () => {
-      email = '';
+  //   it('should return email must be provided error', async () => {
+  //     email = '';
 
-      const response = await Account.authenticate(email, password);
+  //     const response = await Account.authenticate(email, password);
 
-      expect(response).toEqual({
-        error: 'Email must be provided'
-      });
-    });
+  //     expect(response).toEqual({
+  //       error: 'Email must be provided'
+  //     });
+  //   });
 
-    it('should return password must be provided error', async () => {
-      password = '';
+  //   it('should return password must be provided error', async () => {
+  //     password = '';
 
-      const response = await Account.authenticate(email, password);
+  //     const response = await Account.authenticate(email, password);
 
-      expect(response).toEqual({
-        error: 'Password must be provided'
-      });
-    });
+  //     expect(response).toEqual({
+  //       error: 'Password must be provided'
+  //     });
+  //   });
 
-    it('should return custom error', async () => {
-      email = 'john.doe@example.org';
+  //   it('should return custom error', async () => {
+  //     email = 'john.doe@example.org';
 
-      const response = await Account.authenticate(email, password);
+  //     const response = await Account.authenticate(email, password);
 
-      expect(response).toEqual({
-        error: 'some error'
-      });
-    });
+  //     expect(response).toEqual({
+  //       error: 'some error'
+  //     });
+  //   });
 
-    it('should return account by credentials', async () => {
-      const response = await Account.authenticate(email, password);
+  //   it('should return account by credentials', async () => {
+  //     const response = await Account.authenticate(email, password);
 
-      expect(response).toEqual(jasmine.any(Account));
-      expect(response.accountId).toBe('jane.doe@example.org');
-      expect(response.nhsNumber).toBe(9999999003);
-      expect(response.email).toBe('jane.doe@example.org');
-    });
-  });
+  //     expect(response).toEqual(jasmine.any(Account));
+  //     expect(response.accountId).toBe('jane.doe@example.org');
+  //     expect(response.nhsNumber).toBe(9999999003);
+  //     expect(response.email).toBe('jane.doe@example.org');
+  //   });
+  // });
 });

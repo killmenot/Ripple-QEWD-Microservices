@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  8 June 2018
+  12 October 2018
 
 */
 
@@ -121,5 +121,10 @@ module.exports = {
     else {
       return '<!delete>';
     }
+  },
+  getDateCreated: function(dateCreated, source) {
+    console.log('** getDateCreated: dateCreated = ' + dateCreated + '; source = ' + source);
+    if (source === 'GP') return new Date(dateCreated).toISOString();
+    return new Date().toISOString();
   }
 };

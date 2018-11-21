@@ -1,6 +1,6 @@
 {
   "name": "qewd-openid-connect",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "QEWD-enabled OpenId Connect Server",
   "main": "index.js",
   "license": "Apache-2.0",
@@ -14,28 +14,29 @@
     "all": true,
     "include": [
       "lib/**/*.js"
-    ],
-    "exclude": [
-      "coverage",
-      "node_modules",
-      "spec/**/*.js"
     ]
   },
   "dependencies": {
+    "bcrypt": "^3.0.2",
     "debug": "^4.0.1",
     "lru-cache": "^4.1.3",
+    "mustache": "^3.0.1",
+    "nodemailer": "^4.7.0",
     "oidc-provider": "^4.5.0",
-    "qewd-require-json": "^1.2.1"
+    "qewd-require-json": "^1.2.1",
+    "qewd-transform-json": "^1.10.0",
+    "randomstring": "^1.1.5",
+    "twilio": "^3.24.0"
   },
   "devDependencies": {
     "coveralls": "^3.0.0",
+    "eslint": "^5.6.1",
     "ewd-document-store": "^1.23.0",
     "ewd-memory-globals": "killmenot/ewd-memory-globals",
     "ewd-session": "^2.19.0",
     "jasmine": "^3.1.0",
     "jasmine-spec-reporter": "^4.1.1",
     "jasmine-spy-matchers": "^2.0.0",
-    "eslint": "^5.6.1",
     "mockery": "^2.1.0",
     "nyc": "^13.1.0"
   }

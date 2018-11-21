@@ -30,16 +30,22 @@
 
 'use strict';
 
-const DOCUMENTS_PATH = '/opt/qewd/mapped/documents.json';
-const requireJson = require('qewd-require-json')();
-const load = require('./loader');
-const qewd_interface = require('./qewd_interface');
-const debug = require('debug')('qewd-openid-connect:qewd-openid-connect');
+var transform = require('qewd-transform-json').transform;
+var global_config = require('/opt/qewd/mapped/settings/configuration.json');
+var helpers = require('../../../helpers');
+
+var documentsPath = '/opt/qewd/mapped/documents.json';
+
+var load = require('./loader');
+var qewd_interface = require('./qewd_interface');
+var debug = require('debug')('qewd-openid-connect:qewd-openid-connect');
 
 let documents;
 try {
-  documents = requireJson(DOCUMENTS_PATH);
+  var documents_template = require(documentsPath);
+  documents = transform(documents_template, global_config, helpers);
   debug('documents loaded: %j', documents);
+  //console.log('documents = ' + JSON.stringify(documents, null, 2));
 }
 catch(err) {
   console.log(err)

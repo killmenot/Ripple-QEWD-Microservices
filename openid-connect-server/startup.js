@@ -24,34 +24,77 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  29 August 2018
+  14 November 2018
 
 */
 
 'use strict';
 
-const requireJson = require('qewd-require-json')('/opt/qewd/mapped');
-const config = require('./startup_config.json');
-const local_routes = require('./local_routes.json');
+var fs = require('fs');
+var transform = require('qewd-transform-json').transform;
+var global_config = require('/opt/qewd/mapped/settings/configuration.json');
+var helpers = require('./helpers');
+
+var config = require('./startup_config.json');
+var local_routes = require('./local_routes.json');
+var oidc_config_template = require('./oidc-config.json');
+var oidc_config = transform(oidc_config_template, global_config, helpers);
+console.log('oidc_config = ' + JSON.stringify(oidc_config, null, 2));
+
 const debug = '*ewd*';
 
 let app;
 let bodyParser;
 
-config.addMiddleware = function(bp, express) {
+config.addMiddleware = function(bp, express, q) {
   bodyParser = bp;
   app = express;
 };
 
-function onStarted() {
-  const deleteDocuments = (config.delete_documents === true);
-  console.log('Wait a couple of seconds for oidc-provider to be available');
+local_routes[1].afterRouter = [
+  (req, res, next) => {
+    console.log('** res.locals.message = ' + JSON.stringify(res.locals.message));
+    var messageObj = res.locals.message;
+    res.set('content-type', 'text/html');
+    if (messageObj.error) {
+      var response = '<html><body><h2>Error: ' + messageObj.error + '</h2></body></html>';
+      res.send(response);
+    }
+    else {
+      //var response = '<html><body>' + messageObj.html + '</body></html>';
+      res.send(messageObj.html);
+    }
+  }
+];
 
+function onStarted() {
+  var documents;
+  try {
+    documents = require('./documents.json');
+  }
+  catch(err) {}
+
+  if (documents) {
+    var msg = {
+      type: 'ewd-save-documents',
+      params: {
+        documents: documents,
+        password: this.userDefined.config.managementPassword
+      }
+    };
+    console.log('Initialising Documents from documents.json');
+    this.handleMessage(msg, function(response) {
+      console.log('QEWD Documents created from ' + __dirname + '/documents.json which will now be deleted');
+      fs.unlinkSync(__dirname + '/documents.json');
+    });
+  }
+
+  var deleteDocuments = (config.delete_documents === true);
+  console.log('Wait a couple of seconds for oidc-provider to be available');
   setTimeout(() => {
-    const oidcServer = require('./modules/qewd-openid-connect');
-    const oidcConfig = requireJson('./oidc-config.json');
-    oidcServer.call(this, app, bodyParser, oidcConfig);
-  }, 2000);
+    var oidcServer = require('qewd-openid-connect');
+    oidcServer.call(self, app, bodyParser, oidc_config);
+  },2000);
 }
 
 module.exports = {
