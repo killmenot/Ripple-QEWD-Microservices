@@ -39,12 +39,12 @@ module.exports = function(nhsNumber, headingName, format, session) {
   //console.log('\n *** resourceName = ' + resourceName);
   //console.log('\n *** nhsNumber = ' + nhsNumber);
 
-  var to_openehr_template = require('../templates/' + headingName + '/discovery_to_openehr.json');
+  var to_openehr_template = require('../../templates/' + headingName + '/discovery_to_openehr.json');
 
   var to_format_template;
   var format_helpers;
   if (format === 'pulsetile') {
-    to_format_template = require('../templates/' + headingName + '/openEHR_to_Pulsetile.json');
+    to_format_template = require('../../templates/' + headingName + '/openEHR_to_Pulsetile.json');
     format_helpers = require('./helpers');
   }
 

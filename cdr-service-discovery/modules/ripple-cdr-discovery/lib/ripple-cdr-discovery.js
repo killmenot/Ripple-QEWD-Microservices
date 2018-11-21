@@ -24,27 +24,40 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  13 March 2018
+  8 May 2018
 
 */
+var router = require('qewd-router');
 
-module.exports = function(args, finished) {
-  var role = args.session.role;
-  if (role === 'phrUser') return finished({
-    patients: []
-  });
+var getDemographics = require('./handlers/getDemographics');
+var getHeadingSummary = require('./handlers/getHeadingSummary');
+var getHeadingDetail = require('./handlers/getHeadingDetail');
 
-  // in production system we'd fetch the patients relevant
-  //  to the user - whose details are in args.session (ie in the JWT)
+var routes = {
+  '/api/patients/:patientId/:heading': {
+    GET:  getHeadingSummary
+  },
+  '/api/discovery/:patientId/:heading': {
+    GET:  getHeadingSummary
+  },
+  '/api/patients/:patientId/:heading/:sourceId': {
+    GET: getHeadingDetail
+  },
+  '/api/demographics/:patientId': {
+    GET: getDemographics
+  }
+};
 
-  var patientDoc = this.db.use('RipplePHRPatients', 'byId');
-  var patients = {};
+module.exports = {
+  init: function() {
+    router.addMicroServiceHandler(routes, module.exports);
+  },
 
-  args.req.qewdSession.data.$('patientList').forEachChild(function(id) {
-    patients[id] = patientDoc.$(id).getDocument();
-  });
-
-  finished(patients);
-
-  //finished(patientDoc.getDocument());
+  beforeMicroServiceHandler: function(req, finished) {
+    var authorised = this.jwt.handlers.validateRestRequest.call(this, req, finished);
+    if (authorised) {
+      req.qewdSession = this.qewdSessionByJWT.call(this, req);
+    }
+    return authorised;
+  }
 };

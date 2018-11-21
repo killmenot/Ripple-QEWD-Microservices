@@ -28,37 +28,4 @@
 
 */
 
-var router = require('qewd-router');
-
-var getDemographics = require('./handlers/getDemographics');
-var getHeadingSummary = require('./handlers/getHeadingSummary');
-var getHeadingDetail = require('./handlers/getHeadingDetail');
-
-var routes = {
-  '/api/patients/:patientId/:heading': {
-    GET:  getHeadingSummary
-  },
-  '/api/discovery/:patientId/:heading': {
-    GET:  getHeadingSummary
-  },
-  '/api/patients/:patientId/:heading/:sourceId': {
-    GET: getHeadingDetail
-  },
-  '/api/demographics/:patientId': {
-    GET: getDemographics
-  }
-};
-
-module.exports = {
-  init: function() {
-    router.addMicroServiceHandler(routes, module.exports);
-  },
-
-  beforeMicroServiceHandler: function(req, finished) {
-    var authorised = this.jwt.handlers.validateRestRequest.call(this, req, finished);
-    if (authorised) {
-      req.qewdSession = this.qewdSessionByJWT.call(this, req);
-    }
-    return authorised;
-  }
-};
+module.exports = require('./lib/ripple-cdr-discovery');

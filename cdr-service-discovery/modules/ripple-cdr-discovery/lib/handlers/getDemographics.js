@@ -1,7 +1,7 @@
 /*
 
  ----------------------------------------------------------------------------
- | ripple-mpi: Ripple Master Patient Index / PAS MicroService               |
+ | ripple-cdr-discovery: Ripple Discovery Interface                         |
  |                                                                          |
  | Copyright (c) 2017-18 Ripple Foundation Community Interest Company       |
  | All rights reserved.                                                     |
@@ -24,36 +24,80 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  29 May 2018
+  17 October 2018
 
 */
 
+var authenticate = require('../src/authenticate');
+var getPatientsByNHSNumber = require('../src/getPatientsByNHSNumber');
+var getPatientResources = require('../src/getPatientResources');
+var getDemographics = require('../src/getDemographics');
+var mapToDiscoveryNHSNo = require('../src/mapToDiscoveryNHSNo');
+
+var tools = require('../src/tools');
+
 module.exports = function(args, finished) {
-  var jwt = args.session;
-  var nhsNumber = jwt.nhsNumber;
-  var role = jwt.role;
 
-  if (!nhsNumber && role === 'IDCR') {
-    nhsNumber = args.patientId;
-    if (!args.req.qewdSession.data.$(['patientList', nhsNumber]).exists) {
-      return finished({error: 'You have no access to this patient'});
+  var patientId = args.patientId;
+  var _this = this;
+
+
+  // override patientId for PHR Users - only allowed to see their own data
+
+  var nhsNumber = args.session.nhsNumber;
+
+  if (args.session.role === 'phrUser') patientId = nhsNumber;
+
+  var valid = tools.isPatientIdValid(patientId);
+  if (valid.error) return finished(valid);
+
+  patientId = mapToDiscoveryNHSNo.call(this, nhsNumber);
+
+  var session = args.req.qewdSession;
+  var cachedDemographics = session.data.$(['Demographics', 'by_nhsNumber', nhsNumber]);
+
+  if (typeof cachedDemographics === 'undefined') {
+    return finished({error: 'Discovery service unable to identify a valid session'});
+  }
+
+  if (cachedDemographics.exists) {
+    return finished(cachedDemographics.getDocument(true));
+  }
+
+  console.log('\n *** authenticating ***');
+  authenticate(session, function(error, token) {
+    if (error) {
+      return finished({error: error});
     }
-  }
-  if (!nhsNumber || nhsNumber === '') {
-    return finished({error: 'Patient Id was not specified'});
-  }
+    else {
+      console.log('\n *** getPatientsByNHSNumber - token = ' + token);
+      getPatientsByNHSNumber(patientId, token, session, function(error) {
+        if (error) {
+          return finished({error: error});
+        }
+        else {
 
-  var patient = this.db.use('RipplePHRPatients', 'byId', nhsNumber);
-  if (!patient.exists) {
-    return finished({error: 'No patient exists with that ID'});
-  }
+          getPatientResources(patientId, 'Patient', token, session, function(error) {
+            if (error) {
+              return finished({error: error});
+            }
 
-  var demographics = patient.getDocument();
+            var results = getDemographics.call(_this, patientId, session);
+            // override the nhsNumber back to the proper one instead of the Discovery-mapped one
 
-  demographics.telephone = demographics.phone + '';
-  delete demographics.phone;
+            console.log('** /src/getDemographics: ' + JSON.stringify(results, null, 2));
 
-  finished({
-    demographics: demographics
+            results.demographics.id = nhsNumber;
+            results.demographics.nhsNumber = nhsNumber;
+            cachedDemographics.setDocument(results);
+
+            finished(results);
+
+          });
+        }
+      });
+    }
   });
+
+  return;
 };
