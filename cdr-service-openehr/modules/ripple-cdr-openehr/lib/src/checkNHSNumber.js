@@ -62,7 +62,7 @@ function checkNHSNumber(patientId, email, session, callback) {
     params.processBody = function(body) {
       console.log('&&& OpenEHR response body = ' + JSON.stringify(body, null, 2));
       if (typeof body === 'undefined' || typeof body === 'string') {
-        // looks like the nhsNumber doesn't exist so create a 
+        // looks like the nhsNumber doesn't exist so create a
         //  new OpenEHR record for this NHS Number
 
         var params = {

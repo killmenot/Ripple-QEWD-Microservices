@@ -13,6 +13,7 @@
       "platform": "ethercis"
     }
   },
+  "defaultPostHost": "ethercis",
   "synopsis": {
     "headings": [
       "procedures",
