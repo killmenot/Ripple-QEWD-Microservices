@@ -258,7 +258,7 @@ module.exports = {
               if (ok) {
                 // headings all done, so
                 // return the original /api/openehr/check response
-                responseObj.message = message;
+                // responseObj.message = message;
                 //send(responseObj);
               }
             }

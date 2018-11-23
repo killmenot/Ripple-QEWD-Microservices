@@ -31,7 +31,7 @@
 var heading = {
   name: 'vitalsigns',
   textFieldName: 'author',
-  headingTableFields: ['author', 'dateCreated',  'newsScore', 'respirationRate', 'oxygenSupplemental', 
+  headingTableFields: ['author', 'dateCreated',  'newsScore', 'respirationRate', 'oxygenSupplemental',
     'heartRate', 'temperature', 'levelOfConsciousness', 'systolicBP', 'diastolicBP', 'oxygenSaturation'],
 
   get: {
@@ -45,16 +45,16 @@ var heading = {
         switch (levelOfConsciousnessCode) {
           case "at0005":
             return "Alert";
-            break;
+
           case "at0006":
             return "Voice";
-            break;
+
           case "at0007":
             return "Pain";
-            break;
+
           case "at0008":
             return "Unresponsive";
-            break;
+
           default:
             return 'Not known'
         }
@@ -91,16 +91,16 @@ var heading = {
         switch (levelOfConsciousness) {
           case "Alert":
             return "at0005";
-            break;
+
           case "Voice":
             return "at0006";
-            break;
+
           case "Pain":
             return "at0007";
-            break;
+
           case "Unresponsive":
             return "at0008";
-            break;
+
           default:
             return 'Not known';
         }
