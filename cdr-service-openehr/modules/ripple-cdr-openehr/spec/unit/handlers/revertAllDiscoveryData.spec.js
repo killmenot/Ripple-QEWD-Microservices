@@ -98,6 +98,7 @@ describe('ripple-cdr-openehr/lib/handlers/revertAllDiscoveryData', () => {
   });
 
   afterEach(() => {
+    mockery.deregisterAll();
     q.db.reset();
   });
 

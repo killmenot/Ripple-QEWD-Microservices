@@ -54,6 +54,7 @@ describe('ripple-cdr-openehr/lib/headings', () => {
     'procedures',
     'proms',
     'referrals',
+    'top3Things',
     'vaccinations',
     'vitalsigns'
   ];

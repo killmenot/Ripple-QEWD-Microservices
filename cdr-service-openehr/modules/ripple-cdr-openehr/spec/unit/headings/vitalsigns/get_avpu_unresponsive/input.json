@@ -3,6 +3,7 @@
   "onAir": "maybe on air",
   "heartRate": "some heart rate",
   "temperature": "42",
+  "levelOfConsciousnessCode": "at0008",
   "systolic": "some systolic",
   "diastolic": "some diastolic",
   "oxygenSats": "awesome stats",
