@@ -63,6 +63,8 @@ describe('ripple-cdr-openehr/lib/feeds/getSummary', () => {
   let args;
   let finished;
 
+  let phrFeeds;
+
   beforeEach(() => {
     q = new Worker();
 
@@ -73,7 +75,7 @@ describe('ripple-cdr-openehr/lib/feeds/getSummary', () => {
     };
     finished = jasmine.createSpy();
 
-    const phrFeeds = new q.documentStore.DocumentNode('PHRFeeds');
+    phrFeeds = new q.documentStore.DocumentNode('PHRFeeds');
     sourceIds.forEach(sourceId => {
       phrFeeds.$(['byEmail', args.session.email, sourceId]).value = 'true';
       phrFeeds.$(['bySourceId', sourceId]).setDocument(feeds[sourceId]);
@@ -104,6 +106,90 @@ describe('ripple-cdr-openehr/lib/feeds/getSummary', () => {
 
     expect(finished).toHaveBeenCalledWith({
       feeds: feeds
+    });
+  });
+
+  it('should remove names duplication', () => {
+    sourceIds.forEach(sourceId => {
+      phrFeeds.$(['byEmail', 'ivor.cox@ripple.foundation', '3020ad3c-8072-4b38-95f7-d8adbbbfb07a']).value = 'true';
+      phrFeeds.$(['bySourceId', '3020ad3c-8072-4b38-95f7-d8adbbbfb07a']).setDocument({
+        author: 'bob.smith@gmail.com',
+        dateCreated: 1527663973204,
+        email: 'ivor.cox@ripple.foundation',
+        landingPageUrl: 'https://www.nytimes.com/section/health',
+        name: 'NYTimes.com',
+        rssFeedUrl: 'http://rss.nytimes.com/services/xml/rss/nyt/Health.xml',
+        sourceId: '3020ad3c-8072-4b38-95f7-d8adbbbfb07a'
+      });
+    });
+
+    getSummary.call(q, args, finished);
+
+    expect(phrFeeds.$(['byEmail', 'ivor.cox@ripple.foundation']).getDocument()).toEqual({
+      '0f7192e9-168e-4dea-812a-3e1d236ae46d': true,
+      '260a7be5-e00f-4b1e-ad58-27d95604d010': true
+    });
+    expect(phrFeeds.$(['bySourceId']).getDocument()).toEqual({
+      '0f7192e9-168e-4dea-812a-3e1d236ae46d': {
+        author: 'bob.smith@gmail.com',
+        dateCreated: 1527663973204,
+        email: 'ivor.cox@ripple.foundation',
+        landingPageUrl: 'https://www.nytimes.com/section/health',
+        name: 'NYTimes.com',
+        rssFeedUrl: 'http://rss.nytimes.com/services/xml/rss/nyt/Health.xml',
+        sourceId: '0f7192e9-168e-4dea-812a-3e1d236ae46d'
+      },
+      '260a7be5-e00f-4b1e-ad58-27d95604d010': {
+        author: 'bob.smith@gmail.com',
+        dateCreated: 1527605220395,
+        email: 'ivor.cox@ripple.foundation',
+        landingPageUrl: 'https://www.leeds-live.co.uk/best-in-leeds/whats-on-news/',
+        name: 'Leeds Live - Whats on',
+        rssFeedUrl: 'https://www.leeds-live.co.uk/best-in-leeds/whats-on-news/?service=rss',
+        sourceId: '260a7be5-e00f-4b1e-ad58-27d95604d010'
+      }
+    });
+  });
+
+  it('should remove urls duplication', () => {
+    sourceIds.forEach(sourceId => {
+      phrFeeds.$(['byEmail', 'ivor.cox@ripple.foundation', '3020ad3c-8072-4b38-95f7-d8adbbbfb07a']).value = 'true';
+      phrFeeds.$(['bySourceId', '3020ad3c-8072-4b38-95f7-d8adbbbfb07a']).setDocument({
+        author: 'bob.smith@gmail.com',
+        dateCreated: 1527663973204,
+        email: 'ivor.cox@ripple.foundation',
+        landingPageUrl: 'https://www.nytimes.com/section/health',
+        name: 'UKTimes.com',
+        rssFeedUrl: 'http://rss.nytimes.com/services/xml/rss/nyt/Health.xml',
+        sourceId: '3020ad3c-8072-4b38-95f7-d8adbbbfb07a'
+      });
+    });
+
+    getSummary.call(q, args, finished);
+
+    expect(phrFeeds.$(['byEmail', 'ivor.cox@ripple.foundation']).getDocument()).toEqual({
+      '0f7192e9-168e-4dea-812a-3e1d236ae46d': true,
+      '260a7be5-e00f-4b1e-ad58-27d95604d010': true
+    });
+    expect(phrFeeds.$(['bySourceId']).getDocument()).toEqual({
+      '0f7192e9-168e-4dea-812a-3e1d236ae46d': {
+        author: 'bob.smith@gmail.com',
+        dateCreated: 1527663973204,
+        email: 'ivor.cox@ripple.foundation',
+        landingPageUrl: 'https://www.nytimes.com/section/health',
+        name: 'NYTimes.com',
+        rssFeedUrl: 'http://rss.nytimes.com/services/xml/rss/nyt/Health.xml',
+        sourceId: '0f7192e9-168e-4dea-812a-3e1d236ae46d'
+      },
+      '260a7be5-e00f-4b1e-ad58-27d95604d010': {
+        author: 'bob.smith@gmail.com',
+        dateCreated: 1527605220395,
+        email: 'ivor.cox@ripple.foundation',
+        landingPageUrl: 'https://www.leeds-live.co.uk/best-in-leeds/whats-on-news/',
+        name: 'Leeds Live - Whats on',
+        rssFeedUrl: 'https://www.leeds-live.co.uk/best-in-leeds/whats-on-news/?service=rss',
+        sourceId: '260a7be5-e00f-4b1e-ad58-27d95604d010'
+      }
     });
   });
 });

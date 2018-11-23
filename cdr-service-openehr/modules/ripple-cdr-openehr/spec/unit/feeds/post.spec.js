@@ -149,4 +149,48 @@ describe('ripple-cdr-openehr/lib/feeds/post', () => {
     expect(phrFeeds.$(['bySourceId', sourceId]).getDocument()).toEqual(expected);
     expect(phrFeeds.$(['byEmail', args.session.email, sourceId]).value).toBe(true);
   });
+
+  it('should handle name duplication', () => {
+    post.call(q, args, finished);
+    post.call(q, args, finished);
+
+    const sourceId = finished.calls.allArgs()[0][0].sourceId;
+    const phrFeeds = new q.documentStore.DocumentNode('PHRFeeds');
+
+    const expected = {};
+    expected[sourceId] = {
+      author: 'ivor.cox@phr.leeds.nhs',
+      dateCreated: 1514764800000,
+      email: 'jane.doe@example.org',
+      landingPageUrl: 'https://www.bbc.co.uk/news',
+      name: 'BBC News',
+      rssFeedUrl: 'https://www.bbc.co.uk/rss',
+      sourceId: sourceId
+    };
+
+    expect(phrFeeds.$(['bySourceId']).getDocument()).toEqual(expected)
+  })
+
+  it('should handle urls duplication', () => {
+    post.call(q, args, finished);
+
+    args.req.body.name = 'CNN News'
+    post.call(q, args, finished);
+
+    const sourceId = finished.calls.allArgs()[0][0].sourceId;
+    const phrFeeds = new q.documentStore.DocumentNode('PHRFeeds');
+
+    const expected = {};
+    expected[sourceId] = {
+      author: 'ivor.cox@phr.leeds.nhs',
+      dateCreated: 1514764800000,
+      email: 'jane.doe@example.org',
+      landingPageUrl: 'https://www.bbc.co.uk/news',
+      name: 'BBC News',
+      rssFeedUrl: 'https://www.bbc.co.uk/rss',
+      sourceId: sourceId
+    };
+
+    expect(phrFeeds.$(['bySourceId']).getDocument()).toEqual(expected)
+  })
 });

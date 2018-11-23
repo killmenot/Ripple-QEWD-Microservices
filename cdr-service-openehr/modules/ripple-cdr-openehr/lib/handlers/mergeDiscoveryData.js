@@ -43,7 +43,7 @@ module.exports = function(args, finished) {
   }
 
   args.patientId = args.session.nhsNumber;
-  
+
   //console.log('** mergeDiscoveryData: ' + JSON.stringify(args, null, 2));
 
   var discovery_data = args.req.data;
@@ -96,6 +96,9 @@ module.exports = function(args, finished) {
 
   */
 
+  // added to have tests running
+  openEHR.init.call(this);
+
   openEHR.startSession(host, session, function(openEhrSession) {
     mapNHSNoByHost.call(_this, patientId, host, openEhrSession, function(ehrId) {
 
@@ -115,7 +118,7 @@ module.exports = function(args, finished) {
           };
 
           postHeading.call(_this, patientId, heading, data, session, function(response) {
- 
+
             console.log('**** response saving Discovery: ' + sourceId + ': ' + JSON.stringify(response, null, 2));
             if (!response) {
               console.log('*** No response returned from OpenEHR for Discovery SourceId ' + sourceId);
