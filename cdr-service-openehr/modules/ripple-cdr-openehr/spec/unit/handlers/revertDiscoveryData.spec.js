@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  22 November 2018
+  27 November 2018
 
 */
 
@@ -34,12 +34,13 @@ const mockery = require('mockery');
 const Worker = require('../../mocks/worker');
 
 describe('ripple-cdr-openehr/lib/handlers/revertDiscoveryData', () => {
+  let q;
+
+  let args;
+  let finished;
+
   let revertDiscoveryData;
   let deletePatientHeading;
-  let args;
-
-  let q;
-  let finished;
 
   function seeds() {
     const DiscoveryMap = q.db.use('DiscoveryMap');
@@ -68,7 +69,7 @@ describe('ripple-cdr-openehr/lib/handlers/revertDiscoveryData', () => {
         openehr: 'bar::vm01.ethercis.org::1',
         patientId: 9999999000
       }
-    })
+    });
   }
 
   beforeAll(() => {
@@ -79,6 +80,7 @@ describe('ripple-cdr-openehr/lib/handlers/revertDiscoveryData', () => {
 
   beforeEach(() => {
     q = new Worker();
+
     args = {
       patientId: 9999999000,
       heading: 'procedures',
@@ -87,10 +89,13 @@ describe('ripple-cdr-openehr/lib/handlers/revertDiscoveryData', () => {
       }
     };
     finished = jasmine.createSpy();
+
     deletePatientHeading = jasmine.createSpy();
     mockery.registerMock('./deletePatientHeading', deletePatientHeading);
+
     delete require.cache[require.resolve('../../../lib/handlers/revertDiscoveryData')];
     revertDiscoveryData = require('../../../lib/handlers/revertDiscoveryData');
+
     seeds();
   });
 
@@ -103,18 +108,19 @@ describe('ripple-cdr-openehr/lib/handlers/revertDiscoveryData', () => {
     mockery.disable();
   });
 
-
   it('should revert discovery data', () => {
     revertDiscoveryData.call(q, args, finished);
   });
 
   it('should heading not valid', () => {
     args.heading = null;
+
     revertDiscoveryData.call(q, args, finished);
   });
 
   it('should patientID not valid', () => {
     args.patientId = '';
+
     revertDiscoveryData.call(q, args, finished);
   });
 
@@ -128,15 +134,20 @@ describe('ripple-cdr-openehr/lib/handlers/revertDiscoveryData', () => {
         host: 'ethercis'
       })
     });
+
     seeds();
+
     revertDiscoveryData.call(q, args, finished);
+
     expect(deletePatientHeading).toHaveBeenCalledTimes(2);
   });
 
   it('should were no matching records', () => {
     args.heading = 'counts';
+
     revertDiscoveryData.call(q, args, finished);
+
     expect(deletePatientHeading).not.toHaveBeenCalled();
     expect(finished).toHaveBeenCalledWith([]);
-  })
+  });
 });
