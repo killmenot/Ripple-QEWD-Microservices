@@ -33,10 +33,11 @@
 const mockery = require('mockery');
 const Worker = require('../../mocks/worker');
 const nock = require('nock');
-var auth_server = require('../../../lib/src/hosts').auth;
 
-describe('ripple-cdr-discovery/lib/src/authenticate', () => {
-  let authenticate;
+describe('ripple-cdr-discovery/lib/src/getPatientsByNHSNumber', () => {
+  let getPatientsByNHSNumber;
+
+  let cachePatientResource;
 
   let q;
   let args;
@@ -44,16 +45,16 @@ describe('ripple-cdr-discovery/lib/src/authenticate', () => {
   let callback;
 
 
-  function httpMock(data, responseData, responseCode) {
-    nock('https://devauth.endeavourhealth.net')
-    .post('/auth/realms/endeavour/protocol/openid-connect/token', data)
+  function httpMock(responseCode, responseData) {
+    nock('https://deveds.endeavourhealth.net/data-assurance')
+    .get('/api/fhir/patients?nhsNumber=5558526785')
     .reply(responseCode, responseData);
   }
 
-  function httpMockWithError(data, responseData) {
-    nock('https://devauth.endeavourhealth.net')
-    .post('/auth/realms/endeavour/protocol/openid-connect/token', data)
-    .replyWithError(responseData)
+  function httpMockWithError(responseData) {
+    nock('https://deveds.endeavourhealth.net/data-assurance')
+    .get('/api/fhir/patients?nhsNumber=5558526785')
+    .replyWithError(500, responseData)
   }
 
   beforeAll(() => {
@@ -74,55 +75,63 @@ describe('ripple-cdr-discovery/lib/src/authenticate', () => {
     q = new Worker();
     args = {
       nhsNumber: 5558526785,
+      token: 'some-jwt-token',
       session: q.sessions.create('app'),
     };
 
     callback = jasmine.createSpy();
 
-    delete require.cache[require.resolve('../../../lib/src/authenticate')];
-    authenticate = require('../../../lib/src/authenticate');
+    cachePatientResource = jasmine.createSpy();
+    mockery.registerMock('./cachePatientResource', cachePatientResource);
+
+    delete require.cache[require.resolve('../../../lib/src/getPatientsByNHSNumber')];
+    getPatientsByNHSNumber = require('../../../lib/src/getPatientsByNHSNumber');
 
     qewdSession = args.session;
   });
 
-  it('should call authenticate with token', () => {
-    qewdSession.data.$(['discoveryToken']).setDocument({
-      jwt: 'some-jwt-token',
-      createdAt: Date.now() - 40000
-    });
-    authenticate.call(q, qewdSession, callback);
-    expect(callback).toHaveBeenCalledWith(false, 'some-jwt-token')
+  it('should call getPatientsByNHSNumber', () => {
+    getPatientsByNHSNumber.call(q, args.nhsNumber, args.token, qewdSession, callback);
   });
 
-  it ('should return error authenticate', (done) => {
-    var form = {
-      client_id:  auth_server.client_id,
-      username:   auth_server.username,
-      password:   auth_server.password,
-      grant_type: auth_server.grant_type,
-    };
-    httpMockWithError(form, false);
-    authenticate.call(q, qewdSession, callback);
+  it('should call getPatientsByNHSNumber without session', () => {
+    qewdSession.data.$(['Discovery', 'Patient','by_nhsNumber', args.nhsNumber]).setDocument('some-data');
+    getPatientsByNHSNumber.call(q, args.nhsNumber, args.token, qewdSession, callback);
+    expect(callback).toHaveBeenCalledWith(false)
+  });
+
+  it ('should call request with  500 response code', (done) => {
+    httpMock(500, 'Server Problems');
+    getPatientsByNHSNumber.call(q, args.nhsNumber, args.token, qewdSession, callback);
+    setTimeout(() => {
+      expect(nock).toHaveBeenDone();
+      expect(callback).toHaveBeenCalledWith({error : 'Discovery Server Problem: Server Problems'});
+      done();
+    }, 100);
+  });
+
+  it ('should call request with success response', (done) => {
+    httpMock(200, JSON.stringify({
+      response: {
+        data : 'some-data'
+      }
+    }));
+    cachePatientResource.and.returnValue({});
+    getPatientsByNHSNumber.call(q, args.nhsNumber, args.token, qewdSession, callback);
+    setTimeout(() => {
+      expect(nock).toHaveBeenDone();
+      expect(callback).toHaveBeenCalledWith(false);
+      done();
+    }, 100);
+  });
+
+  it ('should call request with not json body', (done) => {
+    httpMock(200, 'some-data');
+    getPatientsByNHSNumber.call(q, args.nhsNumber, args.token, qewdSession, callback);
     setTimeout(() => {
       expect(nock).toHaveBeenDone();
       done();
     }, 100);
   });
 
-  it('should call request with success response', (done) => {
-    var form = {
-      client_id:  auth_server.client_id,
-      username:   auth_server.username,
-      password:   auth_server.password,
-      grant_type: auth_server.grant_type,
-    };
-    httpMock(form, {
-      access_token: 'some-jwt-token'
-    }, 200);
-    authenticate.call(q, qewdSession, callback);
-    setTimeout(() => {
-      expect(nock).toHaveBeenDone();
-      done();
-    }, 100);
-  })
 });

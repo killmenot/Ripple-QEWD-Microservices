@@ -30,13 +30,10 @@
 
 'use strict';
 
-const mockery = require('mockery');
 const Worker = require('../../mocks/worker');
-const nock = require('nock');
-var auth_server = require('../../../lib/src/hosts').auth;
 
-describe('ripple-cdr-discovery/lib/src/authenticate', () => {
-  let authenticate;
+describe('ripple-cdr-discovery/lib/src/cachePatientResource', () => {
+  let cachePatientResource;
 
   let q;
   let args;
@@ -44,85 +41,47 @@ describe('ripple-cdr-discovery/lib/src/authenticate', () => {
   let callback;
 
 
-  function httpMock(data, responseData, responseCode) {
-    nock('https://devauth.endeavourhealth.net')
-    .post('/auth/realms/endeavour/protocol/openid-connect/token', data)
-    .reply(responseCode, responseData);
-  }
-
-  function httpMockWithError(data, responseData) {
-    nock('https://devauth.endeavourhealth.net')
-    .post('/auth/realms/endeavour/protocol/openid-connect/token', data)
-    .replyWithError(responseData)
-  }
-
-  beforeAll(() => {
-    mockery.enable({
-      warnOnUnregistered: false
-    });
-  });
-
-  afterEach(() => {
-    mockery.deregisterAll();
-  });
-
-  afterAll(() => {
-    mockery.disable();
-  });
-
   beforeEach(() => {
     q = new Worker();
     args = {
       nhsNumber: 5558526785,
       session: q.sessions.create('app'),
+      patientResource: {
+        entry: [
+          {
+            resource: {
+              id: 585848485,
+              name: 'PatientNameFoo'
+            },
+          },
+          {
+            resource: {
+              id: 585848484,
+              name: 'PatientNameBar'
+            },
+          }
+        ]
+      }
     };
 
     callback = jasmine.createSpy();
 
-    delete require.cache[require.resolve('../../../lib/src/authenticate')];
-    authenticate = require('../../../lib/src/authenticate');
+    delete require.cache[require.resolve('../../../lib/src/cachePatientResource')];
+    cachePatientResource = require('../../../lib/src/cachePatientResource');
 
     qewdSession = args.session;
   });
 
-  it('should call authenticate with token', () => {
-    qewdSession.data.$(['discoveryToken']).setDocument({
-      jwt: 'some-jwt-token',
-      createdAt: Date.now() - 40000
-    });
-    authenticate.call(q, qewdSession, callback);
-    expect(callback).toHaveBeenCalledWith(false, 'some-jwt-token')
+  it('should call cachePatientResource', () => {
+    qewdSession.data.$(['Discovery', 'Patient', 'by_uuid', 585848483, 'data']).setDocument('some-foo-data');
+    qewdSession.data.$(['Discovery', 'Patient', 'by_uuid', 585848482, 'data']).setDocument('some-foo-data');
+    cachePatientResource.call(q, args.nhsNumber, args.patientResource, qewdSession, callback);
+    expect(qewdSession.data.$(['Discovery', 'Patient','by_uuid', 585848485, 'data']).getDocument()).toEqual(args.patientResource.entry[0].resource);
+    expect(qewdSession.data.$(['Discovery', 'Patient','by_uuid', 585848484, 'data']).getDocument()).toEqual(args.patientResource.entry[1].resource);
+    expect(qewdSession.data.$(['Discovery', 'Patient', 'by_uuid', 585848485, 'nhsNumber']).value).toEqual(args.nhsNumber);
+    expect(qewdSession.data.$(['Discovery', 'Patient', 'by_uuid', 585848484, 'nhsNumber']).value).toEqual(args.nhsNumber);
+    expect(qewdSession.data.$(['Discovery', 'Patient','by_nhsNumber', args.nhsNumber, 'Patient', 585848484]).value).toEqual(585848484);
+    expect(qewdSession.data.$(['Discovery', 'Patient','by_nhsNumber', args.nhsNumber, 'Patient', 585848485]).value).toEqual(585848485);
   });
 
-  it ('should return error authenticate', (done) => {
-    var form = {
-      client_id:  auth_server.client_id,
-      username:   auth_server.username,
-      password:   auth_server.password,
-      grant_type: auth_server.grant_type,
-    };
-    httpMockWithError(form, false);
-    authenticate.call(q, qewdSession, callback);
-    setTimeout(() => {
-      expect(nock).toHaveBeenDone();
-      done();
-    }, 100);
-  });
-
-  it('should call request with success response', (done) => {
-    var form = {
-      client_id:  auth_server.client_id,
-      username:   auth_server.username,
-      password:   auth_server.password,
-      grant_type: auth_server.grant_type,
-    };
-    httpMock(form, {
-      access_token: 'some-jwt-token'
-    }, 200);
-    authenticate.call(q, qewdSession, callback);
-    setTimeout(() => {
-      expect(nock).toHaveBeenDone();
-      done();
-    }, 100);
-  })
 });

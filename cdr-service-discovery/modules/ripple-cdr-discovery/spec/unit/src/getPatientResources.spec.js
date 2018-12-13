@@ -36,7 +36,9 @@ const nock = require('nock');
 
 describe('ripple-cdr-discovery/lib/src/getPatientResources', () => {
   let getPatientResources;
+
   let getPatientBundle;
+  let cacheHeadingResources;
 
   let q;
   let args;
@@ -52,12 +54,20 @@ describe('ripple-cdr-discovery/lib/src/getPatientResources', () => {
 
   function httpMockWithError(data, responseData) {
     nock('https://deveds.endeavourhealth.net')
-    .persist()
-    .log(console.log)
     .post('/data-assurance/api/fhir/resources', data)
-    .replyWithError(responseData)
+    .replyWithError(500, responseData)
   }
 
+  function seeds() {
+    qewdSession.data.$(['Discovery', 'PatientBundle', 'by_nhsNumber', args.nhsNumber, 'Patient']).setDocument([
+      {uuid: 1, data: 'some-data-foo'},
+      {uuid: 2, data: 'some-data-bar'},
+      {uuid: 3, data: 'some-data-foo-bar'},
+    ]);
+    qewdSession.data.$(['Discovery', 'PatientBundle', 'by_uuid', 1, 'data']).setDocument('some-data-foo');
+    qewdSession.data.$(['Discovery', 'PatientBundle', 'by_uuid', 2, 'data']).setDocument('some-data-bar');
+    qewdSession.data.$(['Discovery', 'PatientBundle', 'by_uuid', 3, 'data']).setDocument('some-data-foo-bar');
+  }
   beforeAll(() => {
     mockery.enable({
       warnOnUnregistered: false
@@ -83,6 +93,9 @@ describe('ripple-cdr-discovery/lib/src/getPatientResources', () => {
 
     callback = jasmine.createSpy();
 
+    cacheHeadingResources = jasmine.createSpy();
+    mockery.registerMock('./cacheHeadingResources', cacheHeadingResources);
+
     delete require.cache[require.resolve('../../../lib/src/getPatientResources')];
     getPatientResources = require('../../../lib/src/getPatientResources');
 
@@ -90,12 +103,6 @@ describe('ripple-cdr-discovery/lib/src/getPatientResources', () => {
     getPatientBundle = require('../../../lib/src/getPatientBundle');
 
     qewdSession = args.session;
-    // seeds();
-  });
-
-  it('should call getPatientResources', () => {
-      qewdSession.data.$(['Discovery', 'Patient', 'by_nhsNumber', args.nhsNumber, 'resources', args.resourceRequired]);
-      getPatientResources.call(q, args.nhsNumber, args.resourceRequired, args.token, qewdSession, callback);
   });
 
   it('should session data does not exist', () => {
@@ -104,25 +111,6 @@ describe('ripple-cdr-discovery/lib/src/getPatientResources', () => {
       });
       getPatientResources.call(q, args.nhsNumber, args.resourceRequired, args.token, qewdSession, callback);
       expect(callback).toHaveBeenCalledWith(false);
-  });
-
-  it ('should return call request', (done) => {
-    const body = {
-      resources: [args.resourceRequired],
-      patients: {
-        resourceType: 'Bundle',
-        entry: [
-        ]
-      }
-    };
-
-    httpMock(JSON.stringify(body), 200, body);
-    getPatientResources.call(q, args.nhsNumber, args.resourceRequired, args.token, qewdSession, callback);
-    setTimeout(() => {
-      expect(nock).toHaveBeenDone();
-      // expect(callback).toHaveBeenCalledWith(false);
-      done();
-    }, 100);
   });
 
   it ('should return call request with error', (done) => {
@@ -140,40 +128,69 @@ describe('ripple-cdr-discovery/lib/src/getPatientResources', () => {
     setTimeout(() => {
       expect(nock).toHaveBeenDone();
       done();
-    }, 100);
+    }, 200);
   });
 
   it('should call cacheHeadingResources', (done) => {
-    qewdSession.data.$(['Discovery', 'PatientBundle', 'by_nhsNumber', args.nhsNumber, 'Patient']).setDocument([
-      {uuid: 1, data: 'some-data-foo'},
-      {uuid: 2, data: 'some-data-bar'},
-      {uuid: 3, data: 'some-data-foo-bar'},
-    ]);
-    qewdSession.data.$(['Discovery', 'PatientBundle', 'by_uuid', 1, 'data']).setDocument('some-data-foo');
-    qewdSession.data.$(['Discovery', 'PatientBundle', 'by_uuid', 2, 'data']).setDocument('some-data-bar');
-    qewdSession.data.$(['Discovery', 'PatientBundle', 'by_uuid', 3, 'data']).setDocument('some-data-foo-bar');
+    seeds();
     const body = {
       resources: [args.resourceRequired],
       patients: {}
     };
     body.patients = getPatientBundle.call(q, args.nhsNumber, qewdSession);
-    console.log('body - ', body.patients.entry);
-    httpMock(JSON.stringify(body), 200, [
-      {
-        resourceType: 'Bundle',
-        entry: [
-          'foo',
-          'bar'
-        ]
-      }
-    ]);
-
+    httpMock(JSON.stringify(body), 200, JSON.stringify(
+      body.patients
+    ));
+    cacheHeadingResources.and.callFake((resources, resourceRequired, token, session, callback) => {
+      callback();
+    });
     getPatientResources.call(q, args.nhsNumber, args.resourceRequired, args.token, qewdSession, callback);
     setTimeout(() => {
       expect(nock).toHaveBeenDone();
-      // expect(callback).toHaveBeenCalledWith(false);
+      expect(callback).toHaveBeenCalledWith(false);
       done();
-    }, 100);
-  })
+    }, 200);
+  });
+
+  it('shoud return empty entry', (done) => {
+    const body = {
+      resources: [args.resourceRequired],
+      patients: {
+        resourceType: 'Bundle',
+        entry: [
+        ]
+      }
+    };
+
+    httpMock(JSON.stringify(body), 200, JSON.stringify([]));
+    getPatientResources.call(q, args.nhsNumber, args.resourceRequired, args.token, qewdSession, callback);
+    setTimeout(() => {
+      expect(nock).toHaveBeenDone();
+      expect(callback).toHaveBeenCalledWith(false);
+      done();
+    }, 200);
+  });
+
+  it('should call cacheHeadingResources with error', (done) => {
+    seeds();
+    const body = {
+      resources: [args.resourceRequired],
+      patients: {}
+    };
+    body.patients = getPatientBundle.call(q, args.nhsNumber, qewdSession);
+    httpMock(JSON.stringify(body), 200, JSON.stringify(
+      body.patients
+    ));
+    cacheHeadingResources.and.callFake((resources, resourceRequired, token, session, callback) => {
+      callback('error');
+    });
+    getPatientResources.call(q, args.nhsNumber, args.resourceRequired, args.token, qewdSession, callback);
+    setTimeout(() => {
+      expect(nock).toHaveBeenDone();
+      expect(callback).toHaveBeenCalledWith('error');
+      done();
+    }, 200);
+  });
+
 
 });

@@ -33,19 +33,19 @@
 const mockery = require('mockery');
 const Worker = require('../../mocks/worker');
 
-describe('ripple-cdr-discovery/lib/handlers/getDemographics', () => {
-  let getDemographics;
+describe('ripple-cdr-discovery/lib/handlers/getHeadingDetail', () => {
+  let getHeadingDetail;
 
-  let getSrcDemographics;
+  let authenticate;
   let getPatientsByNHSNumber;
   let getPatientResources;
-  let authenticate;
-  let args;
+  let getSrcHeadingDetail;
 
+
+  let args;
   let q;
   let finished;
   let qewdSession;
-
 
   beforeAll(() => {
     mockery.enable({
@@ -65,6 +65,8 @@ describe('ripple-cdr-discovery/lib/handlers/getDemographics', () => {
     q = new Worker();
     args = {
       patientId: 9999999000,
+      heading: 'vaccinations',
+      sourceId: 'Discovery-foo-bar',
       req: {
         qewdSession: q.sessions.create('app')
       },
@@ -84,73 +86,96 @@ describe('ripple-cdr-discovery/lib/handlers/getDemographics', () => {
     getPatientResources = jasmine.createSpy();
     mockery.registerMock('../src/getPatientResources', getPatientResources);
 
-    getSrcDemographics = jasmine.createSpy();
-    mockery.registerMock('../src/getDemographics', getSrcDemographics);
+    getSrcHeadingDetail = jasmine.createSpy();
+    mockery.registerMock('../src/getHeadingDetail', getSrcHeadingDetail);
 
-
-    delete require.cache[require.resolve('../../../lib/handlers/getDemographics')];
-    getDemographics = require('../../../lib/handlers/getDemographics');
+    delete require.cache[require.resolve('../../../lib/handlers/getHeadingDetail')];
+    getHeadingDetail = require('../../../lib/handlers/getHeadingDetail');
 
     qewdSession = args.req.qewdSession;
   });
 
-  it('should call getDemographics', () => {
-    getDemographics.call(q, args, finished);
+  it('should call getHeadingDetail', () => {
+    getHeadingDetail.call(q, args, finished)
+  });
+
+  it('should call not existing heading', () => {
+    args.heading = '';
+    getHeadingDetail.call(q, args, finished);
+    expect(finished).toHaveBeenCalledWith({
+      responseFrom: 'discovery_service',
+      results: false
+    })
   });
 
   it('should patientID be not valid ', () => {
     args.patientId = null;
     args.session.role = 'patient';
 
-    getDemographics.call(q, args, finished);
+    getHeadingDetail.call(q, args, finished);
   });
 
-  it('should call authenticate', () => {
-    qewdSession.data.$(['Demographics', 'by_nhsNumber', 5558526785]).setDocument({
-      nhsNumber: 5558526785,
+  it('should call getHeadingDetail with not valid sourceID', () => {
+      args.sourceId = 'foo-bar';
+      getHeadingDetail.call(q, args, finished);
+      expect(finished).toHaveBeenCalledWith({
+        responseFrom: 'discovery_service',
+        results: false
+      })
+  });
+
+  it('should call authenticate with error', () => {
+    authenticate.and.callFake((session, callback) => {
+        callback('error')
     });
-    getDemographics.call(q, args, finished);
-    expect(finished).toHaveBeenCalledWith({nhsNumber: 5558526785})
-  });
-
-  it('should throw error on auth', () => {
-    authenticate.and.callFake((session, callback) => callback('error'));
-    getDemographics.call(q, args, finished);
-    expect(finished).toHaveBeenCalledWith({error: 'error'});
+    getHeadingDetail.call(q, args, finished);
+    expect(finished).toHaveBeenCalledWith({
+      error: 'error'
+    })
   });
 
   it('should call authenticate with success response and call getPatientsByNHSNumber with error', () => {
-    authenticate.and.callFake((session, callback) => callback(null, 'some-jwt-token'));
+    authenticate.and.callFake((session, callback) => {
+      callback(null, 'some-jwt-token')
+    });
     getPatientsByNHSNumber.and.callFake((patientId, token, session, callback) => callback('error'));
-    getDemographics.call(q, args, finished);
-    expect(finished).toHaveBeenCalledWith({error: 'error'});
+    getHeadingDetail.call(q, args, finished);
+    expect(finished).toHaveBeenCalledWith({
+      error: 'error'
+    })
   });
 
   it('should call getPatientResources with error', () => {
-    authenticate.and.callFake((session, callback) => callback(null, 'some-jwt-token'));
+    authenticate.and.callFake((session, callback) => {
+      callback(null, 'some-jwt-token')
+    });
     getPatientsByNHSNumber.and.callFake((patientId, token, session, callback) => callback());
-    getPatientResources.and.callFake((patientId, patient, token, session, callback) => callback('error'));
-    getDemographics.call(q, args, finished);
-    expect(finished).toHaveBeenCalledWith({error: 'error'});
+    getPatientResources.and.callFake((patientId, resourceRequired, token, session, callback) => callback('error'));
+    getHeadingDetail.call(q, args, finished);
+    expect(finished).toHaveBeenCalledWith({
+      error: 'error'
+    })
   });
 
-  it('should call getDemographics', () => {
-    authenticate.and.callFake((session, callback) => callback(null, 'some-jwt-token'));
+  it('should call getHeadingDetail from src', () => {
+    const response = {
+      responseFrom: 'discovery_service',
+      results: {
+        name: 'Simvastatin',
+        doseAmount: '20mg',
+        dateCreated: 1497211862000,
+        source: 'discovery',
+        sourceId: 'discovery-33a93da2-6677-42a0-8b39-9d1e012dde12'
+      }
+    };
+    authenticate.and.callFake((session, callback) => {
+      callback(null, 'some-jwt-token')
+    });
     getPatientsByNHSNumber.and.callFake((patientId, token, session, callback) => callback());
-    getPatientResources.and.callFake((patientId, patient, token, session, callback) => callback());
-    getSrcDemographics.and.returnValue({
-      demographics: {
-        id: args.patientId,
-        nhsNumber: args.nhsNumber,
-      }
-    });
-    getDemographics.call(q, args, finished);
-    expect(finished).toHaveBeenCalledWith({
-      demographics: {
-        id: 5558526785,
-        nhsNumber: 5558526785,
-      }
-    });
-  });
+    getPatientResources.and.callFake((patientId, resourceRequired, token, session, callback) => callback());
+    getSrcHeadingDetail.and.returnValue(response.results);
+    getHeadingDetail.call(q, args, finished);
+    expect(finished).toHaveBeenCalledWith(response)
+  })
 
 });
