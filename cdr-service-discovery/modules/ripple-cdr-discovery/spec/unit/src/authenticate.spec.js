@@ -101,10 +101,11 @@ describe('ripple-cdr-discovery/lib/src/authenticate', () => {
       password:   auth_server.password,
       grant_type: auth_server.grant_type,
     };
-    httpMockWithError(form, false);
+    httpMockWithError(form, 'custom error');
     authenticate.call(q, qewdSession, callback);
     setTimeout(() => {
       expect(nock).toHaveBeenDone();
+      expect(callback).toHaveBeenCalledWith(Error('custom error'));
       done();
     }, 100);
   });
@@ -122,6 +123,7 @@ describe('ripple-cdr-discovery/lib/src/authenticate', () => {
     authenticate.call(q, qewdSession, callback);
     setTimeout(() => {
       expect(nock).toHaveBeenDone();
+      expect(callback).toHaveBeenCalledWith(false, 'some-jwt-token');
       done();
     }, 100);
   })

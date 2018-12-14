@@ -127,6 +127,7 @@ describe('ripple-cdr-discovery/lib/src/getPatientResources', () => {
     getPatientResources.call(q, args.nhsNumber, args.resourceRequired, args.token, qewdSession, callback);
     setTimeout(() => {
       expect(nock).toHaveBeenDone();
+      expect(callback).toHaveBeenCalledWith(Error(500));
       done();
     }, 200);
   });

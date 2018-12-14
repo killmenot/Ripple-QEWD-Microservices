@@ -112,6 +112,7 @@ describe('ripple-cdr-discovery/lib/src/getResource', () => {
     getResource.call(q, args.reference, args.token, qewdSession, callback);
     setTimeout(() => {
       expect(nock).toHaveBeenDone();
+      expect(callback).toHaveBeenCalledWith(false, {id : 6848939594});
       done();
     }, 100);
   });
@@ -129,6 +130,7 @@ describe('ripple-cdr-discovery/lib/src/getResource', () => {
     getResource.call(q, args.reference, args.token, qewdSession, callback);
     setTimeout(() => {
       expect(nock).toHaveBeenDone();
+      expect(callback).toHaveBeenCalledWith(false, {});
       done();
     }, 100);
   });
