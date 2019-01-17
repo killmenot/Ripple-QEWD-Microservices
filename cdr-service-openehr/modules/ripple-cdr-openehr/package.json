@@ -12,11 +12,11 @@
   "nyc": {
     "all": true,
     "include": [
-      "lib2/**/*.js"
+      "lib/**/*.js"
     ],
     "exclude": [
-      "lib2/headings/**/*.js",
-      "lib2/jumper/**/*.js"
+      "lib/headings/**/*.js",
+      "lib/jumper/**/*.js"
     ]
   },
   "dependencies": {
