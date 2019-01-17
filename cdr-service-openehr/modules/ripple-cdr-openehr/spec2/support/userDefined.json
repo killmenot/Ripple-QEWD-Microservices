@@ -1,0 +1,35 @@
+{
+  "openehr": {
+    "marand": {
+      "url": "https://test.operon.systems",
+      "username": "foo",
+      "password": "123456",
+      "platform": "marand"
+    },
+    "ethercis": {
+      "url": "http://178.62.71.220:8080",
+      "username": "bar",
+      "password": "quux",
+      "platform": "ethercis"
+    }
+  },
+  "defaultPostHost": "ethercis",
+  "synopsis": {
+    "headings": [
+      "procedures",
+      "vaccinations"
+    ],
+    "maximum": 2
+  },
+  "headings": {
+    "counts": true,
+    "procedures": true,
+    "vaccinations": {
+      "template": {
+        "name": "IDCR - Immunisation summary.v0"
+      },
+      "synopsisField": "vaccinationName",
+      "summaryTableFields": ["vaccinationName", "dateCreated"]
+    }
+  }
+}

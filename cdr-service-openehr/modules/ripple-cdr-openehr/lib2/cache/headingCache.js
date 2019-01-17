@@ -24,8 +24,55 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  31 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+const { logger } = require('../core');
+const { byDate, byHeading, byHost, bySourceId, fetchCount } = require('./mixins/heading');
+
+class HeadingCache {
+  constructor(adapter) {
+    this.adapter = adapter;
+    this.byDate = byDate(adapter);
+    this.byHeading = byHeading(adapter);
+    this.byHost = byHost(adapter);
+    this.bySourceId = bySourceId(adapter);
+    this.fetchCount = fetchCount(adapter);
+  }
+
+  static create(adapter) {
+    return new HeadingCache(adapter);
+  }
+
+  /**
+   * Deletes heading cache
+   *
+   * @param  {string} host
+   * @param  {string|int} patientId
+   * @param  {string} heading
+   * @return {Promise}
+   */
+  async deleteAll(host, patientId, heading) {
+    logger.info('cache/headingCache|deleteAll', { host, patientId, heading });
+
+    const qewdSession = this.adapter.qewdSession;
+    const byPatientHeading = qewdSession.data.$(['headings', 'byPatientId', patientId, heading]);
+
+    if (byPatientHeading.exists) {
+      const byDate = byPatientHeading.$('byDate');
+      const bySourceId = qewdSession.data.$(['headings', 'bySourceId']);
+
+      byPatientHeading.$(['byHost', host]).forEachChild((sourceId, node) => {
+        const date = bySourceId.$([sourceId, 'date']).value;
+        bySourceId.$(sourceId).delete();
+        byDate.$([date, sourceId]).delete();
+        node.delete();
+      });
+    }
+  }
+}
+
+module.exports = HeadingCache;

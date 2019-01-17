@@ -24,8 +24,48 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  18 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+const { logger } = require('../core');
+
+class StatusCache {
+  constructor(adapter) {
+    this.adapter = adapter;
+  }
+
+  static create(adapter) {
+    return new StatusCache(adapter);
+  }
+
+  /**
+   * Gets status
+   *
+   * @return {Promise.<Object|null>}
+   */
+  async get() {
+    logger.info('cache/statusCache|get');
+
+    const key = ['record_status'];
+
+    return this.adapter.getObject(key);
+  }
+
+  /**
+   * Sets status
+   *
+   * @param  {Object} data
+   * @return {Promise}
+   */
+  async set(data) {
+    logger.info('cache/statusCache|set', { data });
+
+    const key = ['record_status'];
+    this.adapter.putObject(key, data);
+  }
+}
+
+module.exports = StatusCache;

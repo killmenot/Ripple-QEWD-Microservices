@@ -24,8 +24,78 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  30 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+const { logger } = require('../core');
+const debug = require('debug')('ripple-cdr-openehr:services:status');
+
+class StatusService {
+  constructor(ctx) {
+    this.ctx = ctx;
+    this.statusCache = ctx.cache.statusCache;
+  }
+
+  static create(ctx) {
+    return new StatusService(ctx);
+  }
+
+  /**
+   * Checks record status and increment request number if exists
+   *
+   * @return {Promise.<Object|null?}
+   */
+  async check() {
+    logger.info('services/statusService|check');
+
+    const state = await this.statusCache.get();
+    debug('state: %j', state);
+
+    if (!state) return null;
+
+    state.requestNo = state.requestNo + 1;
+    await this.statusCache.set(state);
+
+    return state;
+  }
+
+  /**
+   * Gets status record
+   *
+   * @return {Promise.<Object>}
+   */
+  async get() {
+    logger.info('services/statusService|get');
+
+    return await this.statusCache.get();
+  }
+
+  /**
+   * Creates a new status record
+   *
+   * @param  {Object} state
+   * @return {Promise}
+   */
+  async create(state) {
+    logger.info('services/statusService|create', { state });
+
+    await this.statusCache.set(state);
+  }
+
+  /**
+   * Updates existing status record
+   *
+   * @param  {Object} state
+   * @return {Promise}
+   */
+  async update(state) {
+    logger.info('services/statusService|update', { state });
+
+    await this.statusCache.set(state);
+  }
+}
+
+module.exports = StatusService;

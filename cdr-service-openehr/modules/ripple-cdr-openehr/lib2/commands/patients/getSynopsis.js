@@ -24,8 +24,58 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  22 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+const { BadRequestError } = require('../../errors');
+const { isPatientIdValid } = require('../../shared/validation');
+const { Role } = require('../../shared/enums');
+const debug = require('debug')('ripple-cdr-openehr:commands:patients:get-synopsis');
+
+class GetPatientSynopsisCommand {
+  constructor(ctx, session) {
+    this.ctx = ctx;
+    this.session = session;
+  }
+
+  /**
+   * @param  {string} patientId
+   * @param  {Object} query
+   * @return {Object}
+   */
+  async execute(patientId, query) {
+    debug('patientId: %s, heading: %s, query: %j', patientId, query);
+    debug('role: %s', this.session.role);
+
+    // override patientId for PHR Users - only allowed to see their own data
+    if (this.session.role === Role.PHR_USER) {
+      patientId = this.session.nhsNumber;
+    }
+
+    const patientValid = isPatientIdValid(patientId);
+    if (!patientValid.ok) {
+      throw new BadRequestError(patientValid.error);
+    }
+
+    const synopsisConfig = this.ctx.synopsisConfig;
+    debug('synopsis config: %j', synopsisConfig);
+
+    const { headingService } = this.ctx.services;
+    await headingService.fetchMany(patientId, synopsisConfig.headings);
+
+    debug('headings %s for %s is cached', synopsisConfig.headings, patientId);
+
+    const synopsisCount = query.maximum || synopsisConfig.maximum;
+    debug('synopsis max count: %s', synopsisCount);
+
+    const responseObj = await headingService.getSynopses(patientId, synopsisConfig.headings, synopsisCount);
+    debug('response: %j', responseObj);
+
+    return responseObj;
+  }
+}
+
+module.exports = GetPatientSynopsisCommand;

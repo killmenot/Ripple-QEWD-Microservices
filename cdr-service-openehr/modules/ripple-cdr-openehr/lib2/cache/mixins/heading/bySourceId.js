@@ -24,8 +24,59 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  31 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+const { logger } = require('../../../core');
+const debug = require('debug')('ripple-cdr-openehr:cache:heading:bySourceId');
+
+module.exports = (adapter) => {
+  return {
+
+    /**
+     * Gets data
+     *
+     * @param  {string} sourceId
+     * @return {Promise.<Object>}
+     */
+    get: async (sourceId) => {
+      logger.info('cache/headingCache|bySourceId|get', { sourceId });
+
+      const key = ['headings', 'bySourceId', sourceId];
+
+      return adapter.getObjectWithArrays(key);
+    },
+
+    /**
+     * Sets data
+     *
+     * @param  {string} sourceId
+     * @param  {Object} data
+     * @return {Promise}
+     */
+    set: async (sourceId, data) => {
+      logger.info('cache/headingCache|bySourceId|set', { sourceId, data: typeof data });
+
+      debug('data: %j', data);
+
+      const key = ['headings', 'bySourceId', sourceId];
+      adapter.putObject(key, data);
+    },
+
+    /**
+     * Deletes data
+     *
+     * @param  {string} sourceId
+     * @return {Promise}
+     */
+    delete: async (sourceId) => {
+      logger.info('cache/headingCache|bySourceId|delete', { sourceId });
+
+      const key = ['headings', 'bySourceId', sourceId];
+      adapter.delete(key);
+    }
+  };
+};

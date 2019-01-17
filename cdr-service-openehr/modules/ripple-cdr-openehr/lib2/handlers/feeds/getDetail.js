@@ -24,8 +24,28 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  22 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+const { GetFeedDetailCommand } = require('../../commands/feeds');
+const { getResponseError } = require('../../errors');
+
+/**
+ * @param  {Object} args
+ * @param  {Function} finished
+ */
+module.exports = async function getFeedDetail(args, finished) {
+  try {
+    const command = new GetFeedDetailCommand(args.req.ctx);
+    const responseObj = await command.execute(args.sourceId);
+
+    finished(responseObj);
+  } catch (err) {
+    const responseError = getResponseError(err);
+
+    finished(responseError);
+  }
+};
+
+

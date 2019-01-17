@@ -24,8 +24,12 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  14 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+module.exports = function () {
+  return jasmine.createSpyObj(['execute']);
+};

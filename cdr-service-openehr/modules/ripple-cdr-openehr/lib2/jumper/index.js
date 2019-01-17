@@ -24,8 +24,21 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  29 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+const getBySourceId = require('./getBySourceId');
+const OpenEhrAdapter = require('./adapter');
+const post = require('./post');
+const query = require('./query');
+
+module.exports = {
+  getBySourceId,
+  OpenEhrAdapter,
+  post,
+  put: post,
+  query
+};

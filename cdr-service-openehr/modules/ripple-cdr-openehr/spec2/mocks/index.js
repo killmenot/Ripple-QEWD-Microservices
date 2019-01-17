@@ -24,8 +24,20 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  30 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+const CommandMock = require('./command');
+const ExecutionContextMock = require('./context');
+const MasterMock = require('./master');
+const Worker = require('./worker');
+
+module.exports = {
+  CommandMock,
+  ExecutionContextMock,
+  MasterMock,
+  Worker
+};

@@ -1,15 +1,16 @@
 /*
 
  ----------------------------------------------------------------------------
- | ripple-cdr-openehr: Ripple MicroServices for OpenEHR                     |
+ | qewd-ripple: QEWD-based Middle Tier for Ripple OSI                       |
  |                                                                          |
- | Copyright (c) 2018 Ripple Foundation Community Interest Company          |
+ | Copyright (c) 2016-17 Ripple Foundation Community Interest Company       |
  | All rights reserved.                                                     |
  |                                                                          |
  | http://rippleosi.org                                                     |
  | Email: code.custodian@rippleosi.org                                      |
  |                                                                          |
  | Author: Rob Tweed, M/Gateway Developments Ltd                            |
+ |         Will Weatherill, Answer                                          |
  |                                                                          |
  | Licensed under the Apache License, Version 2.0 (the "License");          |
  | you may not use this file except in compliance with the License.         |
@@ -24,8 +25,51 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+10 April 2017
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+
+module.exports = {
+  name: 'personalnotes',
+  textFieldName: 'noteType',
+  headingTableFields: ['noteType', 'author', 'dateCreated'],
+
+  get: {
+
+    transformTemplate: {
+      noteType:    '{{type}}',
+      notes:       '{{personal_note}}',
+      author:      '{{author}}',
+      dateCreated: '=> getRippleTime(date_created)',
+      source:      '=> getSource()',
+      sourceId:    '=> getUid(uid)'
+    }
+
+  },
+
+  post: {
+    templateId: 'RIPPLE - Personal Notes.v1',
+
+    transformTemplate: {
+      ctx: {
+        composer_name:               '=> either(author, "Dr Tony Shannon")',
+        'health_care_facility|id':   '=> either(healthcareFacilityId, "999999-345")',
+        'health_care_facility|name': '=> either(healthcareFacilityName, "Rippleburgh GP Practice")',
+        id_namespace:                'NHS-UK',
+        id_scheme:                   '2.16.840.1.113883.2.1.4.3',
+        language:                    'en',
+        territory:                   'GB',
+        time:                        '=> now()'
+      },
+      personal_notes: {
+        clinical_synopsis: [
+          {
+            '_name|value': '=> either(noteType, "undefined")',
+            notes:         '=> either(notes, "undefined")',
+          }
+        ]
+      }
+    }
+  }
+};

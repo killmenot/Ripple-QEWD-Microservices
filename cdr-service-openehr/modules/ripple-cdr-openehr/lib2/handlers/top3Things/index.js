@@ -24,8 +24,18 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  22 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+const getTop3ThingsDetail = require('./getDetail');
+const getTop3ThingsSummary = require('./getSummary');
+const postTop3Things = require('./post');
+
+module.exports = {
+  getTop3ThingsDetail,
+  getTop3ThingsSummary,
+  postTop3Things
+};

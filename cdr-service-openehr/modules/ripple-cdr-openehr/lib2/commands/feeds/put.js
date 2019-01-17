@@ -24,8 +24,53 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  19 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+const { BadRequestError } = require('../../errors');
+const { isFeedPayloadValid } = require('../../shared/validation');
+const debug = require('debug')('ripple-cdr-openehr:commands:feeds:put');
+
+class PutFeedCommand {
+  constructor(ctx, session) {
+    this.ctx = ctx;
+    this.session = session;
+  }
+
+  /**
+   * @param  {string} sourceId
+   * @param  {Object} payload
+   * @return {Promise.<Object>}
+   */
+  async execute(sourceId, payload) {
+    debug('sourceId: %s, payload: %j', sourceId, payload);
+
+    if (!sourceId || sourceId === '') {
+      throw new BadRequestError('Missing or empty sourceId');
+    }
+
+    const { phrFeedService } = this.ctx.services;
+    const feed = await phrFeedService.getBySourceId(sourceId);
+
+    const valid = isFeedPayloadValid(payload);
+    if (!valid.ok) {
+      throw new BadRequestError(valid.error);
+    }
+
+    const updatedFeed = {
+      ...payload,
+      email: this.session.email
+    };
+
+    await phrFeedService.update(feed.sourceId, updatedFeed);
+
+    return {
+      sourceId: feed.sourceId
+    };
+  }
+}
+
+module.exports = PutFeedCommand;

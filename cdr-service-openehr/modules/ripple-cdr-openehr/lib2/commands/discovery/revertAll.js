@@ -24,8 +24,39 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  18 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+const P = require('bluebird');
+const debug = require('debug')('ripple-cdr-openehr:commands:discovery:revert-all');
+
+class RevertAllDiscoveryDataCommand {
+  constructor(ctx) {
+    this.ctx = ctx;
+  }
+
+  /**
+   * @return {Promise.<Object[]>}
+   */
+  async execute() {
+    const { discoveryService, headingService } = this.ctx.services;
+    const sourceIds = await discoveryService.getAllSourceIds();
+
+    const results = await P.mapSeries(sourceIds, async (sourceId) => {
+      debug('sourceId: %s', sourceId);
+      const data = await discoveryService.getBySourceId(sourceId);
+      const responseObj = await headingService.delete(data.patientId, data.heading, sourceId);
+      debug('response: %j', responseObj);
+      await discoveryService.delete(data.discovery);
+
+      return responseObj;
+    });
+
+    return results;
+  }
+}
+
+module.exports = RevertAllDiscoveryDataCommand;

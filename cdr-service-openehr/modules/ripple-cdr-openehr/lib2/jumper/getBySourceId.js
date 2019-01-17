@@ -24,8 +24,23 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  20 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+const { logger } = require('../core');
+
+let getFormattedRecordFromCache;
+
+try {
+  getFormattedRecordFromCache = require('../../../ripple-openehr-jumper/lib/getFormattedRecordFromCache');
+}
+catch(err) {
+  logger.error('jumper/getBySourceId|err: ' + err.message);
+  logger.error('jumper/getBySourceId|stack: ' + err.stack);
+  getFormattedRecordFromCache = false;
+}
+
+module.exports = getFormattedRecordFromCache;

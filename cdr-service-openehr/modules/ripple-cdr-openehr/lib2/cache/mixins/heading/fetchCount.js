@@ -24,8 +24,31 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  31 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+const { logger } = require('../../../core');
+
+module.exports = (adapter) => {
+  return {
+
+    /**
+     * Increments and returns fetch count value
+     *
+     * @param  {string|int} patientId
+     * @param  {string} heading
+     * @return {Promise.<int>}
+     */
+    increment: async (patientId, heading) => {
+      logger.info('cache/headingCache|fetchCount|increment', { patientId, heading });
+
+      const qewdSession = adapter.qewdSession;
+      const key = ['headings', 'byPatientId', patientId, heading, 'fetch_count'];
+
+      return qewdSession.data.$(key).increment();
+    }
+  };
+};

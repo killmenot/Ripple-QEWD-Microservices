@@ -24,8 +24,32 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  29 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+const { createLogger, format, transports } = require('winston');
+const jsonStringify = require('fast-safe-stringify');
+const config = require('../config');
+
+const { combine, timestamp, colorize, printf, metadata } = format;
+const printLog = (info) => info.metadata && Object.keys(info.metadata).length > 0
+  ? `${info.timestamp} ${info.level}: ${info.message} - ${jsonStringify(info.metadata)}`
+  : `${info.timestamp} ${info.level}: ${info.message}`;
+const logger = createLogger({
+  transports: [
+    new transports.Console({
+      level: config.logging.defaultLevel,
+      format: combine(
+        colorize(),
+        metadata(),
+        timestamp(),
+        printf(printLog)
+      )
+    })
+  ]
+});
+
+module.exports = logger;

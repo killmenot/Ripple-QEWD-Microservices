@@ -24,8 +24,77 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  31 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+const traverse = require('traverse');
+const { isNumeric } = require('./validation');
+
+function buildSourceId(host, compositionId) {
+  return `${host}-${compositionId.split('::')[0]}`;
+}
+
+function flatten(obj) {
+  const flatObj = {};
+
+  traverse(obj).map(function (node) {
+    if (this.isLeaf) {
+      let flatPath = '';
+      let slash = '';
+      let colon = '';
+
+      const lastPathIndex = this.path.length - 1;
+      const pathArr = this.path;
+
+      pathArr.forEach(function (path, index) {
+        if (isNumeric(path)) {
+          flatPath = flatPath + colon + path;
+        } else {
+          if (index === lastPathIndex && path[0] === '|' && isNumeric(pathArr[index -1])) {
+            slash = '';
+          }
+          flatPath = flatPath + slash + path;
+        }
+
+        slash = '/';
+        colon = ':';
+      });
+
+      flatObj[flatPath] = node;
+    }
+  });
+
+  return flatObj;
+}
+
+function equals(l, r) {
+  return l.toString() === r.toString();
+}
+
+function lazyLoadAdapter(target) {
+  if (!target.initialise) {
+    throw new Error('target must has initialise method defined.');
+  }
+
+  return new Proxy(target, {
+    get: (obj, prop) => {
+      if (typeof prop === 'symbol' || prop === 'inspect' || Reflect.has(obj, prop)) {
+        return Reflect.get(obj, prop);
+      }
+
+      Reflect.set(obj, prop, obj.initialise(prop));
+
+      return obj[prop];
+    }
+  });
+}
+
+module.exports = {
+  buildSourceId,
+  flatten,
+  equals,
+  lazyLoadAdapter
+};

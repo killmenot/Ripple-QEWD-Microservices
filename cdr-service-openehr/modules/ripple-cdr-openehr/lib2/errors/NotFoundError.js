@@ -24,8 +24,24 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  16 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+function NotFoundError(message, userMessage, reason, meta, statusCode, code) {
+  this.message = message || 'Not found';
+  this.stack = new Error().stack;
+  this.errorType = this.name;
+  this.statusCode = statusCode || 404;
+  this.code = code || 'NotFound';
+  this.userMessage = userMessage || message;
+  this.meta = meta;
+  this.reason = reason;
+}
+
+NotFoundError.prototype = Object.create(Error.prototype);
+NotFoundError.prototype.name = 'NotFoundError';
+
+module.exports = NotFoundError;

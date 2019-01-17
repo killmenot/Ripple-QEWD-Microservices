@@ -1,15 +1,15 @@
 /*
 
  ----------------------------------------------------------------------------
- | ripple-cdr-openehr: Ripple MicroServices for OpenEHR                     |
+ | qewd-ripple: QEWD-based Middle Tier for Ripple OSI                       |
  |                                                                          |
- | Copyright (c) 2018 Ripple Foundation Community Interest Company          |
+ | Copyright (c) 2016-17 Ripple Foundation Community Interest Company       |
  | All rights reserved.                                                     |
  |                                                                          |
  | http://rippleosi.org                                                     |
  | Email: code.custodian@rippleosi.org                                      |
  |                                                                          |
- | Author: Rob Tweed, M/Gateway Developments Ltd                            |
+ | Author: Dinesh Patel - Leidos                                            |
  |                                                                          |
  | Licensed under the Apache License, Version 2.0 (the "License");          |
  | you may not use this file except in compliance with the License.         |
@@ -24,8 +24,52 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+ 6 April 2017
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+var heading = {
+  name: 'clinicalnotes',
+  textFieldName: 'author',
+  headingTableFields: ['author', 'dateCreated',  'clinicalNotesType'],
+
+  get: {
+
+    transformTemplate: {
+      note:              '{{note}}',
+      clinicalNotesType: '{{type}}',
+      author:            '{{author}}',
+      dateCreated:       '=> getRippleTime(date_created)',
+      source:            '=> getSource()',
+      sourceId:          '=> getUid(uid)'
+    }
+
+  },
+
+  post: {
+    templateId: 'RIPPLE - Clinical Notes.v1',
+
+    transformTemplate: {
+      ctx: {
+        composer_name:               '=> either(author, "Dr Tony Shannon")',
+        'health_care_facility|id':   '=> either(healthcareFacilityId, "999999-345")',
+        'health_care_facility|name': '=> either(healthcareFacilityName, "Ripple View Care Home")',
+        id_namespace:                'NHS-UK',
+        id_scheme:                   '2.16.840.1.113883.2.1.4.3',
+        language:                    'en',
+        territory:                   'GB',
+        time:                        '=> now()'
+      },
+      clinical_notes: {
+        clinical_synopsis: [
+          {
+            '_name|value': '{{clinicalNotesType}}',
+            notes:         '{{note}}'
+          }
+        ]
+      }
+    }
+  }
+};
+
+module.exports = heading;

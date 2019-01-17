@@ -24,8 +24,28 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  22 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+const { GetTop3ThingsSummaryCommand } = require('../../commands/top3Things');
+const { getResponseError } = require('../../errors');
+
+/**
+ * @param  {Object} args
+ * @param  {Function} finished
+ */
+module.exports = async function getTop3ThingsSummary(args, finished) {
+  try {
+    const command = new GetTop3ThingsSummaryCommand(args.req.ctx, args.session);
+    const responseObj = await command.execute(args.patientId);
+
+    finished(responseObj);
+  } catch (err) {
+    const responseError = getResponseError(err);
+
+    finished(responseError);
+  }
+};
+
+

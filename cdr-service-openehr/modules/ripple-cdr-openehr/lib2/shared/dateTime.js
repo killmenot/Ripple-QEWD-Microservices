@@ -24,8 +24,77 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  20 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+const moment = require('moment-timezone');
+const config = require('../config');
+
+function format(date) {
+  if (typeof date !== 'object') date = new Date(date);
+
+  return moment(date).tz(config.timezone).format();
+}
+
+function now() {
+  return format(new Date());
+}
+
+function isDST(date) {
+  if (typeof date !== 'object') date = new Date(date);
+
+  return moment(date).tz(config.timezone).isDST();
+}
+
+function toSqlPASFormat(date) {
+  if (typeof date !== 'object') date = new Date(date);
+
+  return moment(date).tz(config.timezone).format('YYYY-MM-DD');
+}
+
+function toGMT(date) {
+  // if a date is in summer time, return as GMT, ie with an hour deducted
+  let result = date;
+  if (moment(date).tz(config.timezone).isDST()) result = new Date(date.getTime() - 3600000);
+
+  return result;
+}
+
+function getRippleTime(date, host) {
+  if (date === '') return date;
+
+  let dt = new Date(date);
+  if (host === 'ethercis') dt = toGMT(dt);
+
+  return dt.getTime();
+}
+
+function msSinceMidnight(date, host, GMTCheck) {
+  let e = new Date(date);
+
+  if (GMTCheck) e = toGMT(e);
+
+  return e.getTime() - e.setHours(0,0,0,0);
+}
+
+function msAtMidnight(date, host, GMTCheck) {
+  let e = new Date(date);
+
+  if (GMTCheck) e = toGMT(e);
+
+  return e.setHours(0,0,0,0);
+}
+
+module.exports = {
+  format: format,
+  now: now,
+  isDST: isDST,
+  toGMT: toGMT,
+  msSinceMidnight: msSinceMidnight,
+  msAtMidnight: msAtMidnight,
+  getRippleTime: getRippleTime,
+  toSqlPASFormat: toSqlPASFormat
+};

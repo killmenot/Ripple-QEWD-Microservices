@@ -24,8 +24,44 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  19 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+const { BadRequestError } = require('../../errors');
+const { isFeedPayloadValid } = require('../../shared/validation');
+const debug = require('debug')('ripple-cdr-openehr:commands:feeds:post');
+
+class PostFeedCommand {
+  constructor(ctx, session) {
+    this.ctx = ctx;
+    this.session = session;
+  }
+
+  /**
+   * @param  {Object} payload
+   * @return {Promise.<Object>}
+   */
+  async execute(payload) {
+    debug('payload: %j', payload);
+
+    const valid = isFeedPayloadValid(payload);
+    if (!valid.ok) {
+      throw new BadRequestError(valid.error);
+    }
+
+    const feed = {
+      ...payload,
+      email: this.session.email
+    };
+    debug('create a new feed: %j', feed);
+    const { phrFeedService } = this.ctx.services;
+    const responseObj = await phrFeedService.create(feed);
+
+    return responseObj;
+  }
+}
+
+module.exports = PostFeedCommand;

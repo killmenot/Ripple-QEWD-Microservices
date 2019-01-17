@@ -24,8 +24,63 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  20 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+const { BadRequestError } = require('../../errors');
+const { isHeadingValid, isEmpty, isPatientIdValid } = require('../../shared/validation');
+const { Role } = require('../../shared/enums');
+const debug = require('debug')('ripple-cdr-openehr:commands:patients:put-heading');
+
+class PutPatientHeadingCommand {
+  constructor(ctx, session) {
+    this.ctx = ctx;
+    this.session = session;
+  }
+
+  /**
+   * @param  {string} patientId
+   * @param  {string} heading
+   * @param  {string} sourceId
+   * @param  {Object} payload
+   * @return {Object}
+   */
+  async execute(patientId, heading, sourceId, payload) {
+    debug('patientId: %s, heading: %s, sourceId: %s, payload: %j', patientId, heading, sourceId, payload);
+    debug('role: %s', this.session.role);
+
+    // override patientId for PHR Users - only allowed to see their own data
+    if (this.session.role === Role.PHR_USER) {
+      patientId = this.session.nhsNumber;
+    }
+
+    const patientValid = isPatientIdValid(patientId);
+    if (!patientValid.ok) {
+      throw new BadRequestError(patientValid.error);
+    }
+
+    const headingValid = isHeadingValid(this.ctx.headingsConfig, heading);
+    if (!headingValid.ok) {
+      throw new BadRequestError(headingValid.error);
+    }
+
+    if (isEmpty(payload)) {
+      throw new BadRequestError(`No body content was sent for heading ${heading}`);
+    }
+
+    const host = this.ctx.defaultHost;
+    const { headingService, cacheService } = this.ctx.services;
+
+    const responseObj = await headingService.put(host, patientId, heading, sourceId, payload);
+    debug('response: %j', responseObj);
+
+    await cacheService.delete(host, patientId, heading);
+
+    return responseObj;
+  }
+}
+
+module.exports = PutPatientHeadingCommand;

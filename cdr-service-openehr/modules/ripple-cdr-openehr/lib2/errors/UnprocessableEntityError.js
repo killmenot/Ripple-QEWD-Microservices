@@ -24,8 +24,24 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  18 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+function UnprocessableEntityError(message, userMessage, reason, meta, statusCode, code) {
+  this.message = message || 'Unprocessable entity';
+  this.stack = new Error().stack;
+  this.errorType = this.name;
+  this.statusCode = statusCode || 422;
+  this.code = code || 'UnprocessableEntity';
+  this.userMessage = userMessage || this.message;
+  this.meta = meta;
+  this.reason = reason;
+}
+
+UnprocessableEntityError.prototype = Object.create(Error.prototype);
+UnprocessableEntityError.prototype.name = 'UnprocessableEntityError';
+
+module.exports = UnprocessableEntityError;

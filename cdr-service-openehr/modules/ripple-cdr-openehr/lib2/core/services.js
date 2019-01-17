@@ -24,8 +24,35 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  14 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+const { lazyLoadAdapter } = require('../shared/utils');
+const logger = require('./logger');
+
+class ServiceRegistry {
+  constructor(ctx) {
+    this.ctx = ctx;
+  }
+
+  initialise(id) {
+    logger.info('core/services|initialise', { id });
+
+    const Service = require(`../services/${id}`);
+
+    if (!Service.create) {
+      throw new Error(`${id} service does not support lazy load initialisation.`);
+    }
+
+    return Service.create(this.ctx);
+  }
+
+  static create(ctx) {
+    return lazyLoadAdapter(new ServiceRegistry(ctx));
+  }
+}
+
+module.exports = ServiceRegistry;

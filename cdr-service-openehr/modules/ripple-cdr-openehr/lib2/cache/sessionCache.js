@@ -24,8 +24,63 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  30 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+const { logger } = require('../core');
+
+class SessionCache {
+  constructor(adapter) {
+    this.adapter = adapter;
+  }
+
+  static create(adapter) {
+    return new SessionCache(adapter);
+  }
+
+  /**
+   * Gets a session for a host
+   *
+   * @param  {string} host
+   * @return {Promise}
+   */
+  async get(host) {
+    logger.info('cache/sessionCache|get', { host  });
+
+    const key = ['openEHR', 'sessions', host];
+
+    return this.adapter.getObject(key);
+  }
+
+  /**
+   * Sets a session for a host
+   *
+   * @param  {string} host
+   * @param  {Object} session
+   * @return {Promise}
+   */
+  async set(host, session) {
+    logger.info('cache/sessionCache|set', { host, session });
+
+    const key = ['openEHR', 'sessions', host];
+    this.adapter.putObject(key, session);
+  }
+
+  /**
+   * Deletes a session for a host
+   *
+   * @param  {string} host
+   * @return {Promise}
+   */
+  async delete(host) {
+    logger.info('cache/sessionCache|delete', { host });
+
+    const key = ['openEHR', 'sessions', host];
+    this.adapter.delete(key);
+  }
+}
+
+module.exports = SessionCache;

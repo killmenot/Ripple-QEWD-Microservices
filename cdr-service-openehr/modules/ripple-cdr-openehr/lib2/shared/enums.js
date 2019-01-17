@@ -24,8 +24,52 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  20 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+const ExtraHeading = Object.freeze({
+  FINISHED: 'finished'
+});
+
+const Heading = Object.freeze({
+  COUNTS: 'counts',
+  FEEDS: 'feeds',
+  TOP_3_THINGS: 'top3Things'
+});
+
+const PostHeadingFormat = Object.freeze({
+  JUMPER: 'openehr-jumper',
+  PULSETILE: 'pulsetile'
+});
+
+const RecordStatus = Object.freeze({
+  LOADING: 'loading_data',
+  READY: 'ready'
+});
+
+const ResponseFormat = Object.freeze({
+  DETAIL: 'detail',
+  SUMMARY: 'summary',
+  SYNOPSIS: 'synopsis'
+});
+
+const Role = Object.freeze({
+  PHR_USER: 'phrUser'
+});
+
+const UserMode = Object.freeze({
+  ADMIN: 'admin'
+});
+
+module.exports = {
+  ExtraHeading,
+  Heading,
+  PostHeadingFormat,
+  RecordStatus,
+  ResponseFormat,
+  Role,
+  UserMode
+};

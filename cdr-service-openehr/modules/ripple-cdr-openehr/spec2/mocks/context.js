@@ -24,8 +24,39 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  29 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+const { ExecutionContext, QewdCacheAdapter } = require('../../lib2/core');
+const WorkerMock = require('./worker');
+const CacheRegistryMock = require('./cache');
+const DbRegistryMock = require('./db');
+const ServiceRegistryMock = require('./services');
+const OpenEhrRegistryMock = require('./openehr');
+
+class ExecutionContextMock extends ExecutionContext {
+  constructor(q) {
+    q = q || new WorkerMock();
+    const qewdSession = q.sessions.create('mock');
+
+    super(q, { qewdSession });
+
+    this.adapter = new QewdCacheAdapter(qewdSession);
+    this.cache = CacheRegistryMock.create();
+    this.db = DbRegistryMock.create();
+    this.services = ServiceRegistryMock.create();
+    this.openehr = OpenEhrRegistryMock.create();
+  }
+
+  freeze() {
+    this.cache.freeze();
+    this.db.freeze();
+    this.services.freeze();
+    this.openehr.freeze();
+  }
+}
+
+module.exports = ExecutionContextMock;

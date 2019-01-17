@@ -24,8 +24,28 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  12 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+const CheckNhsNumberCommand = require('../commands/checkNhsNumber');
+const { getResponseError } = require('../errors');
+
+/**
+ * @param  {Object} args
+ * @param  {Function} finished
+ */
+module.exports = async function checkNhsNumber(args, finished) {
+  try {
+    const command = new CheckNhsNumberCommand(args.req.ctx, args.session);
+    const responseObj = await command.execute();
+
+    finished(responseObj);
+  } catch (err) {
+    const responseError = getResponseError(err);
+
+    finished(responseError);
+  }
+};
+
+

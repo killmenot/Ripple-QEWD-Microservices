@@ -24,8 +24,63 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  18 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+const { RecordStatus, ExtraHeading } = require('../../shared/enums');
+const debug = require('debug')('ripple-cdr-openehr:commands:discovery:merge');
+
+class MergeDiscoveryDataCommand {
+  constructor(ctx, session) {
+    this.ctx = ctx;
+    this.session = session;
+  }
+
+  /**
+   * @param  {string} heading
+   * @param  {Object[]} data
+   * @return {Promise.<Object>}
+   */
+  async execute(heading, data) {
+    debug('heading: %s, data: %j', heading, data);
+
+    const patientId = this.session.nhsNumber;
+    debug('patientId: %s', patientId);
+
+    const { statusService } = this.ctx.services;
+
+    if (heading === ExtraHeading.FINISHED) {
+      const state = await statusService.get();
+      debug('record state: %j', state);
+
+      state.status = RecordStatus.READY;
+      await statusService.update(state);
+
+      return {
+        refresh: true
+      };
+    }
+
+    if (data.length === 0) {
+      return {
+        refresh: false
+      };
+    }
+
+    const host = this.ctx.defaultHost;
+    const { discoveryService, cacheService } = this.ctx.services;
+    const result = await discoveryService.mergeAll(host, patientId, heading, data);
+    if (result) {
+      cacheService.delete(host, patientId, heading);
+    }
+
+    return {
+      refresh: result
+    };
+  }
+}
+
+module.exports = MergeDiscoveryDataCommand;

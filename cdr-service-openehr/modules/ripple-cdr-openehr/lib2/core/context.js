@@ -24,8 +24,60 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  20 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+const CacheRegistry = require('./cache');
+const DbRegistry = require('./db');
+const ServiceRegistry = require('./services');
+const OpenEhrRegistry = require('./openehr');
+
+class ExecutionContext {
+  constructor(q, { req, qewdSession }) {
+    this.worker = q;
+    this.userDefined = q.userDefined;
+    this.qewdSession = qewdSession || q.qewdSessionByJWT.call(q, req);
+
+    this.cache = CacheRegistry.create(this);
+    this.db = DbRegistry.create(this);
+    this.services = ServiceRegistry.create(this);
+    this.openehr = OpenEhrRegistry.create(this);
+  }
+
+  static fromRequest(q, req) {
+    return new ExecutionContext(q, { req });
+  }
+
+  static fromQewdSession(q, qewdSession) {
+    return new ExecutionContext(q, { qewdSession });
+  }
+
+  get defaultHost() {
+    return this.userDefined.defaultPostHost || 'ethercis';
+  }
+
+  get headingsConfig() {
+    return this.userDefined.headings;
+  }
+
+  get synopsisConfig() {
+    return this.userDefined.synopsis;
+  }
+
+  get serversConfig() {
+    return this.userDefined.openehr;
+  }
+
+  get activeSessions() {
+    return this.worker.sessions.active();
+  }
+
+  getHeadingConfig(heading) {
+    return this.userDefined.headings[heading];
+  }
+}
+
+module.exports = ExecutionContext;

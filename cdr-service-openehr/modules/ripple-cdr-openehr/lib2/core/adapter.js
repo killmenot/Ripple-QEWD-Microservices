@@ -1,3 +1,4 @@
+
 /*
 
  ----------------------------------------------------------------------------
@@ -24,8 +25,66 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  30 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+const logger = require('./logger');
+
+class QewdCacheAdapter {
+  constructor(qewdSession) {
+    this.qewdSession = qewdSession;
+  }
+
+  exists(key) {
+    logger.debug('core/adapter|exists', { key });
+
+    return this.qewdSession.data.$(key).exists;
+  }
+
+  get(key) {
+    logger.debug('core/adapter|get', { key });
+
+    return this.qewdSession.data.$(key).exists
+      ? this.qewdSession.data.$(key).value
+      : null;
+  }
+
+  getObject(key) {
+    logger.debug('core/adapter|getObject', { key });
+
+    return this.qewdSession.data.$(key).exists
+      ? this.qewdSession.data.$(key).getDocument()
+      : null;
+  }
+
+  getObjectWithArrays(key) {
+    logger.debug('core/adapter|getObjectWithArrays', { key });
+
+    return this.qewdSession.data.$(key).exists
+      ? this.qewdSession.data.$(key).getDocument(true)
+      : null;
+  }
+
+  put(key, value) {
+    logger.debug('core/adapter|put', { key, value });
+
+    this.qewdSession.data.$(key).value = value;
+  }
+
+  putObject(key, value) {
+    logger.debug('core/adapter|putObject', { key, value });
+
+    this.qewdSession.data.$(key).setDocument(value);
+  }
+
+  delete(key) {
+    logger.debug('core/adapter|delete', { key });
+
+    this.qewdSession.data.$(key).delete();
+  }
+}
+
+module.exports = QewdCacheAdapter;

@@ -24,8 +24,31 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  14 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+const debug = require('debug')('ripple-cdr-openehr:commands:feeds:get-summary');
+
+class GetFeedsSummaryCommand {
+  constructor(ctx, session) {
+    this.ctx = ctx;
+    this.session = session;
+  }
+
+  /**
+   * @return {Promise.<Object[]>}
+   */
+  async execute() {
+    debug('execute get feeds summary');
+
+    const { phrFeedService } = this.ctx.services;
+    const responseObj = await phrFeedService.getByEmail(this.session.email);
+
+    return responseObj;
+  }
+}
+
+module.exports = GetFeedsSummaryCommand;

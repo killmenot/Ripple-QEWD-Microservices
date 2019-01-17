@@ -24,8 +24,45 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  31 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+const P = require('bluebird');
+const { ExecutionContext, logger } = require('../core');
+
+class CacheService {
+  constructor(ctx) {
+    this.ctx = ctx;
+  }
+
+  static create(ctx) {
+    return new CacheService(ctx);
+  }
+
+  /**
+   * Deletes heading cache by host in all active sessions
+   *
+   * @param  {string} host
+   * @param  {string|int} patientId
+   * @param  {string} heading
+   * @return {Promise}
+   */
+  async delete(host, patientId, heading) {
+    logger.info('cache/cacheService|delete', { host, patientId, heading });
+
+    const sessions = this.ctx.activeSessions;
+
+    await P.each(sessions, async (session) => {
+      const ctx = ExecutionContext.fromQewdSession(this.ctx.worker, session);
+      const { headingCache } = ctx.cache;
+
+      await headingCache.deleteAll(host, patientId, heading);
+      await headingCache.byHeading.deleteAll(heading);
+    });
+  }
+}
+
+module.exports = CacheService;

@@ -24,8 +24,38 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  18 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+const BadRequestError = require('./BadRequestError');
+const EhrIdNotFoundError = require('./EhrIdNotFoundError');
+const EhrSessionError = require('./EhrSessionError');
+const ForbiddenError = require('./ForbiddenError');
+const NotFoundError = require('./NotFoundError');
+const UnprocessableEntityError = require('./UnprocessableEntityError');
+
+function qewdifyError(err) {
+  return {
+    error: err.userMessage || err.message
+  };
+}
+
+function getResponseError(err = new Error('Unknown error')) {
+  const resultError = err.error ? err : qewdifyError(err);
+
+  return resultError;
+}
+
+module.exports = {
+  BadRequestError,
+  EhrIdNotFoundError,
+  EhrSessionError,
+  ForbiddenError,
+  NotFoundError,
+  UnprocessableEntityError,
+  getResponseError,
+  qewdifyError
+};

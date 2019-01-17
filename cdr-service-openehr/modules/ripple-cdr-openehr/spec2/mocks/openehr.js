@@ -24,8 +24,37 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  29 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+const EhrRestService = require('../../lib2/services/ehrRestService');
+const { lazyLoadAdapter } = require('../../lib2/shared/utils');
+
+class OpenEhrRegistryMock {
+  constructor() {
+    this.freezed = false;
+  }
+
+  initialise(host) {
+    if (this.freezed) return;
+
+    const methods = Reflect
+      .ownKeys(EhrRestService.prototype)
+      .filter(x => x !== 'constructor');
+
+    return jasmine.createSpyObj(host, methods);
+  }
+
+  freeze() {
+    this.freezed = true;
+  }
+
+  static create() {
+    return lazyLoadAdapter(new OpenEhrRegistryMock());
+  }
+}
+
+module.exports = OpenEhrRegistryMock;

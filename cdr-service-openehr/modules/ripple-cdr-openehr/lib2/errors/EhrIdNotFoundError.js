@@ -24,8 +24,24 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  15 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+function EhrIdNotFoundError(message, userMessage, reason, meta, statusCode, code) {
+  this.message = message || 'Ehr id not found';
+  this.stack = new Error().stack;
+  this.errorType = this.name;
+  this.statusCode = statusCode || 400;
+  this.code = code || 'NotFound';
+  this.userMessage = userMessage || message;
+  this.meta = meta;
+  this.reason = reason;
+}
+
+EhrIdNotFoundError.prototype = Object.create(Error.prototype);
+EhrIdNotFoundError.prototype.name = 'EhrIdNotFoundError';
+
+module.exports = EhrIdNotFoundError;

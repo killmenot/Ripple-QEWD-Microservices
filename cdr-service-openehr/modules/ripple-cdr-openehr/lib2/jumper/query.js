@@ -24,8 +24,23 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  20 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+const { logger } = require('../core');
+
+let getHeadingFromOpenEHRServer;
+
+try {
+  getHeadingFromOpenEHRServer = require('../../../ripple-openehr-jumper/lib/getHeadingFromOpenEHRServer');
+}
+catch(err) {
+  logger.error('jumper/query|err: ' + err.message);
+  logger.error('jumper/query|stack: ' + err.stack);
+  getHeadingFromOpenEHRServer = false;
+}
+
+module.exports = getHeadingFromOpenEHRServer;

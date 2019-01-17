@@ -1,15 +1,15 @@
 /*
 
  ----------------------------------------------------------------------------
- | ripple-cdr-openehr: Ripple MicroServices for OpenEHR                     |
+ | qewd-ripple: QEWD-based Middle Tier for Ripple OSI                       |
  |                                                                          |
- | Copyright (c) 2018 Ripple Foundation Community Interest Company          |
+ | Copyright (c) 2016-17 Ripple Foundation Community Interest Company       |
  | All rights reserved.                                                     |
  |                                                                          |
  | http://rippleosi.org                                                     |
  | Email: code.custodian@rippleosi.org                                      |
  |                                                                          |
- | Author: Rob Tweed, M/Gateway Developments Ltd                            |
+ | Author: Dinesh Patel - Leidos                                            |
  |                                                                          |
  | Licensed under the Apache License, Version 2.0 (the "License");          |
  | you may not use this file except in compliance with the License.         |
@@ -24,8 +24,28 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+10 April 2017
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+module.exports = {
+  name: 'mdtreports',
+  textFieldName: 'serviceTeam',
+  headingTableFields: ['serviceTeam', 'dateOfRequest', 'dateOfMeeting'],
+
+  get: {
+
+    transformTemplate: {
+      serviceTeam:     '{{service_team}}',
+      dateOfRequest:   '=> getRippleTime(request_date)',
+      dateOfMeeting:   '=> getRippleTime(meeting_date)',
+      timeOfMeeting:   '=> msAfterMidnight(meeting_date)',
+      servicePageLink: '',
+      question:        '{{question}}',
+      notes:           '{{notes}}',
+      source:          '=> getSource()',
+      sourceId:        '=> getUid(uid)'
+    }
+
+  }
+};

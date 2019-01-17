@@ -24,8 +24,36 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  16 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+const EhrRestService = require('../services/ehrRestService');
+const { lazyLoadAdapter } = require('../shared/utils');
+const logger = require('./logger');
+
+class OpenEhrRegistry {
+  constructor(ctx) {
+    this.ctx = ctx;
+  }
+
+  initialise(host) {
+    logger.info('core/openehr|initialise', { host });
+
+    const hostConfig = this.ctx.userDefined.openehr[host];
+
+    if (!hostConfig) {
+      throw new Error(`Config for ${host} host is not defined.`);
+    }
+
+    return new EhrRestService(this.ctx, host, hostConfig);
+  }
+
+  static create(ctx) {
+    return lazyLoadAdapter(new OpenEhrRegistry(ctx));
+  }
+}
+
+module.exports = OpenEhrRegistry;

@@ -24,8 +24,28 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  22 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+const { RevertAllDiscoveryDataCommand } = require('../../commands/discovery');
+const { getResponseError } = require('../../errors');
+
+/**
+ * @param  {Object} args
+ * @param  {Function} finished
+ */
+module.exports = async function revertAllDiscoveryData(args, finished) {
+  try {
+    const command = new RevertAllDiscoveryDataCommand(args.req.ctx);
+    const responseObj = await command.execute();
+
+    finished(responseObj);
+  } catch (err) {
+    const responseError = getResponseError(err);
+
+    finished(responseError);
+  }
+};
+
+

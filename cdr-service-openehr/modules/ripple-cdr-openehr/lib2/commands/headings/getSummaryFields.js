@@ -24,8 +24,62 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  20 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+const { BadRequestError, ForbiddenError } = require('../../errors');
+const { Heading, UserMode } = require('../../shared/enums');
+const { getHeadingDefinition } = require('../../shared/headings');
+const { isHeadingValid } = require('../../shared/validation');
+const debug = require('debug')('ripple-cdr-openehr:commands:headings:get-summary-fields');
+
+class GetHeadingSummaryFieldsCommand {
+  constructor(ctx, session) {
+    this.ctx = ctx;
+    this.session = session;
+  }
+
+  get blacklistHeadings() {
+    return [
+      Heading.FEEDS,
+      Heading.TOP_3_THINGS
+    ];
+  }
+
+  /**
+   * @param  {string} heading
+   * @return {Promise.<string[]>}
+   */
+  async execute(heading) {
+    debug('heading: %s', heading);
+    debug('user mode: %s', this.session.userMode);
+
+    if (this.session.userMode !== UserMode.ADMIN) {
+      throw new ForbiddenError('Invalid request');
+    }
+
+    if (heading && this.blacklistHeadings.includes(heading)) {
+      throw new BadRequestError(`${heading} records are not maintained on OpenEHR`);
+    }
+
+    const headingValid = isHeadingValid(this.ctx.headingsConfig, heading);
+    if (!headingValid.ok) {
+      throw new BadRequestError(headingValid.error);
+    }
+
+    let headingConfig = this.ctx.getHeadingConfig(heading);
+    if (headingConfig === true) {
+      const headingDefinition = getHeadingDefinition(heading);
+      headingConfig = {
+        summaryTableFields: headingDefinition.headingTableFields
+      };
+    }
+
+    return headingConfig.summaryTableFields;
+  }
+}
+
+module.exports = GetHeadingSummaryFieldsCommand;

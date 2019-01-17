@@ -24,8 +24,29 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  14 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+exports.uuidV4Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+exports.clone = function (obj) {
+  return JSON.parse(JSON.stringify(obj));
+};
+
+exports.__revert__ = function (obj) {
+  obj.__revert__();
+  delete obj.__revert__;
+};
+
+exports.rfc3986 = function (str) {
+  return str.replace(/[!'()*]/g, function (c) {
+    return '%' + c.charCodeAt(0).toString(16).toUpperCase();
+  });
+};
+
+exports.isUuidV4 = function (s) {
+  return exports.uuidV4Regex.test(s);
+};

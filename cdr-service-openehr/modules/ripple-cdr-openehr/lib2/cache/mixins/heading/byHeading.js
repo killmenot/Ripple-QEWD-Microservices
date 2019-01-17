@@ -24,8 +24,42 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  31 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+const { logger } = require('../../../core');
+
+module.exports = (adapter) => {
+  return {
+
+    /**
+     * Deletes by heading and source id
+     *
+     * @param  {string} heading
+     * @param  {string} sourceId
+     * @return {Promise}
+     */
+    delete: async (heading, sourceId) => {
+      logger.info('cache/headingCache|byHeading|delete', { heading, sourceId });
+
+      const key = ['headings', 'byHeading', heading, sourceId];
+      adapter.delete(key);
+    },
+
+    /**
+     * Deletes all by heading
+     *
+     * @param  {string} heading
+     * @return {Promise}
+     */
+    deleteAll: async (heading) => {
+      logger.info('cache/headingCache|byHeading|deleteAll', { heading });
+
+      const key = ['headings', 'byHeading', heading];
+      adapter.delete(key);
+    }
+  };
+};

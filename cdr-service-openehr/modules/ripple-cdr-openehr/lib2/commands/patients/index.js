@@ -24,8 +24,26 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  22 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+const DeletePatientHeadingCommand = require('./deleteHeading');
+const GetPatientHeadingDetailCommand = require('./getHeadingDetail');
+const GetPatientHeadingSummaryCommand = require('./getHeadingSummary');
+const GetPatientHeadingSynopsisCommand = require('./getHeadingSynopsis');
+const GetPatientSynopsisCommand = require('./getSynopsis');
+const PostPatientHeadingCommand = require('./postHeading');
+const PutPatientHeadingCommand = require('./putHeading');
+
+module.exports = {
+  DeletePatientHeadingCommand,
+  GetPatientHeadingDetailCommand,
+  GetPatientHeadingSummaryCommand,
+  GetPatientHeadingSynopsisCommand,
+  GetPatientSynopsisCommand,
+  PostPatientHeadingCommand,
+  PutPatientHeadingCommand
+};

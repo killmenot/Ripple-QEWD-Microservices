@@ -24,8 +24,24 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  31 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+const userDefined = require('../support/userDefined.json');
+const { clone } = require('../helpers/utils');
+
+module.exports = function (config) {
+  this.handleMessage = jasmine.createSpy();
+  this.microServiceRouter = jasmine.createSpy();
+  this.jwt = {
+    handlers: {
+      getProperty: jasmine.createSpy()
+    }
+  };
+
+  userDefined.config = config || {};
+  this.userDefined = clone(userDefined);
+};

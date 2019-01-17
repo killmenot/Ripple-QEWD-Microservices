@@ -24,8 +24,36 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  14 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+const { BadRequestError } = require('../../errors');
+const debug = require('debug')('ripple-cdr-openehr:commands:feeds:get-detail');
+
+class GetFeedDetailCommand {
+  constructor(ctx) {
+    this.ctx = ctx;
+  }
+
+  /**
+   * @param  {string} sourceId
+   * @return {Promise.<Object>}
+   */
+  async execute(sourceId) {
+    debug('sourceId: %s', sourceId);
+
+    if (!sourceId || sourceId === '') {
+      throw new BadRequestError('Missing or empty sourceId');
+    }
+
+    const { phrFeedService } = this.ctx.services;
+    const responseObj = await phrFeedService.getBySourceId(sourceId);
+
+    return responseObj;
+  }
+}
+
+module.exports = GetFeedDetailCommand;

@@ -24,8 +24,52 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  19 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+const { BadRequestError } = require('../../errors');
+const { isPatientIdValid, isTop3ThingsPayloadValid } = require('../../shared/validation');
+const debug = require('debug')('ripple-cdr-openehr:commands:top3things:post');
+
+class PostTop3ThingsCommand {
+  constructor(ctx, session) {
+    this.ctx = ctx;
+    this.session = session;
+  }
+
+  /**
+   * @param  {string} patientId
+   * @param  {Object} payload
+   * @return {Promise.<Object[]>}
+   */
+  async execute(patientId, payload) {
+    debug('patientId: %s, payload: %j', patientId, payload);
+
+    // override patientId for PHR Users - only allowed to see their own data
+    if (this.session.role === 'phrUser') {
+      patientId = this.session.nhsNumber;
+    }
+
+    const patientValid = isPatientIdValid(patientId);
+    if (!patientValid.ok) {
+      throw new BadRequestError(patientValid.error);
+    }
+
+    const payloadValid = isTop3ThingsPayloadValid(payload);
+    if (!payloadValid.ok) {
+      throw new BadRequestError(payloadValid.error);
+    }
+
+    const { top3ThingsService } = this.ctx.services;
+    const sourceId = await top3ThingsService.create(patientId, payload);
+
+    return {
+      sourceId
+    };
+  }
+}
+
+module.exports = PostTop3ThingsCommand;

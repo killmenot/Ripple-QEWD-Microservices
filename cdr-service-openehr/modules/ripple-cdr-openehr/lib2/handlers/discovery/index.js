@@ -24,8 +24,18 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  22 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+const mergeDiscoveryData = require('./merge');
+const revertDiscoveryData = require('./revert');
+const revertAllDiscoveryData = require('./revertAll');
+
+module.exports = {
+  mergeDiscoveryData,
+  revertDiscoveryData,
+  revertAllDiscoveryData
+};

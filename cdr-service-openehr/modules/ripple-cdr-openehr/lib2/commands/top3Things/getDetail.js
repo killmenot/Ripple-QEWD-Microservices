@@ -24,8 +24,44 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  19 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+const { BadRequestError } = require('../../errors');
+const { isPatientIdValid } = require('../../shared/validation');
+const debug = require('debug')('ripple-cdr-openehr:commands:top3things:get-detail');
+
+class GetTop3ThingsDetailCommand {
+  constructor(ctx, session) {
+    this.ctx = ctx;
+    this.session = session;
+  }
+
+  /**
+   * @param  {string} patientId
+   * @return {Promise.<Object[]>}
+   */
+  async execute(patientId) {
+    debug('patientId: %s', patientId);
+
+    // override patientId for PHR Users - only allowed to see their own data
+    if (this.session.role === 'phrUser') {
+      patientId = this.session.nhsNumber;
+    }
+
+    const valid = isPatientIdValid(patientId);
+    if (!valid.ok) {
+      throw new BadRequestError(valid.error);
+    }
+
+    const { top3ThingsService } = this.ctx.services;
+    const responseObj = await top3ThingsService.getLatestDetailByPatientId(patientId);
+
+    return responseObj;
+  }
+}
+
+module.exports = GetTop3ThingsDetailCommand;

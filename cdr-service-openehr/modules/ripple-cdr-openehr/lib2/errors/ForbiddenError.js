@@ -24,8 +24,24 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  16 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+function ForbiddenError(message, userMessage, reason, meta, statusCode, code) {
+  this.message = message || 'Forbidden';
+  this.stack = new Error().stack;
+  this.errorType = this.name;
+  this.statusCode = statusCode || 403;
+  this.code = code || 'Forbidden';
+  this.userMessage = userMessage || message;
+  this.meta = meta;
+  this.reason = reason;
+}
+
+ForbiddenError.prototype = Object.create(Error.prototype);
+ForbiddenError.prototype.name = 'ForbiddenError';
+
+module.exports = ForbiddenError;

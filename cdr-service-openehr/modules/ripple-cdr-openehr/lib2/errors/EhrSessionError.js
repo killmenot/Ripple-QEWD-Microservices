@@ -24,8 +24,24 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  14 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+function EhrSessionError(message, userMessage, reason, meta, statusCode, code) {
+  this.message = message || 'Unable to establish a session';
+  this.stack = new Error().stack;
+  this.errorType = this.name;
+  this.statusCode = statusCode || 500;
+  this.code = code || 'ServerError';
+  this.userMessage = userMessage || this.message;
+  this.meta = meta;
+  this.reason = reason;
+}
+
+EhrSessionError.prototype = Object.create(Error.prototype);
+EhrSessionError.prototype.name = 'EhrSessionError';
+
+module.exports = EhrSessionError;

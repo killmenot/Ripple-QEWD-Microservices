@@ -24,8 +24,66 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  20 December 2018
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+'use strict';
+
+const { BadRequestError, ForbiddenError } = require('../../errors');
+const { Heading, UserMode } = require('../../shared/enums');
+const { isHeadingValid, isPatientIdValid } = require('../../shared/validation');
+const debug = require('debug')('ripple-cdr-openehr:commands:patients:delete-heading');
+
+class DeletePatientHeadingCommand {
+  constructor(ctx, session) {
+    this.ctx = ctx;
+    this.session = session;
+  }
+
+  get blacklistHeadings() {
+    return [
+      Heading.FEEDS,
+      Heading.TOP_3_THINGS
+    ];
+  }
+
+  /**
+   * @param  {string} patientId
+   * @param  {string} heading
+   * @param  {string} sourceId
+   * @return {Object}
+   */
+  async execute(patientId, heading, sourceId) {
+    debug('patientId: %s, heading: %s, sourceId: %s', patientId, heading, sourceId);
+    debug('user mode: %s', this.session.userMode);
+
+    if (this.session.userMode !== UserMode.ADMIN) {
+      throw new ForbiddenError('Invalid request');
+    }
+
+    const patientValid = isPatientIdValid(patientId);
+    if (!patientValid.ok) {
+      throw new BadRequestError(patientValid.error);
+    }
+
+    if (heading && this.blacklistHeadings.includes(heading)) {
+      throw new BadRequestError(`Cannot delete ${heading} records`);
+    }
+
+    const headingValid = isHeadingValid(this.ctx.headingsConfig, heading);
+    if (!headingValid.ok) {
+      throw new BadRequestError(headingValid.error);
+    }
+
+    const { headingService, discoveryService } = this.ctx.services;
+    await headingService.fetchOne(patientId, heading);
+
+    const responseObj = await headingService.delete(patientId, heading, sourceId);
+    await discoveryService.delete(sourceId);
+
+    return responseObj;
+  }
+}
+
+module.exports = DeletePatientHeadingCommand;

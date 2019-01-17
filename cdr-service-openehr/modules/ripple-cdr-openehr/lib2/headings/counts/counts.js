@@ -1,9 +1,9 @@
 /*
 
  ----------------------------------------------------------------------------
- | ripple-cdr-openehr: Ripple MicroServices for OpenEHR                     |
+ | qewd-ripple: QEWD-based Middle Tier for Ripple OSI                       |
  |                                                                          |
- | Copyright (c) 2018 Ripple Foundation Community Interest Company          |
+ | Copyright (c) 2016-17 Ripple Foundation Community Interest Company       |
  | All rights reserved.                                                     |
  |                                                                          |
  | http://rippleosi.org                                                     |
@@ -24,8 +24,29 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+28 June 2017
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+var heading = {
+  name: 'counts',
+  headingTableFields: ['diagnosesCount', 'diagnosesDate', 'ordersCount', 'ordersDate', 'resultsCount', 'resultsDate', 'vitalsCount', 'vitalsDate'],
+
+  get: {
+
+    transformTemplate: {
+      diagnosesCount: '=> integer(diagnosesCount)',
+      diagnosesDate:  '{{diagnosesDate}}',
+      ordersCount:    '=> integer(ordersCount)',
+      ordersDate:     '{{ordersDate}}',
+      resultsCount:   '=> integer(resultsCount)',
+      resultsDate:    '{{resultsDate}}',
+      vitalsCount:    '=> integer(vitalsCount)',
+      vitalsDate:     '{{vitalsDate}}',
+      source:         '=> getSource()',
+      sourceId:       '=> getCountsSource()',
+    }
+  }
+};
+
+module.exports = heading;
