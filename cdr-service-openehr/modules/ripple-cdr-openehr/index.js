@@ -3,7 +3,7 @@
  ----------------------------------------------------------------------------
  | ripple-cdr-openehr: Ripple MicroServices for OpenEHR                     |
  |                                                                          |
- | Copyright (c) 2018 Ripple Foundation Community Interest Company          |
+ | Copyright (c) 2018-19 Ripple Foundation Community Interest Company       |
  | All rights reserved.                                                     |
  |                                                                          |
  | http://rippleosi.org                                                     |
@@ -24,8 +24,8 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  1 November 2018
+  17 January 2019
 
 */
 
-module.exports = require('./lib/ripple-cdr-openehr');
+module.exports = require('./lib2');

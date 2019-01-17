@@ -5,6 +5,10 @@
   "author": "Rob Tweed <rtweed@mgateway.com>",
   "main": "index.js",
   "dependencies": {
-    "traverse": ""
+    "traverse": "",
+    "fs-extra": "",
+    "qewd-transform-json": "",
+    "jsonschema": "",
+    "moment-timezone": ""
   }
 }

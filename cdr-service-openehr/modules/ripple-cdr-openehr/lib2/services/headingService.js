@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  30 December 2018
+  17 January 2019
 
 */
 
@@ -80,7 +80,7 @@ class HeadingService {
 
     const { ehrSessionService, patientService } = this.ctx.services;
     const { sessionId } = await ehrSessionService.start(host);
-    const ehrId = await patientService.getEhrId(host, sessionId, patientId);
+    const ehrId = await patientService.getEhrId(host, patientId);
 
     const helpers = headingHelpers(host, heading, 'post');
     const output = transform(headingMap.transformTemplate, data.data, helpers);
@@ -143,7 +143,7 @@ class HeadingService {
 
     const { ehrSessionService, patientService } = this.ctx.services;
     const { sessionId } = await ehrSessionService.start(host);
-    await patientService.getEhrId(host, sessionId, patientId);
+    await patientService.getEhrId(host, patientId);
     // TODO: ask about ehrId passed to ehrRestService.putHeading
 
     const helpers = headingHelpers(host, heading, 'post');
@@ -188,7 +188,7 @@ class HeadingService {
 
     const { ehrSessionService, patientService } = this.ctx.services;
     const { sessionId } = await ehrSessionService.start(host);
-    const ehrId = await patientService.getEhrId(host, sessionId, patientId);
+    const ehrId = await patientService.getEhrId(host, patientId);
 
     const aql = getHeadingAql(heading);
     const subs = {

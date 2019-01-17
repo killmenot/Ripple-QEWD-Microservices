@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  31 December 2018
+  17 January 2019
 
 */
 
@@ -97,7 +97,7 @@ class JumperService {
 
     const { ehrSessionService, patientService } = this.ctx.services;
     const { sessionId } = await ehrSessionService.start(host);
-    const ehrId = await patientService.getEhrId(host, sessionId, patientId);
+    const ehrId = await patientService.getEhrId(host, patientId);
     const adapter = new OpenEhrAdapter(this.ctx);
 
     return new Promise((resolve, reject) => {

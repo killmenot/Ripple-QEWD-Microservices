@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  29 December 2018
+  17 January 2019
 
 */
 
@@ -37,7 +37,6 @@ describe('ripple-cdr-openehr/lib/services/discoveryService', () => {
   let ctx;
   let discoveryService;
 
-  let ehrSessionService;
   let patientService;
   let headingService;
 
@@ -47,7 +46,6 @@ describe('ripple-cdr-openehr/lib/services/discoveryService', () => {
     ctx = new ExecutionContextMock();
     discoveryService = new DiscoveryService(ctx);
 
-    ehrSessionService = ctx.services.ehrSessionService;
     patientService = ctx.services.patientService;
     headingService = ctx.services.headingService;
 
@@ -71,9 +69,6 @@ describe('ripple-cdr-openehr/lib/services/discoveryService', () => {
 
       spyOn(discoveryService, 'merge').and.resolveValues(false, false);
 
-      ehrSessionService.start.and.resolveValue({
-        sessionId: '182bdb28-d257-4a99-9a41-441c49aead0c'
-      });
       patientService.getEhrId.and.resolveValue('41bc6370-33a4-4ae1-8b3d-d2d9cfe606a4');
 
       const host = 'ethercis';
@@ -90,10 +85,7 @@ describe('ripple-cdr-openehr/lib/services/discoveryService', () => {
 
       const actual = await discoveryService.mergeAll(host, patientId, heading, data);
 
-      expect(ehrSessionService.start).toHaveBeenCalledWith('ethercis');
-      expect(patientService.getEhrId).toHaveBeenCalledWith(
-        'ethercis', '182bdb28-d257-4a99-9a41-441c49aead0c', 9999999000
-      );
+      expect(patientService.getEhrId).toHaveBeenCalledWith('ethercis', 9999999000);
 
       expect(discoveryService.merge).toHaveBeenCalledTimes(2);
       expect(discoveryService.merge.calls.argsFor(0)).toEqual([
@@ -119,9 +111,6 @@ describe('ripple-cdr-openehr/lib/services/discoveryService', () => {
 
       spyOn(discoveryService, 'merge').and.resolveValues(true, false);
 
-      ehrSessionService.start.and.resolveValue({
-        sessionId: '182bdb28-d257-4a99-9a41-441c49aead0c'
-      });
       patientService.getEhrId.and.resolveValue('41bc6370-33a4-4ae1-8b3d-d2d9cfe606a4');
 
       const host = 'ethercis';
@@ -138,10 +127,7 @@ describe('ripple-cdr-openehr/lib/services/discoveryService', () => {
 
       const actual = await discoveryService.mergeAll(host, patientId, heading, data);
 
-      expect(ehrSessionService.start).toHaveBeenCalledWith('ethercis');
-      expect(patientService.getEhrId).toHaveBeenCalledWith(
-        'ethercis', '182bdb28-d257-4a99-9a41-441c49aead0c', 9999999000
-      );
+      expect(patientService.getEhrId).toHaveBeenCalledWith('ethercis', 9999999000);
 
       expect(discoveryService.merge).toHaveBeenCalledTimes(2);
       expect(discoveryService.merge.calls.argsFor(0)).toEqual([

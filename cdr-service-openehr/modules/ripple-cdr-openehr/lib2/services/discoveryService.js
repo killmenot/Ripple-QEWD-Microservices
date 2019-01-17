@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  31 December 2018
+  17 January 2019
 
 */
 
@@ -59,9 +59,7 @@ class DiscoveryService {
     // this ensures it's available for each iteration of the loop instead of each
     // iteration creating a new one
 
-    const { patientService, ehrSessionService } = this.ctx.services;
-
-    const { sessionId } = await ehrSessionService.start(host);
+    const { patientService } = this.ctx.services;
     await patientService.getEhrId(host, patientId);
 
     // The posts are serialised - only one at a time, and the next one isn't sent till the

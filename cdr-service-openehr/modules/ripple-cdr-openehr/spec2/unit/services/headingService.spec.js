@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  31 December 2018
+  17 January 2019
 
 */
 
@@ -182,7 +182,7 @@ describe('ripple-cdr-openehr/lib/services/headingService', () => {
 
       expect(jumperService.check).toHaveBeenCalledWith('personalnotes', 'post');
       expect(ehrSessionService.start).toHaveBeenCalledWith('ethercis');
-      expect(patientService.getEhrId).toHaveBeenCalledWith('ethercis', '03134cc0-3741-4d3f-916a-a279a24448e5', 9999999000);
+      expect(patientService.getEhrId).toHaveBeenCalledWith('ethercis', 9999999000);
       expect(ethercisEhrRestService.postHeading).toHaveBeenCalledWith(
         '03134cc0-3741-4d3f-916a-a279a24448e5',
         '74b6a24b-bd97-47f0-ac6f-a632d0cac60f',
@@ -227,7 +227,7 @@ describe('ripple-cdr-openehr/lib/services/headingService', () => {
 
       expect(jumperService.check).toHaveBeenCalledWith('personalnotes', 'post');
       expect(ehrSessionService.start).toHaveBeenCalledWith('ethercis');
-      expect(patientService.getEhrId).toHaveBeenCalledWith('ethercis', '03134cc0-3741-4d3f-916a-a279a24448e5', 9999999000);
+      expect(patientService.getEhrId).toHaveBeenCalledWith('ethercis', 9999999000);
       expect(ethercisEhrRestService.postHeading).toHaveBeenCalledWith(
         '03134cc0-3741-4d3f-916a-a279a24448e5',
         '74b6a24b-bd97-47f0-ac6f-a632d0cac60f',
@@ -512,9 +512,7 @@ describe('ripple-cdr-openehr/lib/services/headingService', () => {
       expect(jumperService.check).toHaveBeenCalledWith('procedures', 'query');
 
       expect(ehrSessionService.start).toHaveBeenCalledWith('ethercis');
-      expect(patientService.getEhrId).toHaveBeenCalledWith(
-        'ethercis', '03134cc0-3741-4d3f-916a-a279a24448e5', 9999999000
-      );
+      expect(patientService.getEhrId).toHaveBeenCalledWith('ethercis', 9999999000);
       expect(ethercisEhrRestService.query).toHaveBeenCalledWith(
         '03134cc0-3741-4d3f-916a-a279a24448e5',
         [ 'select     a/uid/value as uid',
@@ -556,9 +554,7 @@ describe('ripple-cdr-openehr/lib/services/headingService', () => {
       expect(jumperService.check).toHaveBeenCalledWith('procedures', 'query');
 
       expect(ehrSessionService.start).toHaveBeenCalledWith('ethercis');
-      expect(patientService.getEhrId).toHaveBeenCalledWith(
-        'ethercis', '03134cc0-3741-4d3f-916a-a279a24448e5', 9999999000
-      );
+      expect(patientService.getEhrId).toHaveBeenCalledWith('ethercis', 9999999000);
       expect(ethercisEhrRestService.query).toHaveBeenCalledWith(
         '03134cc0-3741-4d3f-916a-a279a24448e5',
         jasmine.any(String)

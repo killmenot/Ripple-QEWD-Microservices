@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  30 December 2018
+  17 January 2019
 
 */
 
@@ -186,9 +186,7 @@ describe('ripple-cdr-openehr/lib/services/jumperService', () => {
       const actual = await jumperService.query(host, patientId, heading);
 
       expect(ehrSessionService.start).toHaveBeenCalledWith('ethercis');
-      expect(patientService.getEhrId).toHaveBeenCalledWith(
-        'ethercis', '03134cc0-3741-4d3f-916a-a279a24448e5', 9999999000
-      );
+      expect(patientService.getEhrId).toHaveBeenCalledWith('ethercis', 9999999000);
       expect(jumper.query).toHaveBeenCalledWithContext(
         ctx.worker,
         {
