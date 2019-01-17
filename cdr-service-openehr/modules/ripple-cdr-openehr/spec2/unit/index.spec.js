@@ -3,7 +3,7 @@
  ----------------------------------------------------------------------------
  | ripple-cdr-openehr: Ripple MicroServices for OpenEHR                     |
  |                                                                          |
- | Copyright (c) 2018 Ripple Foundation Community Interest Company          |
+ | Copyright (c) 2018-19 Ripple Foundation Community Interest Company       |
  | All rights reserved.                                                     |
  |                                                                          |
  | http://rippleosi.org                                                     |
@@ -32,8 +32,8 @@
 
 const mockery = require('mockery');
 const router = require('qewd-router');
-const { ExecutionContext } = require('../../lib2/core');
-const { Heading } = require('../../lib2/shared/enums');
+const { ExecutionContext } = require('../../lib/core');
+const { Heading } = require('../../lib/shared/enums');
 const { ExecutionContextMock, MasterMock, Worker } = require('../mocks');
 
 describe('ripple-cdr-openehr/lib/index', () => {
@@ -41,8 +41,8 @@ describe('ripple-cdr-openehr/lib/index', () => {
   let target;
 
   function loadModule() {
-    delete require.cache[require.resolve('../../lib2')];
-    return require('../../lib2');
+    delete require.cache[require.resolve('../../lib')];
+    return require('../../lib');
   }
 
   beforeAll(() => {
@@ -63,8 +63,8 @@ describe('ripple-cdr-openehr/lib/index', () => {
     let routes;
 
     beforeAll(() => {
-      delete require.cache[require.resolve('../../lib2/routes')];
-      routes = require('../../lib2/routes');
+      delete require.cache[require.resolve('../../lib/routes')];
+      routes = require('../../lib/routes');
     });
 
     beforeEach(() => {

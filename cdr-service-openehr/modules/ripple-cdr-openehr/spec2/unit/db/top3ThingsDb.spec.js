@@ -3,7 +3,7 @@
  ----------------------------------------------------------------------------
  | ripple-cdr-openehr: Ripple MicroServices for OpenEHR                     |
  |                                                                          |
- | Copyright (c) 2018 Ripple Foundation Community Interest Company          |
+ | Copyright (c) 2018-19 Ripple Foundation Community Interest Company       |
  | All rights reserved.                                                     |
  |                                                                          |
  | http://rippleosi.org                                                     |
@@ -31,7 +31,7 @@
 'use strict';
 
 const { ExecutionContextMock } = require('../../mocks');
-const Top3ThingsDb = require('../../../lib2/db/top3ThingsDb');
+const Top3ThingsDb = require('../../../lib/db/top3ThingsDb');
 
 describe('ripple-cdr-openehr/lib/db/top3ThingsDb', () => {
   let ctx;

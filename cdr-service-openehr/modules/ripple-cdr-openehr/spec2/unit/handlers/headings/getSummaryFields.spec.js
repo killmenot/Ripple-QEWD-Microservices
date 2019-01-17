@@ -3,7 +3,7 @@
  ----------------------------------------------------------------------------
  | ripple-cdr-openehr: Ripple MicroServices for OpenEHR                     |
  |                                                                          |
- | Copyright (c) 2018 Ripple Foundation Community Interest Company          |
+ | Copyright (c) 2018-19 Ripple Foundation Community Interest Company       |
  | All rights reserved.                                                     |
  |                                                                          |
  | http://rippleosi.org                                                     |
@@ -69,8 +69,8 @@ describe('ripple-cdr-openehr/lib/handlers/headings/getSummaryFields', () => {
     GetHeadingSummaryFieldsCommand = jasmine.createSpy().and.returnValue(command);
     mockery.registerMock('../../commands/headings', { GetHeadingSummaryFieldsCommand });
 
-    delete require.cache[require.resolve('../../../../lib2/handlers/headings/getSummaryFields')];
-    handler = require('../../../../lib2/handlers/headings/getSummaryFields');
+    delete require.cache[require.resolve('../../../../lib/handlers/headings/getSummaryFields')];
+    handler = require('../../../../lib/handlers/headings/getSummaryFields');
   });
 
   afterEach(() => {

@@ -3,7 +3,7 @@
  ----------------------------------------------------------------------------
  | ripple-cdr-openehr: Ripple MicroServices for OpenEHR                     |
  |                                                                          |
- | Copyright (c) 2018 Ripple Foundation Community Interest Company          |
+ | Copyright (c) 2018-19 Ripple Foundation Community Interest Company       |
  | All rights reserved.                                                     |
  |                                                                          |
  | http://rippleosi.org                                                     |
@@ -31,9 +31,9 @@
 'use strict';
 
 const { ExecutionContextMock } = require('../../mocks');
-const config = require('../../../lib2/config');
-const { EhrSessionError } = require('../../../lib2/errors');
-const EhrSessionService = require('../../../lib2/services/ehrSessionService');
+const config = require('../../../lib/config');
+const { EhrSessionError } = require('../../../lib/errors');
+const EhrSessionService = require('../../../lib/services/ehrSessionService');
 
 describe('ripple-cdr-openehr/lib/services/ehrSessionService', () => {
   let ctx;

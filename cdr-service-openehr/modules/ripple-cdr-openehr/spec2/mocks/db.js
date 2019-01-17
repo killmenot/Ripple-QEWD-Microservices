@@ -3,7 +3,7 @@
  ----------------------------------------------------------------------------
  | ripple-cdr-openehr: Ripple MicroServices for OpenEHR                     |
  |                                                                          |
- | Copyright (c) 2018 Ripple Foundation Community Interest Company          |
+ | Copyright (c) 2018-19 Ripple Foundation Community Interest Company       |
  | All rights reserved.                                                     |
  |                                                                          |
  | http://rippleosi.org                                                     |
@@ -30,7 +30,7 @@
 
 'use strict';
 
-const { lazyLoadAdapter } = require('../../lib2/shared/utils');
+const { lazyLoadAdapter } = require('../../lib/shared/utils');
 
 class DbRegistryMock {
   constructor() {
@@ -40,7 +40,7 @@ class DbRegistryMock {
   initialise(id) {
     if (this.freezed) return;
 
-    const Db = require(`../../lib2/db/${id}`);
+    const Db = require(`../../lib/db/${id}`);
     const methods = Reflect
       .ownKeys(Db.prototype)
       .filter(x => x !== 'constructor');

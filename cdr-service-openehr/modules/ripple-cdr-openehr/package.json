@@ -4,9 +4,9 @@
   "main": "index.js",
   "license": "Apache-2.0",
   "scripts": {
-    "lint": "eslint lib2 spec2",
-    "test": "jasmine --config=spec2/support/jasmine.json",
-    "coverage": "nyc --reporter=html --reporter=text jasmine --config=spec2/support/jasmine.json",
+    "lint": "eslint lib spec",
+    "test": "jasmine --config=spec/support/jasmine.json",
+    "coverage": "nyc --reporter=html --reporter=text jasmine --config=spec/support/jasmine.json",
     "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
   "nyc": {

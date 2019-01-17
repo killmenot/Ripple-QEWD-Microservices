@@ -3,7 +3,7 @@
  ----------------------------------------------------------------------------
  | ripple-cdr-openehr: Ripple MicroServices for OpenEHR                     |
  |                                                                          |
- | Copyright (c) 2018 Ripple Foundation Community Interest Company          |
+ | Copyright (c) 2018-19 Ripple Foundation Community Interest Company       |
  | All rights reserved.                                                     |
  |                                                                          |
  | http://rippleosi.org                                                     |
@@ -30,7 +30,7 @@
 
 'use strict';
 
-const { ExecutionContext, QewdCacheAdapter } = require('../../lib2/core');
+const { ExecutionContext, QewdCacheAdapter } = require('../../lib/core');
 const WorkerMock = require('./worker');
 const CacheRegistryMock = require('./cache');
 const DbRegistryMock = require('./db');

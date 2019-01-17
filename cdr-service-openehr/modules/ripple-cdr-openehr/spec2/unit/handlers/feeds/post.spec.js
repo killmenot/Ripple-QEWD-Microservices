@@ -3,7 +3,7 @@
  ----------------------------------------------------------------------------
  | ripple-cdr-openehr: Ripple MicroServices for OpenEHR                     |
  |                                                                          |
- | Copyright (c) 2018 Ripple Foundation Community Interest Company          |
+ | Copyright (c) 2018-19 Ripple Foundation Community Interest Company       |
  | All rights reserved.                                                     |
  |                                                                          |
  | http://rippleosi.org                                                     |
@@ -74,8 +74,8 @@ describe('ripple-cdr-openehr/lib/handlers/feeds/post', () => {
     PostFeedCommand = jasmine.createSpy().and.returnValue(command);
     mockery.registerMock('../../commands/feeds', { PostFeedCommand });
 
-    delete require.cache[require.resolve('../../../../lib2/handlers/feeds/post')];
-    handler = require('../../../../lib2/handlers/feeds/post');
+    delete require.cache[require.resolve('../../../../lib/handlers/feeds/post')];
+    handler = require('../../../../lib/handlers/feeds/post');
   });
 
   afterEach(() => {

@@ -3,7 +3,7 @@
  ----------------------------------------------------------------------------
  | ripple-cdr-openehr: Ripple MicroServices for OpenEHR                     |
  |                                                                          |
- | Copyright (c) 2018 Ripple Foundation Community Interest Company          |
+ | Copyright (c) 2018-19 Ripple Foundation Community Interest Company       |
  | All rights reserved.                                                     |
  |                                                                          |
  | http://rippleosi.org                                                     |
@@ -30,10 +30,10 @@
 
 'use strict';
 
-const { lazyLoadAdapter } = require('../../lib2/shared/utils');
+const { lazyLoadAdapter } = require('../../lib/shared/utils');
 
 function getMethods(id, dir) {
-  const Target = require(`../../lib2/${dir}/${id}`);
+  const Target = require(`../../lib/${dir}/${id}`);
 
   return Reflect
     .ownKeys(Target.prototype)
@@ -43,7 +43,7 @@ function getMethods(id, dir) {
 function getMixins(id, dir) {
   try {
     const name = id.split(/(?=[A-Z])/g)[0];
-    const mixins = require(`../../lib2/${dir}/mixins/${name}`);
+    const mixins = require(`../../lib/${dir}/mixins/${name}`);
 
     return mixins;
   } catch (err) {
