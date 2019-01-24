@@ -74,7 +74,7 @@ class EhrSessionService {
       await this.sessionCache.delete(host);
     }
 
-    const ehrRestService = this.ctx.openehr[host];
+    const ehrRestService = this.ctx.rest[host];
     const data = await ehrRestService.startSession();
     if (!data || !data.sessionId) {
       logger.error(`start session response was unexpected: ${JSON.stringify(data)}`);
@@ -120,7 +120,7 @@ class EhrSessionService {
       await this.sessionCache.delete(host);
     }
 
-    const ehrRestService = this.ctx.openehr[host];
+    const ehrRestService = this.ctx.rest[host];
     await ehrRestService.stopSession(sessionId);
 
     return true;

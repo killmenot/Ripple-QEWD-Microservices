@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  17 January 2019
+  25 January 2019
 
 */
 
@@ -85,7 +85,7 @@ class HeadingService {
     const helpers = headingHelpers(host, heading, 'post');
     const output = transform(headingMap.transformTemplate, data.data, helpers);
     const postData = flatten(output);
-    const ehrRestService = this.ctx.openehr[host];
+    const ehrRestService = this.ctx.rest[host];
     const responseObj = await ehrRestService.postHeading(sessionId, ehrId, headingMap.templateId, postData);
     debug('response: %j', responseObj);
 
@@ -149,7 +149,7 @@ class HeadingService {
     const helpers = headingHelpers(host, heading, 'post');
     const output = transform(headingMap.transformTemplate, data, helpers);
     const postData = flatten(output);
-    const ehrRestService = this.ctx.openehr[host];
+    const ehrRestService = this.ctx.rest[host];
     const responseObj = await ehrRestService.putHeading(sessionId, compositionId, headingMap.templateId, postData);
     debug('response: %j', responseObj);
 
@@ -196,7 +196,7 @@ class HeadingService {
     };
     const query = template.replace(aql, subs);
 
-    const ehrRestService = this.ctx.openehr[host];
+    const ehrRestService = this.ctx.rest[host];
     const responseObj = await ehrRestService.query(sessionId, query);
 
     await ehrSessionService.stop(host, sessionId);
@@ -484,7 +484,7 @@ class HeadingService {
     const { ehrSessionService } = this.ctx.services;
     const { sessionId } = await ehrSessionService.start(host);
 
-    const ehrRestService = this.ctx.openehr[host];
+    const ehrRestService = this.ctx.rest[host];
     await ehrRestService.deleteHeading(sessionId, compositionId);
 
     await headingCache.byHost.delete(patientId, heading, host, sourceId);

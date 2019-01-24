@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  30 December 2018
+  25 January 2019
 
 */
 
@@ -58,7 +58,7 @@ class PatientService {
 
     const { sessionId } = await this.ehrSessionService.start(host);
 
-    const ehrRestService = this.ctx.openehr[host];
+    const ehrRestService = this.ctx.rest[host];
     data = await ehrRestService.getEhr(sessionId, patientId);
     debug('get ehr data: %j', data);
 
@@ -95,7 +95,7 @@ class PatientService {
       return ehrId;
     }
 
-    const ehrRestService = this.ctx.openehr[host];
+    const ehrRestService = this.ctx.rest[host];
     const { sessionId } = await this.ehrSessionService.start(host);
     const data = await ehrRestService.getEhr(sessionId, patientId);
 

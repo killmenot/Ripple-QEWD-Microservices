@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  30 December 2018
+  25 January 2019
 
 */
 
@@ -48,7 +48,7 @@ describe('ripple-cdr-openehr/lib/services/statusService', () => {
 
     nhsNumberDb = ctx.db.nhsNumberDb;
     ehrSessionService = ctx.services.ehrSessionService;
-    ethercisEhrRestService = ctx.openehr.ethercis;
+    ethercisEhrRestService = ctx.rest.ethercis;
 
     ehrSessionService.start.and.resolveValue({
       sessionId: '03134cc0-3741-4d3f-916a-a279a24448e5'

@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  29 December 2018
+  25 January 2019
 
 */
 
@@ -35,7 +35,7 @@ const WorkerMock = require('./worker');
 const CacheRegistryMock = require('./cache');
 const DbRegistryMock = require('./db');
 const ServiceRegistryMock = require('./services');
-const OpenEhrRegistryMock = require('./openehr');
+const RestRegistryMock = require('./rest');
 
 class ExecutionContextMock extends ExecutionContext {
   constructor(q) {
@@ -48,14 +48,14 @@ class ExecutionContextMock extends ExecutionContext {
     this.cache = CacheRegistryMock.create();
     this.db = DbRegistryMock.create();
     this.services = ServiceRegistryMock.create();
-    this.openehr = OpenEhrRegistryMock.create();
+    this.rest = RestRegistryMock.create();
   }
 
   freeze() {
     this.cache.freeze();
     this.db.freeze();
     this.services.freeze();
-    this.openehr.freeze();
+    this.rest.freeze();
   }
 }
 

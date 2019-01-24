@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  30 December 2018
+  25 January 2019
 
 */
 
@@ -52,7 +52,7 @@ describe('ripple-cdr-openehr/lib/services/ehrSessionService', () => {
     ehrSessionService = new EhrSessionService(ctx);
 
     sessionCache = ctx.cache.sessionCache;
-    ethercisEhrRestService = ctx.openehr.ethercis;
+    ethercisEhrRestService = ctx.rest.ethercis;
 
     ctx.freeze();
   });

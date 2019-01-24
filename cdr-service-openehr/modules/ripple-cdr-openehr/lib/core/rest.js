@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  16 December 2018
+  25 January 2019
 
 */
 
@@ -34,13 +34,13 @@ const EhrRestService = require('../services/ehrRestService');
 const { lazyLoadAdapter } = require('../shared/utils');
 const logger = require('./logger');
 
-class OpenEhrRegistry {
+class RestRegistry {
   constructor(ctx) {
     this.ctx = ctx;
   }
 
   initialise(host) {
-    logger.info('core/openehr|initialise', { host });
+    logger.info('core/rest|initialise', { host });
 
     const hostConfig = this.ctx.userDefined.openehr[host];
 
@@ -52,8 +52,8 @@ class OpenEhrRegistry {
   }
 
   static create(ctx) {
-    return lazyLoadAdapter(new OpenEhrRegistry(ctx));
+    return lazyLoadAdapter(new RestRegistry(ctx));
   }
 }
 
-module.exports = OpenEhrRegistry;
+module.exports = RestRegistry;

@@ -33,7 +33,7 @@
 const CacheRegistry = require('./cache');
 const DbRegistry = require('./db');
 const ServiceRegistry = require('./services');
-const OpenEhrRegistry = require('./openehr');
+const RestRegistry = require('./rest');
 
 class ExecutionContext {
   constructor(q, { req, qewdSession } = {}) {
@@ -44,7 +44,7 @@ class ExecutionContext {
     this.cache = CacheRegistry.create(this);
     this.db = DbRegistry.create(this);
     this.services = ServiceRegistry.create(this);
-    this.openehr = OpenEhrRegistry.create(this);
+    this.rest = RestRegistry.create(this);
   }
 
   static fromRequest(q, req) {

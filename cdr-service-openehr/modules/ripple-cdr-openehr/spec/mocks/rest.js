@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  29 December 2018
+  25 January 2019
 
 */
 
@@ -33,7 +33,7 @@
 const EhrRestService = require('../../lib/services/ehrRestService');
 const { lazyLoadAdapter } = require('../../lib/shared/utils');
 
-class OpenEhrRegistryMock {
+class RestRegistryMock {
   constructor() {
     this.freezed = false;
   }
@@ -53,8 +53,8 @@ class OpenEhrRegistryMock {
   }
 
   static create() {
-    return lazyLoadAdapter(new OpenEhrRegistryMock());
+    return lazyLoadAdapter(new RestRegistryMock());
   }
 }
 
-module.exports = OpenEhrRegistryMock;
+module.exports = RestRegistryMock;
