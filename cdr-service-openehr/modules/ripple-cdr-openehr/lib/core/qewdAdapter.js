@@ -1,3 +1,4 @@
+
 /*
 
  ----------------------------------------------------------------------------
@@ -24,22 +25,66 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  25 January 2019
+  24 January 2019
 
 */
 
 'use strict';
 
 const logger = require('./logger');
-const ExecutionContext = require('./context');
-const NullCacheAdapter = require('./nullAdapter');
-const OpenEhrAdapter = require('./openEhrAdapter');
-const QewdCacheAdapter = require('./qewdAdapter');
 
-module.exports = {
-  logger,
-  ExecutionContext,
-  NullCacheAdapter,
-  OpenEhrAdapter,
-  QewdCacheAdapter
-};
+class QewdCacheAdapter {
+  constructor(qewdSession) {
+    this.qewdSession = qewdSession;
+  }
+
+  exists(key) {
+    logger.debug('core/qewdAdapter|exists', { key });
+
+    return this.qewdSession.data.$(key).exists;
+  }
+
+  get(key) {
+    logger.debug('core/qewdAdapter|get', { key });
+
+    return this.qewdSession.data.$(key).exists
+      ? this.qewdSession.data.$(key).value
+      : null;
+  }
+
+  getObject(key) {
+    logger.debug('core/qewdAdapter|getObject', { key });
+
+    return this.qewdSession.data.$(key).exists
+      ? this.qewdSession.data.$(key).getDocument()
+      : null;
+  }
+
+  getObjectWithArrays(key) {
+    logger.debug('core/qewdAdapter|getObjectWithArrays', { key });
+
+    return this.qewdSession.data.$(key).exists
+      ? this.qewdSession.data.$(key).getDocument(true)
+      : null;
+  }
+
+  put(key, value) {
+    logger.debug('core/qewdAdapter|put', { key, value });
+
+    this.qewdSession.data.$(key).value = value;
+  }
+
+  putObject(key, value) {
+    logger.debug('core/qewdAdapter|putObject', { key, value });
+
+    this.qewdSession.data.$(key).setDocument(value);
+  }
+
+  delete(key) {
+    logger.debug('core/qewdAdapter|delete', { key });
+
+    this.qewdSession.data.$(key).delete();
+  }
+}
+
+module.exports = QewdCacheAdapter;

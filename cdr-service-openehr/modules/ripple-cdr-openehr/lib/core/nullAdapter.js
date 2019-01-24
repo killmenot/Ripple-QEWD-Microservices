@@ -1,3 +1,4 @@
+
 /*
 
  ----------------------------------------------------------------------------
@@ -31,15 +32,35 @@
 'use strict';
 
 const logger = require('./logger');
-const ExecutionContext = require('./context');
-const NullCacheAdapter = require('./nullAdapter');
-const OpenEhrAdapter = require('./openEhrAdapter');
-const QewdCacheAdapter = require('./qewdAdapter');
 
-module.exports = {
-  logger,
-  ExecutionContext,
-  NullCacheAdapter,
-  OpenEhrAdapter,
-  QewdCacheAdapter
-};
+class NullCacheAdapter {
+  exists(key) {
+    logger.debug('core/nullAdapter|exists', { key });
+  }
+
+  get(key) {
+    logger.debug('core/nullAdapter|get', { key });
+  }
+
+  getObject(key) {
+    logger.debug('core/nullAdapter|getObject', { key });
+  }
+
+  getObjectWithArrays(key) {
+    logger.debug('core/nullAdapter|getObjectWithArrays', { key });
+  }
+
+  put(key, value) {
+    logger.debug('core/nullAdapter|put', { key, value });
+  }
+
+  putObject(key, value) {
+    logger.debug('core/nullAdapter|putObject', { key, value });
+  }
+
+  delete(key) {
+    logger.debug('core/nullAdapter|delete', { key });
+  }
+}
+
+module.exports = NullCacheAdapter;

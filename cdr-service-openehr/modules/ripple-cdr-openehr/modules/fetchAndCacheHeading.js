@@ -30,16 +30,18 @@
 
 'use strict';
 
-const logger = require('./logger');
-const ExecutionContext = require('./context');
-const NullCacheAdapter = require('./nullAdapter');
-const OpenEhrAdapter = require('./openEhrAdapter');
-const QewdCacheAdapter = require('./qewdAdapter');
+const { ExecutionContext, logger } = require('../lib/core');
 
-module.exports = {
-  logger,
-  ExecutionContext,
-  NullCacheAdapter,
-  OpenEhrAdapter,
-  QewdCacheAdapter
-};
+function fetchAndCacheHeading(patientId, heading, session, callback) {
+  const ctx = ExecutionContext.fromQewdSession(this, session);
+  const { headingService } = ctx.services;
+
+  headingService.fetchOne(patientId, heading)
+    .then((resultObj) => callback(resultObj))
+    .catch(err => {
+      logger.error('modules/fetchAndCacheHeading|err: ' + err.message);
+      logger.error('modules/fetchAndCacheHeading|stack: ' + err.stack);
+    });
+}
+
+module.exports = fetchAndCacheHeading;

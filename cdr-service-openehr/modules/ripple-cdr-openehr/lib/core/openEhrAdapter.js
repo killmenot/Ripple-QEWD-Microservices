@@ -3,7 +3,7 @@
  ----------------------------------------------------------------------------
  | ripple-cdr-openehr: Ripple MicroServices for OpenEHR                     |
  |                                                                          |
- | Copyright (c) 2018 Ripple Foundation Community Interest Company          |
+ | Copyright (c) 2018-19 Ripple Foundation Community Interest Company       |
  | All rights reserved.                                                     |
  |                                                                          |
  | http://rippleosi.org                                                     |
@@ -24,13 +24,15 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  20 December 2018
+  25 January 2019
 
 */
 
 'use strict';
 
 const request = require('request');
+const ExecutionContext = require('./context');
+const logger = require('./logger');
 
 /**
  * Adapter to OpenEhr that is used in ripple-openehr-jumper
@@ -98,6 +100,34 @@ class OpenEhrAdapter {
     });
 
     /*eslint-enable */
+  }
+
+  startSession(host, qewdSession, callback) {
+    const ctx = qewdSession
+      ? ExecutionContext.fromQewdSession(this.ctx.worker, qewdSession)
+      : this.ctx;
+    const { ehrSessionService } = ctx.services;
+
+    ehrSessionService.start(host)
+      .then(ehrSession => callback(ehrSession))
+      .catch((err) => {
+        logger.error('jumper/adapter/startSession|err: ' + err.message);
+        logger.error('jumper/adapte/startSession|stack: ' + err.stack);
+      });
+  }
+
+  stopSession(host, sessionId, qewdSession, callback) {
+    const ctx = qewdSession
+      ? ExecutionContext.fromQewdSession(this.ctx.worker, qewdSession)
+      : this.ctx;
+    const { ehrSessionService } = ctx.services;
+
+    ehrSessionService.stop(host, sessionId)
+      .then(() => callback())
+      .catch((err) => {
+        logger.error('jumper/adapter/stopSession|err: ' + err.message);
+        logger.error('jumper/adapter/stopSession|stack: ' + err.stack);
+      });
   }
 }
 

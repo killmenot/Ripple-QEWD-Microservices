@@ -24,22 +24,60 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  25 January 2019
+ 25 January 2019
 
 */
 
 'use strict';
 
-const logger = require('./logger');
-const ExecutionContext = require('./context');
-const NullCacheAdapter = require('./nullAdapter');
-const OpenEhrAdapter = require('./openEhrAdapter');
-const QewdCacheAdapter = require('./qewdAdapter');
+const nock = require('nock');
+const { Worker } = require('../mocks');
+const mapNHSNoByHost = require('../../modules/mapNhsNoByHost');
 
-module.exports = {
-  logger,
-  ExecutionContext,
-  NullCacheAdapter,
-  OpenEhrAdapter,
-  QewdCacheAdapter
-};
+describe('ripple-cdr-openehr/modules/mapNHSNoByHost', () => {
+  let q;
+
+  function httpSessionMock(data) {
+    nock('https://test.operon.systems')
+      .post('/rest/v1/session?username=foo&password=123456')
+      .matchHeader('x-max-session', 75)
+      .matchHeader('x-session-timeout', 120000)
+      .reply(200, data);
+  }
+
+  function httpEhrMock(sessionId, data) {
+    nock('https://test.operon.systems')
+      .get('/rest/v1/ehr?subjectId=9999999000&subjectNamespace=uk.nhs.nhs_number')
+      .matchHeader('ehr-session', sessionId)
+      .reply(200, data || {});
+  }
+
+  beforeEach(() => {
+    q = new Worker();
+  });
+
+  afterEach(() => {
+    q.db.reset();
+  });
+
+  it('should return ehrId', (done) => {
+    const session = {
+      sessionId: '03391e86-5085-4b99-89ff-79209f8d1f20'
+    };
+    const data = {
+      ehrId: '74b6a24b-bd97-47f0-ac6f-a632d0cac60f'
+    };
+
+    httpSessionMock(session);
+    httpEhrMock(session.sessionId, data);
+
+    const nhsNo = 9999999000;
+    const host = 'marand';
+
+    mapNHSNoByHost.call(q, nhsNo, host, null, (actual) => {
+      expect(actual).toBe('74b6a24b-bd97-47f0-ac6f-a632d0cac60f');
+
+      done();
+    });
+  });
+});

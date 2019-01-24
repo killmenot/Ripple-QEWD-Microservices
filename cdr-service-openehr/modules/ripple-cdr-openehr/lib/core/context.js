@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  20 December 2018
+  25 January 2019
 
 */
 
@@ -36,10 +36,10 @@ const ServiceRegistry = require('./services');
 const OpenEhrRegistry = require('./openehr');
 
 class ExecutionContext {
-  constructor(q, { req, qewdSession }) {
+  constructor(q, { req, qewdSession } = {}) {
     this.worker = q;
     this.userDefined = q.userDefined;
-    this.qewdSession = qewdSession || q.qewdSessionByJWT.call(q, req);
+    this.qewdSession = qewdSession || (req ? q.qewdSessionByJWT.call(q, req) : null);
 
     this.cache = CacheRegistry.create(this);
     this.db = DbRegistry.create(this);

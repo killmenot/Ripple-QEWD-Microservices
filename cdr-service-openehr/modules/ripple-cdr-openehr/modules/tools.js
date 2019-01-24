@@ -30,16 +30,8 @@
 
 'use strict';
 
-const logger = require('./logger');
-const ExecutionContext = require('./context');
-const NullCacheAdapter = require('./nullAdapter');
-const OpenEhrAdapter = require('./openEhrAdapter');
-const QewdCacheAdapter = require('./qewdAdapter');
+const { isPatientIdValid } = require('../lib/shared/validation');
 
 module.exports = {
-  logger,
-  ExecutionContext,
-  NullCacheAdapter,
-  OpenEhrAdapter,
-  QewdCacheAdapter
+  isPatientIdValid
 };

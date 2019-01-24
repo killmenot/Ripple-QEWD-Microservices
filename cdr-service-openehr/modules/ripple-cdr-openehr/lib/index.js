@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  18 December 2018
+  25 January 2019
 
 */
 
@@ -35,7 +35,6 @@ const { ExecutionContext, logger } = require('./core');
 const DiscoveryDispatcher = require('./dispatchers/discovery');
 const routes = require('./routes');
 const { ExtraHeading, Heading, RecordStatus, Role } = require('./shared/enums');
-const debug = require('debug')('ripple-cdr-openehr');
 
 module.exports = {
   init() {
@@ -49,10 +48,10 @@ module.exports = {
     const authorized = this.jwt.handlers.validateRestRequest.call(this, req, finished);
     if (authorized) {
       const role = req.session.role;
-      debug('role: %s', role);
+      logger.debug('role: %s', role);
 
       if (req.path.startsWith('/api/my/') && role !== Role.PHR_USER) {
-        debug('attempt to use an /api/my/ path by a non-PHR user.');
+        logger.debug('attempt to use an /api/my/ path by a non-PHR user.');
 
         finished({
           error: 'Unauthorised request'
@@ -71,7 +70,7 @@ module.exports = {
     restRequest(message, send) { // eslint-disable-line no-unused-vars
       logger.info('workerResponseHandlers/restRequest');
 
-      debug('path: %s', message.path);
+      logger.debug('path: %s', message.path);
       if (message.path === '/api/openehr/check') {
         /*
           So at this point, during the /api/initialise process before login,
@@ -98,7 +97,7 @@ module.exports = {
             "token": {jwt}
           }
         */
-        debug('message: %j', message);
+        logger.debug('message: %j', message);
 
         // Discovery data has been synced?
         if (message.status === RecordStatus.READY) return;
@@ -106,7 +105,7 @@ module.exports = {
         // Discovery data syncing already started by request 1
         if (message.responseNo > 1) return;
 
-        debug('synopsis headings: %j', this.userDefined.synopsis.headings);
+        logger.debug('synopsis headings: %j', this.userDefined.synopsis.headings);
 
         // add a special extra one to signal the end of processing
         // so the worker can switch the session record status to 'ready'

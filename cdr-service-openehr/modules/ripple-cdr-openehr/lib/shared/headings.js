@@ -24,23 +24,31 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  29 December 2018
+  25 January 2019
 
 */
 
 const path = require('path');
 const fs = require('fs');
 const dateTime = require('./dateTime');
-const debug = require('debug')('ripple-cdr-openehr:shared:heading-helpers');
+const debug = require('debug')('ripple-cdr-openehr:shared:headings');
 
 const headings = {};
 const aql = {};
 
+function getHeadingDir() {
+  return process.env.NODE_ENV === 'test'
+    ? '../../spec/headings'
+    : '../headings';
+}
+
 function loadHeadingModule(heading) {
   debug('loading heading: %s', heading);
 
+  const headingsDir = getHeadingDir();
+
   try {
-    return require(`../headings/${heading}/${heading}`);
+    return require(`${headingsDir}/${heading}/${heading}`);
   } catch (err) {
     debug('error loading heading %s module: %s', heading, err);
   }
@@ -98,7 +106,8 @@ function headingHelpers(host, heading, method = 'get') {
 
 function getHeadingAql(heading) {
   if (!aql[heading]) {
-    const filename = path.join(__dirname, `../headings/${heading}/${heading}.aql`);
+    const headingsDir = getHeadingDir();
+    const filename = path.join(__dirname, `${headingsDir}/${heading}/${heading}.aql`);
     debug('loading aql file: %s', filename);
     aql[heading] = fs.existsSync(filename)
       ? fs.readFileSync(filename).toString().split(/\r?\n/).join(' ')

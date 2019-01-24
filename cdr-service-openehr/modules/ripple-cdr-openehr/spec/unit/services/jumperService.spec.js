@@ -24,13 +24,14 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  17 January 2019
+  25 January 2019
 
 */
 
 'use strict';
 
 const { ExecutionContextMock } = require('../../mocks');
+const { OpenEhrAdapter } = require('../../../lib/core');
 const jumper = require('../../../lib/jumper');
 const JumperService = require('../../../lib/services/jumperService');
 
@@ -194,7 +195,7 @@ describe('ripple-cdr-openehr/lib/services/jumperService', () => {
           patientId: 9999999000,
           heading: 'procedures',
           ehrId: '74b6a24b-bd97-47f0-ac6f-a632d0cac60f',
-          openEHR: jasmine.any(jumper.OpenEhrAdapter),
+          openEHR: jasmine.any(OpenEhrAdapter),
           openEHRSession: {
             id: '03134cc0-3741-4d3f-916a-a279a24448e5'
           },

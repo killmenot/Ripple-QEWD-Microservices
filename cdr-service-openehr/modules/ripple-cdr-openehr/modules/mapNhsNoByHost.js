@@ -30,16 +30,17 @@
 
 'use strict';
 
-const logger = require('./logger');
-const ExecutionContext = require('./context');
-const NullCacheAdapter = require('./nullAdapter');
-const OpenEhrAdapter = require('./openEhrAdapter');
-const QewdCacheAdapter = require('./qewdAdapter');
+const { ExecutionContext, logger } = require('../lib/core');
 
-module.exports = {
-  logger,
-  ExecutionContext,
-  NullCacheAdapter,
-  OpenEhrAdapter,
-  QewdCacheAdapter
-};
+function mapNhsNoByHost(patientId, host, ehrSession, callback) {
+  const ctx = new ExecutionContext(this);
+  const { patientService } = ctx.services;
+
+  patientService.getEhrId(host, patientId)
+    .then(ehrId => callback(ehrId))
+    .catch(err => {
+      logger.error('modules/mapNhsNoByHost|err: ' + err.message);
+      logger.error('modules/mapNhsNoByHost|stack: ' + err.stack);
+    });
+}
+module.exports = mapNhsNoByHost;

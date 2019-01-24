@@ -24,22 +24,61 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  25 January 2019
+ 25 January 2019
 
 */
 
 'use strict';
 
-const logger = require('./logger');
-const ExecutionContext = require('./context');
-const NullCacheAdapter = require('./nullAdapter');
-const OpenEhrAdapter = require('./openEhrAdapter');
-const QewdCacheAdapter = require('./qewdAdapter');
+const { Worker } = require('../mocks');
+const deleteSessionCaches = require('../../modules/deleteSessionCaches');
 
-module.exports = {
-  logger,
-  ExecutionContext,
-  NullCacheAdapter,
-  OpenEhrAdapter,
-  QewdCacheAdapter
-};
+describe('ripple-cdr-openehr/modules/deleteSessionCaches', () => {
+  let q;
+
+  function seeds() {
+    const session1 = q.sessions.create('app1');
+    const session2 = q.sessions.create('app2');
+
+    const byPatientIdCache = session1.data.$(['headings', 'byPatientId', 9999999000, 'procedures']);
+    byPatientIdCache.$(['byDate', 1514764800000, '0f7192e9-168e-4dea-812a-3e1d236ae46d']).value = '';
+    byPatientIdCache.$(['byHost', 'ethercis', 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d']).value = '';
+
+    const bySourceIdCache = session1.data.$(['headings', 'bySourceId']);
+    bySourceIdCache.$('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d').setDocument({date: 1514764800000});
+
+    return [
+      session1,
+      session2
+    ];
+  }
+
+  beforeEach(() => {
+    q = new Worker();
+  });
+
+  afterEach(() => {
+    q.db.reset();
+  });
+
+  it('should delete session caches', () => {
+    const sourceId = 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d';
+    const date = 1514764800000;
+
+    const sessions = seeds();
+
+    const patientId = 9999999000;
+    const heading = 'procedures';
+    const host = 'ethercis';
+
+    // TODO: remove callback
+    deleteSessionCaches.call(q, patientId, heading, host, () => {
+      const byPatientIdCache = sessions[0].data.$(['headings', 'byPatientId', patientId, heading]);
+      expect(byPatientIdCache.$(['byDate', date, sourceId]).exists).toBeFalsy();
+      expect(byPatientIdCache.$(['byHost', host, sourceId]).exists).toBeFalsy();
+
+      const bySourceIdCache = sessions[0].data.$(['headings', 'bySourceId']);
+      expect(bySourceIdCache.$(sourceId).exists).toBeFalsy();
+    });
+  });
+});

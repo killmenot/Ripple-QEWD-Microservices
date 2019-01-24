@@ -1,4 +1,3 @@
-
 /*
 
  ----------------------------------------------------------------------------
@@ -25,66 +24,25 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  30 December 2018
+  25 January 2019
 
 */
 
 'use strict';
 
-const logger = require('./logger');
+const { ExecutionContext } = require('../lib/core');
 
-class QewdCacheAdapter {
-  constructor(qewdSession) {
-    this.qewdSession = qewdSession;
-  }
+// TODO: remove callback
+function deleteSessionCaches(patientId, heading, host, callback) {
+  const ctx = new ExecutionContext(this);
+  const { cacheService } = ctx.services;
 
-  exists(key) {
-    logger.debug('core/adapter|exists', { key });
-
-    return this.qewdSession.data.$(key).exists;
-  }
-
-  get(key) {
-    logger.debug('core/adapter|get', { key });
-
-    return this.qewdSession.data.$(key).exists
-      ? this.qewdSession.data.$(key).value
-      : null;
-  }
-
-  getObject(key) {
-    logger.debug('core/adapter|getObject', { key });
-
-    return this.qewdSession.data.$(key).exists
-      ? this.qewdSession.data.$(key).getDocument()
-      : null;
-  }
-
-  getObjectWithArrays(key) {
-    logger.debug('core/adapter|getObjectWithArrays', { key });
-
-    return this.qewdSession.data.$(key).exists
-      ? this.qewdSession.data.$(key).getDocument(true)
-      : null;
-  }
-
-  put(key, value) {
-    logger.debug('core/adapter|put', { key, value });
-
-    this.qewdSession.data.$(key).value = value;
-  }
-
-  putObject(key, value) {
-    logger.debug('core/adapter|putObject', { key, value });
-
-    this.qewdSession.data.$(key).setDocument(value);
-  }
-
-  delete(key) {
-    logger.debug('core/adapter|delete', { key });
-
-    this.qewdSession.data.$(key).delete();
-  }
+  cacheService.delete(host, patientId, heading)
+    .then(() => callback())
+    .catch(err => {
+      logger.error('modules/deleteSessionCaches|err: ' + err.message);
+      logger.error('modules/deleteSessionCaches|stack: ' + err.stack);
+    });
 }
 
-module.exports = QewdCacheAdapter;
+module.exports = deleteSessionCaches;

@@ -24,15 +24,14 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  17 January 2019
+  25 January 2019
 
 */
 
 'use strict';
 
-const { logger } = require('../core');
+const { logger, OpenEhrAdapter } = require('../core');
 const jumper = require('../jumper');
-const OpenEhrAdapter = jumper.OpenEhrAdapter;
 
 class JumperService {
   constructor(ctx) {

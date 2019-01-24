@@ -5,14 +5,15 @@
   "license": "Apache-2.0",
   "scripts": {
     "lint": "eslint lib spec",
-    "test": "jasmine --config=spec/support/jasmine.json",
-    "coverage": "nyc --reporter=html --reporter=text jasmine --config=spec/support/jasmine.json",
+    "test": "NODE_ENV=test jasmine --config=spec/support/jasmine.json",
+    "coverage": "nyc --reporter=html --reporter=text npm test",
     "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
   "nyc": {
     "all": true,
     "include": [
-      "lib/**/*.js"
+      "lib/**/*.js",
+      "modules/**/*.js"
     ],
     "exclude": [
       "lib/headings/**/*.js",
@@ -28,13 +29,14 @@
     "qewd-transform-json": "^1.10.0",
     "request": "^2.87.0",
     "valid-url": "^1.0.9",
-    "winston": "^3.1.0"
+    "winston": "^3.1.0",
+    "winston-daily-rotate-file": "^3.6.0"
   },
   "devDependencies": {
     "coveralls": "^3.0.0",
-    "eslint": "^5.10.0",
-    "ewd-document-store": "^1.23.0",
-    "ewd-memory-globals": "^1.0.2",
+    "eslint": "^5.12.1",
+    "ewd-document-store": "^1.24.0",
+    "ewd-memory-globals": "^1.0.3",
     "ewd-session": "^2.19.0",
     "glob": "^7.1.2",
     "jasmine": "^3.3.1",

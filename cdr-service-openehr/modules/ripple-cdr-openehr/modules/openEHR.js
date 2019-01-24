@@ -30,16 +30,26 @@
 
 'use strict';
 
-const logger = require('./logger');
-const ExecutionContext = require('./context');
-const NullCacheAdapter = require('./nullAdapter');
-const OpenEhrAdapter = require('./openEhrAdapter');
-const QewdCacheAdapter = require('./qewdAdapter');
+const { ExecutionContext, OpenEhrAdapter } = require('../lib/core');
+
+const adapter = new OpenEhrAdapter();
 
 module.exports = {
-  logger,
-  ExecutionContext,
-  NullCacheAdapter,
-  OpenEhrAdapter,
-  QewdCacheAdapter
+  init: function () {
+    adapter.ctx = new ExecutionContext(this);
+
+    return adapter;
+  },
+
+  request: function (params, userObj) {
+    adapter.request(params, userObj);
+  },
+
+  startSession: function (host, qewdSession, callback) {
+    adapter.startSession(host, qewdSession, callback);
+  },
+
+  stopSession: function (host, sessionId, qewdSession, callback = () => null) {
+    adapter.stopSession(host, sessionId, qewdSession, callback);
+  }
 };

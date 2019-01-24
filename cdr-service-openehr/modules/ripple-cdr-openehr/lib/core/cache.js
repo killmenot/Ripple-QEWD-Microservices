@@ -24,20 +24,23 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  18 December 2018
+  25 January 2019
 
 */
 
 'use strict';
 
 const { lazyLoadAdapter } = require('../shared/utils');
-const QewdCacheAdapter = require('./adapter');
+const NullCacheAdapter = require('./nullAdapter');
+const QewdCacheAdapter = require('./qewdAdapter');
 const logger = require('./logger');
 
 class CacheRegistry {
   constructor(ctx) {
     this.ctx = ctx;
-    this.adapter = new QewdCacheAdapter(ctx.qewdSession);
+    this.adapter = ctx.qewdSession
+      ? new QewdCacheAdapter(ctx.qewdSession)
+      : new NullCacheAdapter;
   }
 
   initialise(id) {

@@ -3,7 +3,7 @@
  ----------------------------------------------------------------------------
  | ripple-cdr-openehr: Ripple MicroServices for OpenEHR                     |
  |                                                                          |
- | Copyright (c) 2018 Ripple Foundation Community Interest Company          |
+ | Copyright (c) 2018-19 Ripple Foundation Community Interest Company       |
  | All rights reserved.                                                     |
  |                                                                          |
  | http://rippleosi.org                                                     |
@@ -24,20 +24,18 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  29 December 2018
+  25 January 2019
 
 */
 
 'use strict';
 
 const getBySourceId = require('./getBySourceId');
-const OpenEhrAdapter = require('./adapter');
 const post = require('./post');
 const query = require('./query');
 
 module.exports = {
   getBySourceId,
-  OpenEhrAdapter,
   post,
   put: post,
   query
