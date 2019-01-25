@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  14 December 2018
+  25 January 2019
 
 */
 
@@ -47,7 +47,9 @@ class GetFeedsSummaryCommand {
     const { phrFeedService } = this.ctx.services;
     const responseObj = await phrFeedService.getByEmail(this.session.email);
 
-    return responseObj;
+    return {
+      feeds: responseObj
+    };
   }
 }
 

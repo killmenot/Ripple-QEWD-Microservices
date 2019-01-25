@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  22 December 2018
+  25 January 2019
 
 */
 
@@ -77,20 +77,22 @@ describe('ripple-cdr-openehr/lib/handlers/feeds/getSummary', () => {
   });
 
   it('should return response object', async () => {
-    const responseObj = [
-      {
-        name: 'BBC News',
-        landingPageUrl: 'https://www.bbc.co.uk/news',
-        rssFeedUrl: 'https://www.bbc.co.uk/rss',
-        sourceId: 'eaf394a9-5e05-49c0-9c69-c710c77eda76'
-      },
-      {
-        name: 'ABC News',
-        landingPageUrl: 'https://www.abc.co.uk/news',
-        rssFeedUrl: 'https://www.abc.co.uk/rss',
-        sourceId: '33a93da2-6677-42a0-8b39-9d1e012dde12'
-      }
-    ];
+    const responseObj = {
+      feeds: [
+        {
+          name: 'BBC News',
+          landingPageUrl: 'https://www.bbc.co.uk/news',
+          rssFeedUrl: 'https://www.bbc.co.uk/rss',
+          sourceId: 'eaf394a9-5e05-49c0-9c69-c710c77eda76'
+        },
+        {
+          name: 'ABC News',
+          landingPageUrl: 'https://www.abc.co.uk/news',
+          rssFeedUrl: 'https://www.abc.co.uk/rss',
+          sourceId: '33a93da2-6677-42a0-8b39-9d1e012dde12'
+        }
+      ]
+    };
     command.execute.and.resolveValue(responseObj);
 
     await handler(args, finished);

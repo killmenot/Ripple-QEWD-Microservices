@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  22 December 2018
+  25 January 2019
 
 */
 
@@ -78,13 +78,15 @@ describe('ripple-cdr-openehr/lib/commands/feeds/getDetail', () => {
 
   it('should return feed', async () => {
     const expected = {
-      author: 'ivor.cox@phr.leeds.nhs',
-      name: 'ABC News',
-      landingPageUrl: 'https://www.abc.co.uk/news',
-      rssFeedUrl: 'https://www.abc.co.uk/rss',
-      email: 'john.doe@example.org',
-      sourceId: 'eaf394a9-5e05-49c0-9c69-c710c77eda76',
-      dateCreated: 1483228800000
+      feed: {
+        author: 'ivor.cox@phr.leeds.nhs',
+        name: 'ABC News',
+        landingPageUrl: 'https://www.abc.co.uk/news',
+        rssFeedUrl: 'https://www.abc.co.uk/rss',
+        email: 'john.doe@example.org',
+        sourceId: 'eaf394a9-5e05-49c0-9c69-c710c77eda76',
+        dateCreated: 1483228800000
+      }
     };
 
     const command = new GetFeedDetailCommand(ctx);

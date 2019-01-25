@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  17 December 2018
+  25 January 2019
 
 */
 
@@ -79,13 +79,15 @@ describe('ripple-cdr-openehr/lib/handlers/feeds/getDetail', () => {
 
   it('should return response object', async () => {
     const responseObj = {
-      author: 'ivor.cox@phr.leeds.nhs',
-      name: 'BBC News',
-      landingPageUrl: 'https://www.bbc.co.uk/news',
-      rssFeedUrl: 'https://www.bbc.co.uk/rss',
-      email: 'jane.doe@example.org',
-      sourceId: 'eaf394a9-5e05-49c0-9c69-c710c77eda76',
-      dateCreated: 1514764800000
+      feed: {
+        author: 'ivor.cox@phr.leeds.nhs',
+        name: 'BBC News',
+        landingPageUrl: 'https://www.bbc.co.uk/news',
+        rssFeedUrl: 'https://www.bbc.co.uk/rss',
+        email: 'jane.doe@example.org',
+        sourceId: 'eaf394a9-5e05-49c0-9c69-c710c77eda76',
+        dateCreated: 1514764800000
+      }
     };
     command.execute.and.resolveValue(responseObj);
 

@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  19 December 2018
+  25 January 2019
 
 */
 
@@ -58,9 +58,11 @@ class PostFeedCommand {
     };
     debug('create a new feed: %j', feed);
     const { phrFeedService } = this.ctx.services;
-    const responseObj = await phrFeedService.create(feed);
+    const sourceId = await phrFeedService.create(feed);
 
-    return responseObj;
+    return {
+      sourceId
+    };
   }
 }
 

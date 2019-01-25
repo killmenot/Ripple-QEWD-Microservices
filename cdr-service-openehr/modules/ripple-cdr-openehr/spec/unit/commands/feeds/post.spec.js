@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  19 December 2018
+  25 January 2019
 
 */
 
@@ -115,7 +115,9 @@ describe('ripple-cdr-openehr/lib/commands/feeds/post', () => {
   });
 
   it('should create feed and return response', async () => {
-    const expected = 'eaf394a9-5e05-49c0-9c69-c710c77eda76';
+    const expected = {
+      sourceId: 'eaf394a9-5e05-49c0-9c69-c710c77eda76'
+    };
 
     const sourceId = 'eaf394a9-5e05-49c0-9c69-c710c77eda76';
     phrFeedService.create.and.resolveValues(sourceId);

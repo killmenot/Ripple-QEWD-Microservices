@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  14 December 2018
+  25 January 2019
 
 */
 
@@ -52,7 +52,9 @@ class GetFeedDetailCommand {
     const { phrFeedService } = this.ctx.services;
     const responseObj = await phrFeedService.getBySourceId(sourceId);
 
-    return responseObj;
+    return {
+      feed: responseObj
+    };
   }
 }
 

@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  22 December 2018
+  25 January 2019
 
 */
 
@@ -52,7 +52,24 @@ describe('ripple-cdr-openehr/lib/commands/feeds/getSummary', () => {
   });
 
   it('should return feeds', async () => {
-    const expected = [
+    const expected = {
+      feeds: [
+        {
+          landingPageUrl: 'https://www.nytimes.com/section/health',
+          name: 'NYTimes.com',
+          rssFeedUrl: 'http://rss.nytimes.com/services/xml/rss/nyt/Health.xml',
+          sourceId: '0f7192e9-168e-4dea-812a-3e1d236ae46d'
+        },
+        {
+          landingPageUrl: 'https://www.leeds-live.co.uk/best-in-leeds/whats-on-news/',
+          name: 'Leeds Live - Whats on',
+          rssFeedUrl: 'https://www.leeds-live.co.uk/best-in-leeds/whats-on-news/?service=rss',
+          sourceId: '260a7be5-e00f-4b1e-ad58-27d95604d010'
+        }
+      ]
+    };
+
+    const feeds = [
       {
         landingPageUrl: 'https://www.nytimes.com/section/health',
         name: 'NYTimes.com',
@@ -67,7 +84,7 @@ describe('ripple-cdr-openehr/lib/commands/feeds/getSummary', () => {
       }
     ];
 
-    phrFeedService.getByEmail.and.resolveValue(expected);
+    phrFeedService.getByEmail.and.resolveValue(feeds);
 
     const command = new GetFeedsSummaryCommand(ctx, session);
     const actual = await command.execute();
