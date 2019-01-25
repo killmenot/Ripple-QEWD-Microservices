@@ -592,6 +592,27 @@ describe('ripple-cdr-openehr/lib/services/headingService', () => {
       expect(headingCache.bySourceId.get).toHaveBeenCalledWith('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d');
     });
 
+    it('should throw unprocessable entity error when heading not recognised, or no GET definition availables', async () => {
+      const dbData = {
+        heading: 'proms',
+        host: 'ethercis',
+        data: {
+          uid: '0f7192e9-168e-4dea-812a-3e1d236ae46d::vm01.ethercis.org::1'
+        }
+      };
+
+      headingCache.bySourceId.get.and.returnValue(dbData);
+
+      const sourceId = 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d';
+      const actual = headingService.getBySourceId(sourceId);
+
+      await expectAsync(actual).toBeRejectedWith(
+        new UnprocessableEntityError('heading proms not recognised, or no GET definition available')
+      );
+
+      expect(headingCache.bySourceId.get).toHaveBeenCalledWith('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d');
+    });
+
     describe('pulsetile', () => {
       let dbData;
 
@@ -633,12 +654,80 @@ describe('ripple-cdr-openehr/lib/services/headingService', () => {
         expect(actual).toEqual(expected);
       });
 
+      it('should return detail (mapped from discovery)', async () => {
+        const expected = {
+          source: 'GP',
+          sourceId: 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d',
+          procedure_name: 'quux',
+          name: 'John Doe',
+          date: '2019-01-01',
+          time: '15:00'
+        };
+
+        headingCache.bySourceId.get.and.returnValue(dbData);
+        jumperService.check.and.returnValue({ ok: false });
+        discoveryDb.checkBySourceId.and.returnValue(true);
+
+        const sourceId = 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d';
+        const actual = await headingService.getBySourceId(sourceId);
+
+        expect(headingCache.bySourceId.get).toHaveBeenCalledWith('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d');
+        expect(jumperService.check).toHaveBeenCalledWith('procedures', 'getBySourceId');
+        expect(discoveryDb.checkBySourceId).toHaveBeenCalledWith('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d');
+
+        expect(actual).toEqual(expected);
+      });
+
       it('should return synopsis', async () => {
         const expected = {
           sourceId: 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d',
           source: 'ethercis',
           text: 'quux'
         };
+
+        headingCache.bySourceId.get.and.returnValue(dbData);
+        jumperService.check.and.returnValue({ ok: false });
+        discoveryDb.checkBySourceId.and.returnValue(false);
+
+        const sourceId = 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d';
+        const actual = await headingService.getBySourceId(sourceId, 'synopsis');
+
+        expect(headingCache.bySourceId.get).toHaveBeenCalledWith('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d');
+        expect(jumperService.check).toHaveBeenCalledWith('procedures', 'getBySourceId');
+        expect(discoveryDb.checkBySourceId).toHaveBeenCalledWith('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d');
+
+        expect(actual).toEqual(expected);
+      });
+
+      it('should return synopsis (mapped from discovery)', async () => {
+        const expected = {
+          sourceId: 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d',
+          source: 'GP',
+          text: 'quux'
+        };
+
+        headingCache.bySourceId.get.and.returnValue(dbData);
+        jumperService.check.and.returnValue({ ok: false });
+        discoveryDb.checkBySourceId.and.returnValue(true);
+
+        const sourceId = 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d';
+        const actual = await headingService.getBySourceId(sourceId, 'synopsis');
+
+        expect(headingCache.bySourceId.get).toHaveBeenCalledWith('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d');
+        expect(jumperService.check).toHaveBeenCalledWith('procedures', 'getBySourceId');
+        expect(discoveryDb.checkBySourceId).toHaveBeenCalledWith('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d');
+
+        expect(actual).toEqual(expected);
+      });
+
+      it('should return synopsis (no values)', async () => {
+        const expected = {
+          sourceId: 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d',
+          source: 'ethercis',
+          text: ''
+        };
+
+        delete dbData.pulsetile.procedure_name;
 
         headingCache.bySourceId.get.and.returnValue(dbData);
         jumperService.check.and.returnValue({ ok: false });
@@ -662,6 +751,54 @@ describe('ripple-cdr-openehr/lib/services/headingService', () => {
           date: '2019-01-01',
           time: '15:00'
         };
+
+        headingCache.bySourceId.get.and.returnValue(dbData);
+        jumperService.check.and.returnValue({ ok: false });
+        discoveryDb.checkBySourceId.and.returnValue(false);
+
+        const sourceId = 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d';
+        const actual = await headingService.getBySourceId(sourceId, 'summary');
+
+        expect(headingCache.bySourceId.get).toHaveBeenCalledWith('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d');
+        expect(jumperService.check).toHaveBeenCalledWith('procedures', 'getBySourceId');
+        expect(discoveryDb.checkBySourceId).toHaveBeenCalledWith('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d');
+
+        expect(actual).toEqual(expected);
+      });
+
+      it('should return summary (mapped from discovery)', async () => {
+        const expected = {
+          sourceId: 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d',
+          source: 'GP',
+          name: 'John Doe',
+          date: '2019-01-01',
+          time: '15:00'
+        };
+
+        headingCache.bySourceId.get.and.returnValue(dbData);
+        jumperService.check.and.returnValue({ ok: false });
+        discoveryDb.checkBySourceId.and.returnValue(true);
+
+        const sourceId = 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d';
+        const actual = await headingService.getBySourceId(sourceId, 'summary');
+
+        expect(headingCache.bySourceId.get).toHaveBeenCalledWith('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d');
+        expect(jumperService.check).toHaveBeenCalledWith('procedures', 'getBySourceId');
+        expect(discoveryDb.checkBySourceId).toHaveBeenCalledWith('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d');
+
+        expect(actual).toEqual(expected);
+      });
+
+      it('should return summary (no values)', async () => {
+        const expected = {
+          sourceId: 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d',
+          source: 'ethercis',
+          name: '',
+          date: '2019-01-01',
+          time: '15:00'
+        };
+
+        delete dbData.pulsetile.name;
 
         headingCache.bySourceId.get.and.returnValue(dbData);
         jumperService.check.and.returnValue({ ok: false });
@@ -731,12 +868,85 @@ describe('ripple-cdr-openehr/lib/services/headingService', () => {
         expect(actual).toEqual(expected);
       });
 
+      it('should return detail (mapped from discovery)', async () => {
+        const expected = {
+          source: 'GP',
+          sourceId: 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d',
+          problem: 'foo bar baz',
+          dateOfOnset: '2018-02-01T12:00:00Z',
+          foo: 'bar'
+        };
+
+        headingCache.bySourceId.get.and.returnValue(dbData);
+        jumperService.check.and.returnValue(jumperObj);
+        jumperService.getBySourceId.and.resolveValue(jumperDataObj);
+        discoveryDb.checkBySourceId.and.returnValue(true);
+
+        const sourceId = 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d';
+        const actual = await headingService.getBySourceId(sourceId);
+
+        expect(headingCache.bySourceId.get).toHaveBeenCalledWith('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d');
+        expect(jumperService.check).toHaveBeenCalledWith('problems', 'getBySourceId');
+        expect(jumperService.getBySourceId).toHaveBeenCalledWith('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d');
+        expect(discoveryDb.checkBySourceId).toHaveBeenCalledWith('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d');
+
+        expect(actual).toEqual(expected);
+      });
+
       it('should return synopsis', async () => {
         const expected = {
           sourceId: 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d',
           source: 'ethercis',
           text: 'foo bar baz'
         };
+
+        headingCache.bySourceId.get.and.returnValue(dbData);
+        jumperService.check.and.returnValue(jumperObj);
+        jumperService.getBySourceId.and.resolveValue(jumperDataObj);
+        discoveryDb.checkBySourceId.and.returnValue(false);
+
+        const sourceId = 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d';
+        const actual = await headingService.getBySourceId(sourceId, 'synopsis');
+
+        expect(headingCache.bySourceId.get).toHaveBeenCalledWith('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d');
+        expect(jumperService.check).toHaveBeenCalledWith('problems', 'getBySourceId');
+        expect(jumperService.getBySourceId).toHaveBeenCalledWith('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d');
+        expect(discoveryDb.checkBySourceId).toHaveBeenCalledWith('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d');
+
+        expect(actual).toEqual(expected);
+      });
+
+      it('should return synopsis (mapped from discovery)', async () => {
+        const expected = {
+          sourceId: 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d',
+          source: 'GP',
+          text: 'foo bar baz'
+        };
+
+        headingCache.bySourceId.get.and.returnValue(dbData);
+        jumperService.check.and.returnValue(jumperObj);
+        jumperService.getBySourceId.and.resolveValue(jumperDataObj);
+        discoveryDb.checkBySourceId.and.returnValue(true);
+
+        const sourceId = 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d';
+        const actual = await headingService.getBySourceId(sourceId, 'synopsis');
+
+        expect(headingCache.bySourceId.get).toHaveBeenCalledWith('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d');
+        expect(jumperService.check).toHaveBeenCalledWith('problems', 'getBySourceId');
+        expect(jumperService.getBySourceId).toHaveBeenCalledWith('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d');
+        expect(discoveryDb.checkBySourceId).toHaveBeenCalledWith('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d');
+
+        expect(actual).toEqual(expected);
+      });
+
+      it('should return synopsis (no values)', async () => {
+        const expected = {
+          sourceId: 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d',
+          source: 'ethercis',
+          text: ''
+        };
+
+        delete jumperDataObj.problem;
 
         headingCache.bySourceId.get.and.returnValue(dbData);
         jumperService.check.and.returnValue(jumperObj);
@@ -761,6 +971,56 @@ describe('ripple-cdr-openehr/lib/services/headingService', () => {
           problem: 'foo bar baz',
           dateOfOnset: '2018-02-01T12:00:00Z',
         };
+
+        headingCache.bySourceId.get.and.returnValue(dbData);
+        jumperService.check.and.returnValue(jumperObj);
+        jumperService.getBySourceId.and.resolveValue(jumperDataObj);
+        discoveryDb.checkBySourceId.and.returnValue(false);
+
+        const sourceId = 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d';
+        const actual = await headingService.getBySourceId(sourceId, 'summary');
+
+        expect(headingCache.bySourceId.get).toHaveBeenCalledWith('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d');
+        expect(jumperService.check).toHaveBeenCalledWith('problems', 'getBySourceId');
+        expect(jumperService.getBySourceId).toHaveBeenCalledWith('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d');
+        expect(discoveryDb.checkBySourceId).toHaveBeenCalledWith('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d');
+
+        expect(actual).toEqual(expected);
+      });
+
+      it('should return summary (mapped from discovery)', async () => {
+        const expected = {
+          sourceId: 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d',
+          source: 'GP',
+          problem: 'foo bar baz',
+          dateOfOnset: '2018-02-01T12:00:00Z',
+        };
+
+        headingCache.bySourceId.get.and.returnValue(dbData);
+        jumperService.check.and.returnValue(jumperObj);
+        jumperService.getBySourceId.and.resolveValue(jumperDataObj);
+        discoveryDb.checkBySourceId.and.returnValue(true);
+
+        const sourceId = 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d';
+        const actual = await headingService.getBySourceId(sourceId, 'summary');
+
+        expect(headingCache.bySourceId.get).toHaveBeenCalledWith('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d');
+        expect(jumperService.check).toHaveBeenCalledWith('problems', 'getBySourceId');
+        expect(jumperService.getBySourceId).toHaveBeenCalledWith('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d');
+        expect(discoveryDb.checkBySourceId).toHaveBeenCalledWith('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d');
+
+        expect(actual).toEqual(expected);
+      });
+
+      it('should return summary (no values)', async () => {
+        const expected = {
+          sourceId: 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d',
+          source: 'ethercis',
+          problem: '',
+          dateOfOnset: '2018-02-01T12:00:00Z',
+        };
+
+        delete jumperDataObj.problem;
 
         headingCache.bySourceId.get.and.returnValue(dbData);
         jumperService.check.and.returnValue(jumperObj);
@@ -858,12 +1118,89 @@ describe('ripple-cdr-openehr/lib/services/headingService', () => {
         expect(actual).toEqual(expected);
       });
 
+      it('should return detail (mapped from discovery)', async () => {
+        const expected = {
+          source: 'GP',
+          sourceId: 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d',
+          noteType: 'some type',
+          notes: 'some personal notes',
+          author: 'Foo Bar',
+          dateCreated: 1517486400000
+        };
+
+        headingCache.bySourceId.get.and.returnValue(dbData);
+        jumperService.check.and.returnValue({ ok: false });
+        discoveryDb.checkBySourceId.and.returnValue(true);
+
+        const sourceId = 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d';
+        const actual = await headingService.getBySourceId(sourceId);
+
+        expect(headingCache.bySourceId.get).toHaveBeenCalledWith('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d');
+        expect(jumperService.check).toHaveBeenCalledWith('personalnotes', 'getBySourceId');
+        expect(headingCache.bySourceId.set).toHaveBeenCalledWith(
+          'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d', jasmine.any(Object)
+        );
+        expect(discoveryDb.checkBySourceId).toHaveBeenCalledWith('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d');
+
+        expect(actual).toEqual(expected);
+      });
+
       it('should return synopsis', async () => {
         const expected = {
           source: 'ethercis',
           sourceId: 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d',
           text: 'some type'
         };
+
+        headingCache.bySourceId.get.and.returnValue(dbData);
+        jumperService.check.and.returnValue({ ok: false });
+        discoveryDb.checkBySourceId.and.returnValue(false);
+
+        const sourceId = 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d';
+        const actual = await headingService.getBySourceId(sourceId, 'synopsis');
+
+        expect(headingCache.bySourceId.get).toHaveBeenCalledWith('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d');
+        expect(jumperService.check).toHaveBeenCalledWith('personalnotes', 'getBySourceId');
+        expect(headingCache.bySourceId.set).toHaveBeenCalledWith(
+          'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d', jasmine.any(Object)
+        );
+        expect(discoveryDb.checkBySourceId).toHaveBeenCalledWith('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d');
+
+        expect(actual).toEqual(expected);
+      });
+
+      it('should return synopsis (mapped from discovery)', async () => {
+        const expected = {
+          source: 'GP',
+          sourceId: 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d',
+          text: 'some type'
+        };
+
+        headingCache.bySourceId.get.and.returnValue(dbData);
+        jumperService.check.and.returnValue({ ok: false });
+        discoveryDb.checkBySourceId.and.returnValue(true);
+
+        const sourceId = 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d';
+        const actual = await headingService.getBySourceId(sourceId, 'synopsis');
+
+        expect(headingCache.bySourceId.get).toHaveBeenCalledWith('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d');
+        expect(jumperService.check).toHaveBeenCalledWith('personalnotes', 'getBySourceId');
+        expect(headingCache.bySourceId.set).toHaveBeenCalledWith(
+          'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d', jasmine.any(Object)
+        );
+        expect(discoveryDb.checkBySourceId).toHaveBeenCalledWith('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d');
+
+        expect(actual).toEqual(expected);
+      });
+
+      it('should return synopsis (no values)', async () => {
+        const expected = {
+          source: 'ethercis',
+          sourceId: 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d',
+          text: ''
+        };
+
+        delete dbData.data.type;
 
         headingCache.bySourceId.get.and.returnValue(dbData);
         jumperService.check.and.returnValue({ ok: false });
@@ -907,12 +1244,61 @@ describe('ripple-cdr-openehr/lib/services/headingService', () => {
 
         expect(actual).toEqual(expected);
       });
-    });
 
-    xit('check if this is a mapped record from discovery', () => null);
-    xit('jumper fields for another types', () => null);
-    xit('empty props', () => null);
-    xit('heading not recognised, or no GET definition availables', () => null);
+      it('should return summary (mapped from discovery)', async () => {
+        const expected = {
+          source: 'GP',
+          sourceId: 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d',
+          noteType: 'some type',
+          author: 'Foo Bar',
+          dateCreated: 1517486400000
+        };
+
+        headingCache.bySourceId.get.and.returnValue(dbData);
+        jumperService.check.and.returnValue({ ok: false });
+        discoveryDb.checkBySourceId.and.returnValue(true);
+
+        const sourceId = 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d';
+        const actual = await headingService.getBySourceId(sourceId, 'summary');
+
+        expect(headingCache.bySourceId.get).toHaveBeenCalledWith('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d');
+        expect(jumperService.check).toHaveBeenCalledWith('personalnotes', 'getBySourceId');
+        expect(headingCache.bySourceId.set).toHaveBeenCalledWith(
+          'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d', jasmine.any(Object)
+        );
+        expect(discoveryDb.checkBySourceId).toHaveBeenCalledWith('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d');
+
+        expect(actual).toEqual(expected);
+      });
+
+      it('should return summary (no values)', async () => {
+        const expected = {
+          source: 'ethercis',
+          sourceId: 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d',
+          noteType: 'some type',
+          author: '',
+          dateCreated: 1517486400000
+        };
+
+        delete dbData.data.author;
+
+        headingCache.bySourceId.get.and.returnValue(dbData);
+        jumperService.check.and.returnValue({ ok: false });
+        discoveryDb.checkBySourceId.and.returnValue(false);
+
+        const sourceId = 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d';
+        const actual = await headingService.getBySourceId(sourceId, 'summary');
+
+        expect(headingCache.bySourceId.get).toHaveBeenCalledWith('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d');
+        expect(jumperService.check).toHaveBeenCalledWith('personalnotes', 'getBySourceId');
+        expect(headingCache.bySourceId.set).toHaveBeenCalledWith(
+          'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d', jasmine.any(Object)
+        );
+        expect(discoveryDb.checkBySourceId).toHaveBeenCalledWith('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d');
+
+        expect(actual).toEqual(expected);
+      });
+    });
   });
 
   describe('#getSummary', () => {

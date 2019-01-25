@@ -71,14 +71,13 @@ describe('ripple-cdr-openehr/modules/deleteSessionCaches', () => {
     const heading = 'procedures';
     const host = 'ethercis';
 
-    // TODO: remove callback
-    deleteSessionCaches.call(q, patientId, heading, host, () => {
-      const byPatientIdCache = sessions[0].data.$(['headings', 'byPatientId', patientId, heading]);
-      expect(byPatientIdCache.$(['byDate', date, sourceId]).exists).toBeFalsy();
-      expect(byPatientIdCache.$(['byHost', host, sourceId]).exists).toBeFalsy();
+    deleteSessionCaches.call(q, patientId, heading, host);
 
-      const bySourceIdCache = sessions[0].data.$(['headings', 'bySourceId']);
-      expect(bySourceIdCache.$(sourceId).exists).toBeFalsy();
-    });
+    const byPatientIdCache = sessions[0].data.$(['headings', 'byPatientId', patientId, heading]);
+    expect(byPatientIdCache.$(['byDate', date, sourceId]).exists).toBeFalsy();
+    expect(byPatientIdCache.$(['byHost', host, sourceId]).exists).toBeFalsy();
+
+    const bySourceIdCache = sessions[0].data.$(['headings', 'bySourceId']);
+    expect(bySourceIdCache.$(sourceId).exists).toBeFalsy();
   });
 });

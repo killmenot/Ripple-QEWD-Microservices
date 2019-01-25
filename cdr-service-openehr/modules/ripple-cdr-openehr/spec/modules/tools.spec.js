@@ -24,52 +24,44 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  25 January 2019
+ 25 January 2019
 
 */
 
 'use strict';
 
-module.exports = {
-  name: 'personalnotes',
-  textFieldName: 'noteType',
-  headingTableFields: ['noteType', 'author', 'dateCreated'],
+const tools = require('../../modules/tools');
 
-  get: {
+describe('ripple-cdr-openehr/modules/tools', () => {
+  describe('#isPatientIdValid', () => {
+    it('should return patientId must be defined', () => {
+      const expected = {
+        error: 'patientId undefined must be defined'
+      };
 
-    transformTemplate: {
-      noteType:    '{{type}}',
-      notes:       '{{personal_note}}',
-      author:      '{{author}}',
-      dateCreated: '=> getRippleTime(date_created)',
-      source:      '=> getSource()',
-      sourceId:    '=> getUid(uid)'
-    }
+      const actual = tools.isPatientIdValid();
 
-  },
+      expect(actual).toEqual(expected);
+    });
 
-  post: {
-    templateId: 'RIPPLE - Personal Notes.v1',
+    it('should return patientId is invalid', () => {
+      const expected = {
+        error: 'patientId abcd is invalid'
+      };
 
-    transformTemplate: {
-      ctx: {
-        composer_name:               '=> either(author, "Dr Tony Shannon")',
-        'health_care_facility|id':   '=> either(healthcareFacilityId, "999999-345")',
-        'health_care_facility|name': '=> either(healthcareFacilityName, "Rippleburgh GP Practice")',
-        id_namespace:                'NHS-UK',
-        id_scheme:                   '2.16.840.1.113883.2.1.4.3',
-        language:                    'en',
-        territory:                   'GB',
-        time:                        '=> now()'
-      },
-      personal_notes: {
-        clinical_synopsis: [
-          {
-            '_name|value': '=> either(noteType, "undefined")',
-            notes:         '=> either(notes, "undefined")',
-          }
-        ]
-      }
-    }
-  }
-};
+      const actual = tools.isPatientIdValid('abcd');
+
+      expect(actual).toEqual(expected);
+    });
+
+    it('should return ok', () => {
+      const expected = {
+        ok: true
+      };
+
+      const actual = tools.isPatientIdValid('9999999000');
+
+      expect(actual).toEqual(expected);
+    });
+  });
+});

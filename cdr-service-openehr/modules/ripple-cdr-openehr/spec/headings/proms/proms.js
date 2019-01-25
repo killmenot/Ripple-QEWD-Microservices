@@ -31,45 +31,7 @@
 'use strict';
 
 module.exports = {
-  name: 'personalnotes',
-  textFieldName: 'noteType',
-  headingTableFields: ['noteType', 'author', 'dateCreated'],
-
-  get: {
-
-    transformTemplate: {
-      noteType:    '{{type}}',
-      notes:       '{{personal_note}}',
-      author:      '{{author}}',
-      dateCreated: '=> getRippleTime(date_created)',
-      source:      '=> getSource()',
-      sourceId:    '=> getUid(uid)'
-    }
-
-  },
-
-  post: {
-    templateId: 'RIPPLE - Personal Notes.v1',
-
-    transformTemplate: {
-      ctx: {
-        composer_name:               '=> either(author, "Dr Tony Shannon")',
-        'health_care_facility|id':   '=> either(healthcareFacilityId, "999999-345")',
-        'health_care_facility|name': '=> either(healthcareFacilityName, "Rippleburgh GP Practice")',
-        id_namespace:                'NHS-UK',
-        id_scheme:                   '2.16.840.1.113883.2.1.4.3',
-        language:                    'en',
-        territory:                   'GB',
-        time:                        '=> now()'
-      },
-      personal_notes: {
-        clinical_synopsis: [
-          {
-            '_name|value': '=> either(noteType, "undefined")',
-            notes:         '=> either(notes, "undefined")',
-          }
-        ]
-      }
-    }
-  }
+  name: 'proms',
+  textFieldName: 'name',
+  headingTableFields: ['name', 'score']
 };

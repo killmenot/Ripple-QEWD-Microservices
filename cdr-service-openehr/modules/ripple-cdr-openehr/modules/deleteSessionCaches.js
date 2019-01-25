@@ -30,10 +30,9 @@
 
 'use strict';
 
-const { ExecutionContext } = require('../lib/core');
+const { ExecutionContext, logger } = require('../lib/core');
 
-// TODO: remove callback
-function deleteSessionCaches(patientId, heading, host, callback) {
+function deleteSessionCaches(patientId, heading, host, callback = () => null) {
   const ctx = new ExecutionContext(this);
   const { cacheService } = ctx.services;
 

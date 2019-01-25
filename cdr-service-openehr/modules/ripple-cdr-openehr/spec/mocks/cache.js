@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  29 December 2018
+  25 January 2019
 
 */
 
@@ -51,6 +51,16 @@ function getMixins(id, dir) {
   }
 }
 
+function createSpyObj(baseName, methodNames) {
+  // methodNames must contain at least one method defined
+  // otherwise target be undefined
+  if (methodNames.length === 0) {
+    methodNames.push(Date.now().toString());
+  }
+
+  return jasmine.createSpyObj(baseName, methodNames);
+}
+
 class CacheRegistryMock {
   constructor() {
     this.freezed = false;
@@ -60,14 +70,14 @@ class CacheRegistryMock {
     if (this.freezed) return;
 
     const methods = getMethods(id, 'cache');
-    const spyObj = jasmine.createSpyObj(id, methods);
+    const spyObj = createSpyObj(id, methods);
 
     const mixins = getMixins(id, 'cache');
     Object.keys(mixins).forEach(key => {
       const mixin = mixins[key]();
       const mixinMethods = Reflect.ownKeys(mixin);
 
-      spyObj[key] = jasmine.createSpyObj(key, mixinMethods);
+      spyObj[key] = createSpyObj(key, mixinMethods);
     });
 
     return spyObj;

@@ -24,6 +24,7 @@
   "headings": {
     "counts": true,
     "procedures": true,
+    "proms": true,
     "vaccinations": {
       "template": {
         "name": "IDCR - Immunisation summary.v0"

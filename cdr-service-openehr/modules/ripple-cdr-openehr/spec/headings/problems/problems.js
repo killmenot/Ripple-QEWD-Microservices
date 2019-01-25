@@ -1,9 +1,9 @@
 /*
 
  ----------------------------------------------------------------------------
- | qewd-ripple: QEWD-based Middle Tier for Ripple OSI                       |
+ | ripple-cdr-openehr: Ripple MicroServices for OpenEHR                     |
  |                                                                          |
- | Copyright (c) 2016-17 Ripple Foundation Community Interest Company       |
+ | Copyright (c) 2018-19 Ripple Foundation Community Interest Company       |
  | All rights reserved.                                                     |
  |                                                                          |
  | http://rippleosi.org                                                     |
@@ -24,9 +24,11 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-18 May 2017
+  25 January 2019
 
 */
+
+'use strict';
 
 module.exports = {
   name: 'problems',
