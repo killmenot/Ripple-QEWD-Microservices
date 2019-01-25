@@ -1165,6 +1165,24 @@ describe('ripple-cdr-openehr/lib/services/headingService', () => {
       expect(actual).toEqual(expected);
     });
 
+    it('should return ok when no data returned (proccessed by jumper query)', async () => {
+      const expected = {
+        ok: true
+      };
+
+      headingCache.byHost.exists.and.returnValue(false);
+      headingService.query.and.resolveValue();
+
+      const host = 'ethercis';
+      const patientId = 9999999000;
+      const heading = 'procedures';
+      const actual = await headingService.fetch(host, patientId, heading);
+
+      expect(headingService.query).toHaveBeenCalledWith('ethercis', 9999999000, 'procedures');
+
+      expect(actual).toEqual(expected);
+    });
+
     it('should return ok and cache fetched records', async () => {
       const expected = {
         ok: true

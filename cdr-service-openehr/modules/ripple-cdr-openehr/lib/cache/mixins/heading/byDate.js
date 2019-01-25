@@ -86,7 +86,7 @@ module.exports = (adapter) => {
 
       let count = 0;
 
-      byDate.forEachChild({direction: 'reverse'}, (date, node) => {
+      byDate.forEachChild({direction}, (date, node) => {
         node.forEachChild((sourceId) => {
           sourceIds.push(sourceId);
           count++;
