@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  31 December 2018
+  25 January 2019
 
 */
 
@@ -53,9 +53,9 @@ class HeadingCache {
    * @param  {string} host
    * @param  {string|int} patientId
    * @param  {string} heading
-   * @return {Promise}
+   * @return {void}
    */
-  async deleteAll(host, patientId, heading) {
+  deleteAll(host, patientId, heading) {
     logger.info('cache/headingCache|deleteAll', { host, patientId, heading });
 
     const qewdSession = this.adapter.qewdSession;

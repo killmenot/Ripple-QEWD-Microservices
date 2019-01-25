@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  30 December 2018
+  25 January 2019
 
 */
 
@@ -88,7 +88,7 @@ describe('ripple-cdr-openehr/lib/db/nhsNumberDb', () => {
 
       const host = 'foo';
       const patientId = 9999999000;
-      const actual = await nhsNumberDb.getEhrId(host, patientId);
+      const actual = nhsNumberDb.getEhrId(host, patientId);
 
       expect(actual).toEqual(expected);
     });
@@ -98,7 +98,7 @@ describe('ripple-cdr-openehr/lib/db/nhsNumberDb', () => {
 
       const host = 'marand';
       const patientId = 9999999000;
-      const actual = await nhsNumberDb.getEhrId(host, patientId);
+      const actual = nhsNumberDb.getEhrId(host, patientId);
 
       expect(actual).toEqual(expected);
     });
@@ -110,7 +110,7 @@ describe('ripple-cdr-openehr/lib/db/nhsNumberDb', () => {
 
       const host = 'ethercis';
       const ehrId = 'foo';
-      const actual = await nhsNumberDb.getPatientId(host, ehrId);
+      const actual = nhsNumberDb.getPatientId(host, ehrId);
 
       expect(actual).toEqual(expected);
     });
@@ -120,7 +120,7 @@ describe('ripple-cdr-openehr/lib/db/nhsNumberDb', () => {
 
       const host = 'marand';
       const ehrId = '188a6bbe-d823-4fca-a79f-11c64af5c2e6';
-      const actual = await nhsNumberDb.getPatientId(host, ehrId);
+      const actual = nhsNumberDb.getPatientId(host, ehrId);
 
       expect(actual).toEqual(expected);
     });
@@ -132,7 +132,7 @@ describe('ripple-cdr-openehr/lib/db/nhsNumberDb', () => {
       const patientId = 9999999111;
       const ehrId = '0f7192e9-168e-4dea-812a-3e1d236ae46d';
 
-      await nhsNumberDb.insert(host, patientId, ehrId);
+      nhsNumberDb.insert(host, patientId, ehrId);
 
       const byNHSNo = nhsNoMap.$(['byNHSNo', '9999999111', 'marand']);
       expect(byNHSNo.value).toEqual('0f7192e9-168e-4dea-812a-3e1d236ae46d');

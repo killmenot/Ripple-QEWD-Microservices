@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  30 December 2018
+  25 January 2019
 
 */
 
@@ -47,9 +47,9 @@ class NhsNumberDb {
    *
    * @param  {string} host
    * @param  {string|int} patientId
-   * @return {Promise.<string|null>}
+   * @return {string|null}
    */
-  async getEhrId(host, patientId) {
+  getEhrId(host, patientId) {
     logger.info('db/nhsNumberDb|getEhrId', { host, patientId });
 
     const key = ['byNHSNo', patientId, host];
@@ -64,9 +64,9 @@ class NhsNumberDb {
    *
    * @param  {string} host
    * @param  {string} ehrId
-   * @return {Promise.<string|int|null>}
+   * @return {string|int|null}
    */
-  async getPatientId(host, ehrId) {
+  getPatientId(host, ehrId) {
     logger.info('db/nhsNumberDb|getEhrId', { host, ehrId });
 
     const key = ['byEhrId', ehrId, host];
@@ -82,9 +82,9 @@ class NhsNumberDb {
    * @param  {string} host
    * @param  {string|int} patientId
    * @param  {string} ehrId
-   * @return {Promise}
+   * @return {void}
    */
-  async insert(host, patientId, ehrId) {
+  insert(host, patientId, ehrId) {
     logger.info('db/nhsNumberDb|getEhrId', { host, patientId, ehrId });
 
     this.nhsNoMap.$(['byNHSNo', patientId, host]).value = ehrId;

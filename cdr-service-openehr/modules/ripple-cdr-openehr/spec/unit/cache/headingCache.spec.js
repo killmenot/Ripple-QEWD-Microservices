@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  31 December 2018
+  25 January 2019
 
 */
 
@@ -169,7 +169,7 @@ describe('ripple-cdr-openehr/lib/cache/headingCache', () => {
       const patientId = 9999999000;
       const heading = 'procedures';
 
-      await headingCache.deleteAll(host, patientId, heading);
+      headingCache.deleteAll(host, patientId, heading);
 
       const actual = qewdSession.data.$('headings').getDocument();
 
@@ -225,7 +225,7 @@ describe('ripple-cdr-openehr/lib/cache/headingCache', () => {
         const sourceId = 'ethercis-33a93da2-6677-42a0-8b39-9d1e012dde12';
         const date = 1514734500000;
 
-        await headingCache.byDate.set(patientId, heading, sourceId, date);
+        headingCache.byDate.set(patientId, heading, sourceId, date);
 
         const actual = qewdSession.data.$('headings').getDocument();
 
@@ -259,7 +259,7 @@ describe('ripple-cdr-openehr/lib/cache/headingCache', () => {
         const sourceId = 'ethercis-33a93da2-6677-42a0-8b39-9d1e012dde12';
         const date = 1514734500000;
 
-        await headingCache.byDate.delete(patientId, heading, sourceId, date);
+        headingCache.byDate.delete(patientId, heading, sourceId, date);
 
         const actual = qewdSession.data.$('headings').getDocument();
 
@@ -279,7 +279,7 @@ describe('ripple-cdr-openehr/lib/cache/headingCache', () => {
         const patientId = 9999999000;
         const heading = 'procedures';
 
-        const actual = await headingCache.byDate.getAllSourceIds(patientId, heading, { limit: 2 });
+        const actual = headingCache.byDate.getAllSourceIds(patientId, heading, { limit: 2 });
 
         expect(actual).toEqual(expected);
       });
@@ -325,7 +325,7 @@ describe('ripple-cdr-openehr/lib/cache/headingCache', () => {
         const heading = 'procedures';
         const sourceId = 'ethercis-eaf394a9-5e05-49c0-9c69-c710c77eda76';
 
-        await headingCache.byHeading.delete(heading, sourceId);
+        headingCache.byHeading.delete(heading, sourceId);
 
         const actual = qewdSession.data.$('headings').getDocument();
 
@@ -347,7 +347,7 @@ describe('ripple-cdr-openehr/lib/cache/headingCache', () => {
 
         const heading = 'procedures';
 
-        await headingCache.byHeading.deleteAll(heading);
+        headingCache.byHeading.deleteAll(heading);
 
         const actual = qewdSession.data.$('headings').getDocument();
 
@@ -404,7 +404,7 @@ describe('ripple-cdr-openehr/lib/cache/headingCache', () => {
         const sourceId = 'ethercis-33a93da2-6677-42a0-8b39-9d1e012dde12';
         const host = 'ethercis';
 
-        await headingCache.byHost.set(patientId, heading, sourceId, host);
+        headingCache.byHost.set(patientId, heading, sourceId, host);
 
         const actual = qewdSession.data.$('headings').getDocument();
 
@@ -438,7 +438,7 @@ describe('ripple-cdr-openehr/lib/cache/headingCache', () => {
         const sourceId = 'ethercis-33a93da2-6677-42a0-8b39-9d1e012dde12';
         const host = 'ethercis';
 
-        await headingCache.byHost.delete(patientId, heading, sourceId, host);
+        headingCache.byHost.delete(patientId, heading, sourceId, host);
 
         const actual = qewdSession.data.$('headings').getDocument();
 
@@ -456,7 +456,7 @@ describe('ripple-cdr-openehr/lib/cache/headingCache', () => {
         const heading = 'procedures';
         const host = 'foo';
 
-        const actual = await headingCache.byHost.exists(patientId, heading, host);
+        const actual = headingCache.byHost.exists(patientId, heading, host);
 
         expect(actual).toEqual(expected);
       });
@@ -470,7 +470,7 @@ describe('ripple-cdr-openehr/lib/cache/headingCache', () => {
         const heading = 'procedures';
         const host = 'ethercis';
 
-        const actual = await headingCache.byHost.exists(patientId, heading, host);
+        const actual = headingCache.byHost.exists(patientId, heading, host);
 
         expect(actual).toEqual(expected);
       });
@@ -489,7 +489,7 @@ describe('ripple-cdr-openehr/lib/cache/headingCache', () => {
         const patientId = 9999999000;
         const heading = 'procedures';
 
-        const actual = await headingCache.byHost.getAllSourceIds(patientId, heading);
+        const actual = headingCache.byHost.getAllSourceIds(patientId, heading);
 
         expect(actual).toEqual(expected);
       });
@@ -537,7 +537,7 @@ describe('ripple-cdr-openehr/lib/cache/headingCache', () => {
         const data = {
           text: 'quux'
         };
-        await headingCache.bySourceId.set(sourceId, data);
+        headingCache.bySourceId.set(sourceId, data);
 
         const actual = qewdSession.data.$('headings').getDocument();
 
@@ -565,7 +565,7 @@ describe('ripple-cdr-openehr/lib/cache/headingCache', () => {
         const data = {
           text: 'quux'
         };
-        await headingCache.bySourceId.set(sourceId, data);
+        headingCache.bySourceId.set(sourceId, data);
 
         const actual = qewdSession.data.$('headings').getDocument();
 
@@ -580,7 +580,7 @@ describe('ripple-cdr-openehr/lib/cache/headingCache', () => {
         seeds();
 
         const sourceId = 'ethercis-foo-bar-baz-quux';
-        const actual = await headingCache.bySourceId.get(sourceId);
+        const actual = headingCache.bySourceId.get(sourceId);
 
         expect(actual).toEqual(expected);
       });
@@ -593,7 +593,7 @@ describe('ripple-cdr-openehr/lib/cache/headingCache', () => {
         seeds();
 
         const sourceId = 'ethercis-eaf394a9-5e05-49c0-9c69-c710c77eda76';
-        const actual = await headingCache.bySourceId.get(sourceId);
+        const actual = headingCache.bySourceId.get(sourceId);
 
         expect(actual).toEqual(expected);
       });
@@ -615,7 +615,7 @@ describe('ripple-cdr-openehr/lib/cache/headingCache', () => {
         seeds();
 
         const sourceId = 'ethercis-eaf394a9-5e05-49c0-9c69-c710c77eda76';
-        await headingCache.bySourceId.delete(sourceId);
+        headingCache.bySourceId.delete(sourceId);
 
         const actual = qewdSession.data.$('headings').getDocument();
 
@@ -635,8 +635,8 @@ describe('ripple-cdr-openehr/lib/cache/headingCache', () => {
 
         const patientId = 9999999000;
         const heading = 'procedures';
-        const actual1 = await headingCache.fetchCount.increment(patientId, heading);
-        const actual2 = await headingCache.fetchCount.increment(patientId, heading);
+        const actual1 = headingCache.fetchCount.increment(patientId, heading);
+        const actual2 = headingCache.fetchCount.increment(patientId, heading);
 
         expect(actual1).toBe(1);
         expect(actual2).toBe(2);

@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  31 December 2018
+  25 January 2019
 
 */
 
@@ -42,9 +42,9 @@ module.exports = (adapter) => {
      * @param  {string} heading
      * @param  {string} sourceId
      * @param  {strinf} host
-     * @return {Promise}
+     * @return {void}
      */
-    delete: async (patientId, heading, sourceId, host) => {
+    delete: (patientId, heading, sourceId, host) => {
       logger.info('cache/headingCache|byHost|delete', { patientId, heading, sourceId, host });
 
       const key = ['headings', 'byPatientId', patientId, heading, 'byHost', host, sourceId];
@@ -56,10 +56,10 @@ module.exports = (adapter) => {
      *
      * @param  {string|int} patientId
      * @param  {string} heading
-     * @param  {strinf} host
-     * @return {Promise.<bool>}
+     * @param  {string} host
+     * @return {bool}
      */
-    exists: async (patientId, heading, host) => {
+    exists: (patientId, heading, host) => {
       logger.info('cache/headingCache|byHost|exists', { patientId, heading, host });
 
       const key = ['headings', 'byPatientId', patientId, heading, 'byHost', host];
@@ -73,10 +73,10 @@ module.exports = (adapter) => {
      * @param  {string|int} patientId
      * @param  {string} heading
      * @param  {string} sourceId
-     * @param  {strinf} host
-     * @return {Promise}
+     * @param  {string} host
+     * @return {void}
      */
-    set: async (patientId, heading, sourceId, host) => {
+    set: (patientId, heading, sourceId, host) => {
       logger.info('cache/headingCache|byHost|set', { patientId, heading, sourceId, host });
 
       const key = ['headings', 'byPatientId', patientId, heading, 'byHost', host, sourceId];
@@ -88,9 +88,9 @@ module.exports = (adapter) => {
      *
      * @param  {string|int} patientId
      * @param  {string} heading
-     * @return {Promise.<string[]>}
+     * @return {string[]}
      */
-    getAllSourceIds: async (patientId, heading) => {
+    getAllSourceIds: (patientId, heading) => {
       logger.info('cache/headingCache|byHost|getAllSourceIds', { patientId, heading });
 
       const sourceIds = [];

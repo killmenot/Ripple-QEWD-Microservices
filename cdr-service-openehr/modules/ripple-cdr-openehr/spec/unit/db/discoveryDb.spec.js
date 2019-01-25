@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  30 December 2018
+  25 January 2019
 
 */
 
@@ -90,7 +90,7 @@ describe('ripple-cdr-openehr/lib/db/discoveryDb', () => {
       const expected = null;
 
       const discoverySourceId = 'foo';
-      const actual = await discoveryDb.getSourceIdByDiscoverySourceId(discoverySourceId);
+      const actual = discoveryDb.getSourceIdByDiscoverySourceId(discoverySourceId);
 
       expect(actual).toEqual(expected);
     });
@@ -99,7 +99,7 @@ describe('ripple-cdr-openehr/lib/db/discoveryDb', () => {
       const expected = 'ethercis-188a6bbe-d823-4fca-a79f-11c64af5c2e6';
 
       const discoverySourceId = 'discovery-33a93da2-6677-42a0-8b39-9d1e012dde12';
-      const actual = await discoveryDb.getSourceIdByDiscoverySourceId(discoverySourceId);
+      const actual = discoveryDb.getSourceIdByDiscoverySourceId(discoverySourceId);
 
       expect(actual).toEqual(expected);
     });
@@ -110,7 +110,7 @@ describe('ripple-cdr-openehr/lib/db/discoveryDb', () => {
       const expected = null;
 
       const sourceId = 'foo';
-      const actual = await discoveryDb.getBySourceId(sourceId);
+      const actual = discoveryDb.getBySourceId(sourceId);
 
       expect(actual).toEqual(expected);
     });
@@ -124,7 +124,7 @@ describe('ripple-cdr-openehr/lib/db/discoveryDb', () => {
       };
 
       const sourceId = 'ethercis-188a6bbe-d823-4fca-a79f-11c64af5c2e6';
-      const actual = await discoveryDb.getBySourceId(sourceId);
+      const actual = discoveryDb.getBySourceId(sourceId);
 
       expect(actual).toEqual(expected);
     });
@@ -135,7 +135,7 @@ describe('ripple-cdr-openehr/lib/db/discoveryDb', () => {
       const expected = false;
 
       const sourceId = 'foo';
-      const actual = await discoveryDb.checkBySourceId(sourceId);
+      const actual = discoveryDb.checkBySourceId(sourceId);
 
       expect(actual).toEqual(expected);
     });
@@ -144,7 +144,7 @@ describe('ripple-cdr-openehr/lib/db/discoveryDb', () => {
       const expected = true;
 
       const sourceId = 'ethercis-188a6bbe-d823-4fca-a79f-11c64af5c2e6';
-      const actual = await discoveryDb.checkBySourceId(sourceId);
+      const actual = discoveryDb.checkBySourceId(sourceId);
 
       expect(actual).toEqual(expected);
     });
@@ -157,7 +157,7 @@ describe('ripple-cdr-openehr/lib/db/discoveryDb', () => {
         'ethercis-260a7be5-e00f-4b1e-ad58-27d95604d010'
       ];
 
-      const actual = await discoveryDb.getAllSourceIds();
+      const actual = discoveryDb.getAllSourceIds();
 
       expect(actual).toEqual(expected);
     });
@@ -170,7 +170,7 @@ describe('ripple-cdr-openehr/lib/db/discoveryDb', () => {
       ];
 
       const filter = (x) => x.heading  === 'problems';
-      const actual = await discoveryDb.getSourceIds(filter);
+      const actual = discoveryDb.getSourceIds(filter);
 
       expect(actual).toEqual(expected);
     });
@@ -187,7 +187,7 @@ describe('ripple-cdr-openehr/lib/db/discoveryDb', () => {
         heading: 'procedures'
       };
 
-      await discoveryDb.insert(discoverySourceId, sourceId, data);
+      discoveryDb.insert(discoverySourceId, sourceId, data);
 
       const byDiscoverySourceId = discoveryMap.$(['by_discovery_sourceId', 'discovery-ce437b97-4f6e-4c96-89bb-0b58b29a79cb']);
       expect(byDiscoverySourceId.value).toEqual('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d');
@@ -207,7 +207,7 @@ describe('ripple-cdr-openehr/lib/db/discoveryDb', () => {
       const discoverySourceId = 'discovery-33a93da2-6677-42a0-8b39-9d1e012dde12';
       const sourceId = 'ethercis-188a6bbe-d823-4fca-a79f-11c64af5c2e6';
 
-      await discoveryDb.delete(discoverySourceId, sourceId);
+      discoveryDb.delete(discoverySourceId, sourceId);
 
       const byDiscoverySourceId = discoveryMap.$(['by_discovery_sourceId', 'discovery-33a93da2-6677-42a0-8b39-9d1e012dde12']);
       expect(byDiscoverySourceId.exists).toBeFalsy();

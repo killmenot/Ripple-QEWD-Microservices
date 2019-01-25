@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  20 December 2018
+  25 January 2019
 
 */
 
@@ -46,9 +46,9 @@ class DiscoveryDb {
    * Gets sourceId by discovery sourceId
    *
    * @param  {string} discoverySourceId
-   * @return {Promise.<string>}
+   * @return {string}
    */
-  async getSourceIdByDiscoverySourceId(discoverySourceId) {
+  getSourceIdByDiscoverySourceId(discoverySourceId) {
     logger.info('db/discoveryDb|getSourceIdByDiscoverySourceId', { discoverySourceId });
 
     const node = this.discoveryMap.$(['by_discovery_sourceId', discoverySourceId]);
@@ -60,9 +60,9 @@ class DiscoveryDb {
    * Gets by sourceId
    *
    * @param  {string} sourceId
-   * @return {Promise.<Object>}
+   * @return {Object}
    */
-  async getBySourceId(sourceId) {
+  getBySourceId(sourceId) {
     logger.info('db/discoveryDb|getBySourceId', { sourceId });
 
     const node = this.discoveryMap.$(['by_openehr_sourceId', sourceId]);
@@ -74,9 +74,9 @@ class DiscoveryDb {
    * Checks by sourceId
    *
    * @param  {string} sourceId
-   * @return {Promise.<bool>}
+   * @return {bool}
    */
-  async checkBySourceId(sourceId) {
+  checkBySourceId(sourceId) {
     logger.info('db/discoveryDb|checkBySourceId', { sourceId });
 
     const node = this.discoveryMap.$(['by_openehr_sourceId', sourceId]);
@@ -87,9 +87,9 @@ class DiscoveryDb {
   /**
    * Gets all sourceIds
    *
-   * @return {Promise.<string[]>}
+   * @return {string[]}
    */
-  async getAllSourceIds() {
+  getAllSourceIds() {
     logger.info('db/discoveryDb|getAllSourceIds');
 
     const dbData = [];
@@ -106,9 +106,9 @@ class DiscoveryDb {
    * Gets all sourceIds by some condition
    *
    * @param  {Function} filter
-   * @return {Promise.<string[]>}
+   * @return {string[]}
    */
-  async getSourceIds(filter) {
+  getSourceIds(filter) {
     logger.info('db/discoveryDb|getAllSourceIds');
 
     const dbData = [];
@@ -129,9 +129,9 @@ class DiscoveryDb {
    * @param  {string} discoverySourceId
    * @param  {string} sourceId
    * @param  {Object} data
-   * @return {Promise}
+   * @return {void}
    */
-  async insert(discoverySourceId, sourceId, data) {
+  insert(discoverySourceId, sourceId, data) {
     logger.info('db/discoveryDb|insert', { discoverySourceId, sourceId, data });
 
     this.discoveryMap.$(['by_discovery_sourceId', discoverySourceId]).value = sourceId;
@@ -143,9 +143,9 @@ class DiscoveryDb {
    *
    * @param  {string} discoverySourceId
    * @param  {string} sourceId
-   * @return {Promise}
+   * @return {void}
    */
-  async delete(discoverySourceId, sourceId) {
+  delete(discoverySourceId, sourceId) {
     logger.info('db/discoveryDb|delete', { discoverySourceId, sourceId });
 
     this.discoveryMap.$(['by_discovery_sourceId', discoverySourceId]).delete();

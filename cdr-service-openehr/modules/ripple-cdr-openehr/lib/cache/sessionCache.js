@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  30 December 2018
+  25 January 2019
 
 */
 
@@ -45,9 +45,9 @@ class SessionCache {
    * Gets a session for a host
    *
    * @param  {string} host
-   * @return {Promise}
+   * @return {Object}
    */
-  async get(host) {
+  get(host) {
     logger.info('cache/sessionCache|get', { host  });
 
     const key = ['openEHR', 'sessions', host];
@@ -60,9 +60,9 @@ class SessionCache {
    *
    * @param  {string} host
    * @param  {Object} session
-   * @return {Promise}
+   * @return {void}
    */
-  async set(host, session) {
+  set(host, session) {
     logger.info('cache/sessionCache|set', { host, session });
 
     const key = ['openEHR', 'sessions', host];
@@ -73,9 +73,9 @@ class SessionCache {
    * Deletes a session for a host
    *
    * @param  {string} host
-   * @return {Promise}
+   * @return {void}
    */
-  async delete(host) {
+  delete(host) {
     logger.info('cache/sessionCache|delete', { host });
 
     const key = ['openEHR', 'sessions', host];

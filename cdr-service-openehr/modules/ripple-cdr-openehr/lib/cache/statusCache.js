@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  18 December 2018
+  25 January 2019
 
 */
 
@@ -44,9 +44,9 @@ class StatusCache {
   /**
    * Gets status
    *
-   * @return {Promise.<Object|null>}
+   * @return {Object|null}
    */
-  async get() {
+  get() {
     logger.info('cache/statusCache|get');
 
     const key = ['record_status'];
@@ -58,9 +58,9 @@ class StatusCache {
    * Sets status
    *
    * @param  {Object} data
-   * @return {Promise}
+   * @return {void}
    */
-  async set(data) {
+  set(data) {
     logger.info('cache/statusCache|set', { data });
 
     const key = ['record_status'];

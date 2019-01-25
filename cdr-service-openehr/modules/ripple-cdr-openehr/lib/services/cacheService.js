@@ -24,13 +24,12 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  31 December 2018
+  25 January 2019
 
 */
 
 'use strict';
 
-const P = require('bluebird');
 const { ExecutionContext, logger } = require('../core');
 
 class CacheService {
@@ -55,12 +54,12 @@ class CacheService {
 
     const sessions = this.ctx.activeSessions;
 
-    await P.each(sessions, async (session) => {
+    sessions.forEach((session) => {
       const ctx = ExecutionContext.fromQewdSession(this.ctx.worker, session);
       const { headingCache } = ctx.cache;
 
-      await headingCache.deleteAll(host, patientId, heading);
-      await headingCache.byHeading.deleteAll(heading);
+      headingCache.deleteAll(host, patientId, heading);
+      headingCache.byHeading.deleteAll(heading);
     });
   }
 }

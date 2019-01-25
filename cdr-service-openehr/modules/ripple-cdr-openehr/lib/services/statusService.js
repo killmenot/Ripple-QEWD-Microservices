@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  30 December 2018
+  25 January 2019
 
 */
 
@@ -51,13 +51,13 @@ class StatusService {
   async check() {
     logger.info('services/statusService|check');
 
-    const state = await this.statusCache.get();
+    const state = this.statusCache.get();
     debug('state: %j', state);
 
     if (!state) return null;
 
     state.requestNo = state.requestNo + 1;
-    await this.statusCache.set(state);
+    this.statusCache.set(state);
 
     return state;
   }
@@ -70,7 +70,7 @@ class StatusService {
   async get() {
     logger.info('services/statusService|get');
 
-    return await this.statusCache.get();
+    return this.statusCache.get();
   }
 
   /**

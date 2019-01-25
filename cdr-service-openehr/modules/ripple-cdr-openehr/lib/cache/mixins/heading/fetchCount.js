@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  31 December 2018
+  25 January 2019
 
 */
 
@@ -40,9 +40,9 @@ module.exports = (adapter) => {
      *
      * @param  {string|int} patientId
      * @param  {string} heading
-     * @return {Promise.<int>}
+     * @return {int}
      */
-    increment: async (patientId, heading) => {
+    increment: (patientId, heading) => {
       logger.info('cache/headingCache|fetchCount|increment', { patientId, heading });
 
       const qewdSession = adapter.qewdSession;

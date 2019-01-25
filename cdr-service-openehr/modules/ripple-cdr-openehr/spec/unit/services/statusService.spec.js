@@ -73,7 +73,7 @@ describe('ripple-cdr-openehr/lib/services/statusService', () => {
         requestNo: 4
       };
 
-      statusCache.get.and.resolveValue({
+      statusCache.get.and.returnValue({
         requestNo: 3
       });
 
@@ -101,7 +101,7 @@ describe('ripple-cdr-openehr/lib/services/statusService', () => {
         new_patient: 'not_known_yet',
         requestNo: 1
       };
-      statusCache.get.and.resolveValue(dbData);
+      statusCache.get.and.returnValue(dbData);
 
       const actual = await statusService.get();
 

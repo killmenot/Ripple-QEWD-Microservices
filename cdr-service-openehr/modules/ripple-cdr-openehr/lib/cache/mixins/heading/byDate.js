@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  31 December 2018
+  25 January 2019
 
 */
 
@@ -42,9 +42,9 @@ module.exports = (adapter) => {
      * @param  {string} heading
      * @param  {string} sourceId
      * @param  {int} date
-     * @return {Promise}
+     * @return {void}
      */
-    set: async (patientId, heading, sourceId, date) => {
+    set: (patientId, heading, sourceId, date) => {
       logger.info('cache/headingCache|byDate|set', { patientId, heading, sourceId, date });
 
       const key = ['headings', 'byPatientId', patientId, heading, 'byDate', date, sourceId];
@@ -58,9 +58,9 @@ module.exports = (adapter) => {
      * @param  {string} heading
      * @param  {string} sourceId
      * @param  {int} date
-     * @return {Promise}
+     * @return {void}
      */
-    delete: async (patientId, heading, sourceId, date) => {
+    delete: (patientId, heading, sourceId, date) => {
       logger.info('cache/headingCache|byDate|delete', { patientId, heading, sourceId, date });
 
       const key = ['headings', 'byPatientId', patientId, heading, 'byDate', date, sourceId];
@@ -75,9 +75,9 @@ module.exports = (adapter) => {
      * @param  {Object} options
      * @param  {string} options.direction
      * @param  {int} options.limit
-     * @return {Promise.<string[]>}
+     * @return {string[]}
      */
-    getAllSourceIds: async (patientId, heading, { direction = 'reverse', limit = 1 } = {}) => {
+    getAllSourceIds: (patientId, heading, { direction = 'reverse', limit = 1 } = {}) => {
       logger.info('cache/headingCache|byDate|getAllSourceIds', { patientId, heading, direction, limit });
 
       const sourceIds = [];

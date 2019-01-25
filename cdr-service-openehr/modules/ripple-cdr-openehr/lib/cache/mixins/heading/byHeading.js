@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  31 December 2018
+  25 January 2019
 
 */
 
@@ -40,9 +40,9 @@ module.exports = (adapter) => {
      *
      * @param  {string} heading
      * @param  {string} sourceId
-     * @return {Promise}
+     * @return {void}
      */
-    delete: async (heading, sourceId) => {
+    delete: (heading, sourceId) => {
       logger.info('cache/headingCache|byHeading|delete', { heading, sourceId });
 
       const key = ['headings', 'byHeading', heading, sourceId];
@@ -53,9 +53,9 @@ module.exports = (adapter) => {
      * Deletes all by heading
      *
      * @param  {string} heading
-     * @return {Promise}
+     * @return {void}
      */
-    deleteAll: async (heading) => {
+    deleteAll: (heading) => {
       logger.info('cache/headingCache|byHeading|deleteAll', { heading });
 
       const key = ['headings', 'byHeading', heading];

@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  15 December 2018
+  25 January 2019
 
 */
 
@@ -46,10 +46,10 @@ class Top3ThingsDb {
    * Gets latest source id
    *
    * @param  {string|int} patientId
-   * @return {Promise.<string|null>}
+   * @return {string|null}
    */
-  async getLatestSourceId(patientId) {
-    logger.info('db/Top3ThingsDb|getLatestSourceId', { patientId });
+  getLatestSourceId(patientId) {
+    logger.info('db/top3ThingsDb|getLatestSourceId', { patientId });
 
     const node = this.top3Things.$(['byPatient', patientId, 'latest']);
 
@@ -61,10 +61,10 @@ class Top3ThingsDb {
    *
    * @param  {string|int} patientId
    * @param  {string} sourceId
-   * @return {Promise}
+   * @return {void}
    */
-  async setLatestSourceId(patientId, sourceId) {
-    logger.info('db/Top3ThingsDb|getLatestSourceId', { patientId, sourceId });
+  setLatestSourceId(patientId, sourceId) {
+    logger.info('db/top3ThingsDb|getLatestSourceId', { patientId, sourceId });
 
     this.top3Things.$(['byPatient', patientId, 'latest']).value = sourceId;
   }
@@ -73,10 +73,10 @@ class Top3ThingsDb {
    * Gets data by source id
    *
    * @param  {string} sourceId
-   * @return {Promise.<Object|null>}
+   * @return {Object|null}
    */
-  async getBySourceId(sourceId) {
-    logger.info('db/Top3ThingsDb|getBySourceId', { sourceId });
+  getBySourceId(sourceId) {
+    logger.info('db/top3ThingsDb|getBySourceId', { sourceId });
 
     const node = this.top3Things.$(['bySourceId', sourceId]);
 
@@ -89,10 +89,10 @@ class Top3ThingsDb {
    * @param  {string|int} patientId
    * @param  {string} sourceId
    * @param  {Object} top3Things
-   * @return {Promise.<Object>}
+   * @return {Object}
    */
-  async insert(patientId, sourceId, top3Things) {
-    logger.info('db/Top3ThingsDb|insert', { patientId, sourceId, top3Things });
+  insert(patientId, sourceId, top3Things) {
+    logger.info('db/top3ThingsDb|insert', { patientId, sourceId, top3Things });
 
     this.top3Things.$(['bySourceId', sourceId]).setDocument(top3Things);
     this.top3Things.$(['byPatient', patientId, 'byDate', top3Things.date]).value = sourceId;

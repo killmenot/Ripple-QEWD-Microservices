@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  30 December 2018
+  25 January 2019
 
 */
 
@@ -90,7 +90,7 @@ describe('ripple-cdr-openehr/lib/db/phrFeedDb', () => {
       const expected = null;
 
       const sourceId = 'foo';
-      const actual = await phrFeedDb.getBySourceId(sourceId);
+      const actual = phrFeedDb.getBySourceId(sourceId);
 
       expect(actual).toEqual(expected);
     });
@@ -104,7 +104,7 @@ describe('ripple-cdr-openehr/lib/db/phrFeedDb', () => {
       };
 
       const sourceId = '260a7be5-e00f-4b1e-ad58-27d95604d010';
-      const actual = await phrFeedDb.getBySourceId(sourceId);
+      const actual = phrFeedDb.getBySourceId(sourceId);
 
       expect(actual).toEqual(expected);
     });
@@ -116,7 +116,7 @@ describe('ripple-cdr-openehr/lib/db/phrFeedDb', () => {
 
       const email = 'john.doe@example.org';
       const name = 'foo';
-      const actual = await phrFeedDb.getByName(email, name);
+      const actual = phrFeedDb.getByName(email, name);
 
       expect(actual).toEqual(expected);
     });
@@ -126,7 +126,7 @@ describe('ripple-cdr-openehr/lib/db/phrFeedDb', () => {
 
       const email = 'quux@example.org';
       const name = 'foo';
-      const actual = await phrFeedDb.getByName(email, name);
+      const actual = phrFeedDb.getByName(email, name);
 
       expect(actual).toEqual(expected);
     });
@@ -141,7 +141,7 @@ describe('ripple-cdr-openehr/lib/db/phrFeedDb', () => {
 
       const email = 'john.doe@example.org';
       const name = 'Leeds Live - Whats On';
-      const actual = await phrFeedDb.getByName(email, name);
+      const actual = phrFeedDb.getByName(email, name);
 
       expect(actual).toEqual(expected);
     });
@@ -153,7 +153,7 @@ describe('ripple-cdr-openehr/lib/db/phrFeedDb', () => {
 
       const email = 'john.doe@example.org';
       const landingPageUrl = 'https://www.quux.co.uk/baz1/baz2';
-      const actual = await phrFeedDb.getByLandingPageUrl(email, landingPageUrl);
+      const actual = phrFeedDb.getByLandingPageUrl(email, landingPageUrl);
 
       expect(actual).toEqual(expected);
     });
@@ -163,7 +163,7 @@ describe('ripple-cdr-openehr/lib/db/phrFeedDb', () => {
 
       const email = 'foo@example.org';
       const landingPageUrl = 'https://www.quux.co.uk/baz1/baz2';
-      const actual = await phrFeedDb.getByLandingPageUrl(email, landingPageUrl);
+      const actual = phrFeedDb.getByLandingPageUrl(email, landingPageUrl);
 
       expect(actual).toEqual(expected);
     });
@@ -178,7 +178,7 @@ describe('ripple-cdr-openehr/lib/db/phrFeedDb', () => {
 
       const email = 'john.doe@example.org';
       const landingPageUrl = 'https://www.leeds-live.co.uk/best-in-leeds/whats-on-news/';
-      const actual = await phrFeedDb.getByLandingPageUrl(email, landingPageUrl);
+      const actual = phrFeedDb.getByLandingPageUrl(email, landingPageUrl);
 
       expect(actual).toEqual(expected);
     });
@@ -189,7 +189,7 @@ describe('ripple-cdr-openehr/lib/db/phrFeedDb', () => {
       const expected = [];
 
       const email = 'quux@example.org';
-      const actual = await phrFeedDb.getByEmail(email);
+      const actual = phrFeedDb.getByEmail(email);
 
       expect(actual).toEqual(expected);
     });
@@ -211,7 +211,7 @@ describe('ripple-cdr-openehr/lib/db/phrFeedDb', () => {
       ];
 
       const email = 'john.doe@example.org';
-      const actual = await phrFeedDb.getByEmail(email);
+      const actual = phrFeedDb.getByEmail(email);
 
       expect(actual).toEqual(expected);
     });
@@ -238,7 +238,7 @@ describe('ripple-cdr-openehr/lib/db/phrFeedDb', () => {
         ];
 
         const email = 'jane.doe@example.org';
-        const actual = await phrFeedDb.getByEmail(email);
+        const actual = phrFeedDb.getByEmail(email);
 
         expect(actual).toEqual(expected);
       });
@@ -266,7 +266,7 @@ describe('ripple-cdr-openehr/lib/db/phrFeedDb', () => {
         ];
 
         const email = 'jane.doe@example.org';
-        const actual = await phrFeedDb.getByEmail(email);
+        const actual = phrFeedDb.getByEmail(email);
 
         expect(actual).toEqual(expected);
       });
@@ -280,7 +280,7 @@ describe('ripple-cdr-openehr/lib/db/phrFeedDb', () => {
         sourceId: '0f7192e9-168e-4dea-812a-3e1d236ae46d'
       };
 
-      await phrFeedDb.insert(data);
+      phrFeedDb.insert(data);
 
       const byEmail = phrFeeds.$(['byEmail', 'john.doe@example.org', '0f7192e9-168e-4dea-812a-3e1d236ae46d']);
       expect(byEmail.value).toEqual(true);
@@ -301,7 +301,7 @@ describe('ripple-cdr-openehr/lib/db/phrFeedDb', () => {
         foo: 'bar'
       };
 
-      await phrFeedDb.update(data.sourceId, data);
+      phrFeedDb.update(data.sourceId, data);
 
       const bySourceId = phrFeeds.$(['bySourceId', '260a7be5-e00f-4b1e-ad58-27d95604d010']);
       expect(bySourceId.getDocument()).toEqual({

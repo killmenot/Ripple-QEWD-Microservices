@@ -90,7 +90,7 @@ class PatientService {
 
     const nhsNumberDb = this.ctx.db.nhsNumberDb;
 
-    const ehrId = await nhsNumberDb.getEhrId(host, patientId);
+    const ehrId = nhsNumberDb.getEhrId(host, patientId);
     if (ehrId) {
       return ehrId;
     }
@@ -103,7 +103,7 @@ class PatientService {
       throw new EhrIdNotFoundError();
     }
 
-    await nhsNumberDb.insert(host, patientId, data.ehrId);
+    nhsNumberDb.insert(host, patientId, data.ehrId);
 
     return data.ehrId;
   }

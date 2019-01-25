@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  17 January 2019
+  25 January 2019
 
 */
 
@@ -84,7 +84,7 @@ class DiscoveryService {
     const discoverySourceId = item.sourceId;
 
     const { discoveryDb } = this.ctx.db;
-    const found = await discoveryDb.getSourceIdByDiscoverySourceId(discoverySourceId);
+    const found = discoveryDb.getSourceIdByDiscoverySourceId(discoverySourceId);
     if (found) return false;
 
     let result = false;
@@ -112,7 +112,7 @@ class DiscoveryService {
         heading: heading
       };
 
-      await discoveryDb.insert(discoverySourceId, sourceId, dbData);
+      discoveryDb.insert(discoverySourceId, sourceId, dbData);
 
       result = true;
     } catch (err) {
@@ -133,10 +133,10 @@ class DiscoveryService {
     logger.info('services/discoveryService|delete', { sourceId });
 
     const { discoveryDb } = this.ctx.db;
-    const dbData = await discoveryDb.getBySourceId(sourceId);
+    const dbData = discoveryDb.getBySourceId(sourceId);
 
     if (dbData) {
-      await discoveryDb.delete(dbData.discovery, sourceId);
+      discoveryDb.delete(dbData.discovery, sourceId);
     }
   }
 
@@ -149,7 +149,7 @@ class DiscoveryService {
     logger.info('services/discoveryService|getAllSourceIds');
 
     const { discoveryDb } = this.ctx.db;
-    const sourceIds = await discoveryDb.getAllSourceIds();
+    const sourceIds = discoveryDb.getAllSourceIds();
 
     return sourceIds;
   }
@@ -164,7 +164,7 @@ class DiscoveryService {
     logger.info('services/discoveryService|getSourceIds', { filter: typeof filter });
 
     const { discoveryDb } = this.ctx.db;
-    const sourceIds = await discoveryDb.getSourceIds(filter);
+    const sourceIds = discoveryDb.getSourceIds(filter);
 
     return sourceIds;
   }
@@ -179,7 +179,7 @@ class DiscoveryService {
     logger.info('services/discoveryService|getBySourceId', { sourceId });
 
     const { discoveryDb } = this.ctx.db;
-    const dbData = await discoveryDb.getBySourceId(sourceId);
+    const dbData = discoveryDb.getBySourceId(sourceId);
 
     return dbData;
   }

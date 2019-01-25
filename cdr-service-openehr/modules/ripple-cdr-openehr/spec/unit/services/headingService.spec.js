@@ -289,7 +289,7 @@ describe('ripple-cdr-openehr/lib/services/headingService', () => {
         uid: '0f7192e9-168e-4dea-812a-3e1d236ae46d::vm01.ethercis.org::1'
       };
 
-      headingCache.bySourceId.get.and.resolveValue(dbData);
+      headingCache.bySourceId.get.and.returnValue(dbData);
       jumperService.check.and.returnValue({ ok: true });
       jumperService.put.and.resolveValue({
         ok: true,
@@ -327,7 +327,7 @@ describe('ripple-cdr-openehr/lib/services/headingService', () => {
         uid: '0f7192e9-168e-4dea-812a-3e1d236ae46d::vm01.ethercis.org::1'
       };
 
-      headingCache.bySourceId.get.and.resolveValue(dbData);
+      headingCache.bySourceId.get.and.returnValue(dbData);
       jumperService.check.and.returnValue({ ok: false });
 
       const host = 'ethercis';
@@ -352,7 +352,7 @@ describe('ripple-cdr-openehr/lib/services/headingService', () => {
         uid: '0f7192e9-168e-4dea-812a-3e1d236ae46d::vm01.ethercis.org::1'
       };
 
-      headingCache.bySourceId.get.and.resolveValue(dbData);
+      headingCache.bySourceId.get.and.returnValue(dbData);
       jumperService.check.and.returnValue({ ok: false });
 
       const host = 'ethercis';
@@ -385,7 +385,7 @@ describe('ripple-cdr-openehr/lib/services/headingService', () => {
         uid: '0f7192e9-168e-4dea-812a-3e1d236ae46d::vm01.ethercis.org::1'
       };
 
-      headingCache.bySourceId.get.and.resolveValue(dbData);
+      headingCache.bySourceId.get.and.returnValue(dbData);
       jumperService.check.and.returnValue({ ok: false });
       ethercisEhrRestService.putHeading.and.resolveValue({
         compositionUid: '0f7192e9-168e-4dea-812a-3e1d236ae46d::vm01.ethercis.org::1',
@@ -434,7 +434,7 @@ describe('ripple-cdr-openehr/lib/services/headingService', () => {
         uid: '0f7192e9-168e-4dea-812a-3e1d236ae46d::vm01.ethercis.org::1'
       };
 
-      headingCache.bySourceId.get.and.resolveValue(dbData);
+      headingCache.bySourceId.get.and.returnValue(dbData);
       jumperService.check.and.returnValue({ ok: false });
       ethercisEhrRestService.putHeading.and.resolveValue();
 
@@ -580,7 +580,7 @@ describe('ripple-cdr-openehr/lib/services/headingService', () => {
       const dbData = {
         heading: 'test'
       };
-      headingCache.bySourceId.get.and.resolveValue(dbData);
+      headingCache.bySourceId.get.and.returnValue(dbData);
 
       const sourceId = 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d';
       const actual = headingService.getBySourceId(sourceId);
@@ -619,9 +619,9 @@ describe('ripple-cdr-openehr/lib/services/headingService', () => {
           time: '15:00'
         };
 
-        headingCache.bySourceId.get.and.resolveValue(dbData);
+        headingCache.bySourceId.get.and.returnValue(dbData);
         jumperService.check.and.returnValue({ ok: false });
-        discoveryDb.checkBySourceId.and.resolveValue(false);
+        discoveryDb.checkBySourceId.and.returnValue(false);
 
         const sourceId = 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d';
         const actual = await headingService.getBySourceId(sourceId);
@@ -640,9 +640,9 @@ describe('ripple-cdr-openehr/lib/services/headingService', () => {
           text: 'quux'
         };
 
-        headingCache.bySourceId.get.and.resolveValue(dbData);
+        headingCache.bySourceId.get.and.returnValue(dbData);
         jumperService.check.and.returnValue({ ok: false });
-        discoveryDb.checkBySourceId.and.resolveValue(false);
+        discoveryDb.checkBySourceId.and.returnValue(false);
 
         const sourceId = 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d';
         const actual = await headingService.getBySourceId(sourceId, 'synopsis');
@@ -663,9 +663,9 @@ describe('ripple-cdr-openehr/lib/services/headingService', () => {
           time: '15:00'
         };
 
-        headingCache.bySourceId.get.and.resolveValue(dbData);
+        headingCache.bySourceId.get.and.returnValue(dbData);
         jumperService.check.and.returnValue({ ok: false });
-        discoveryDb.checkBySourceId.and.resolveValue(false);
+        discoveryDb.checkBySourceId.and.returnValue(false);
 
         const sourceId = 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d';
         const actual = await headingService.getBySourceId(sourceId, 'summary');
@@ -715,10 +715,10 @@ describe('ripple-cdr-openehr/lib/services/headingService', () => {
           foo: 'bar'
         };
 
-        headingCache.bySourceId.get.and.resolveValue(dbData);
+        headingCache.bySourceId.get.and.returnValue(dbData);
         jumperService.check.and.returnValue(jumperObj);
         jumperService.getBySourceId.and.resolveValue(jumperDataObj);
-        discoveryDb.checkBySourceId.and.resolveValue(false);
+        discoveryDb.checkBySourceId.and.returnValue(false);
 
         const sourceId = 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d';
         const actual = await headingService.getBySourceId(sourceId);
@@ -738,10 +738,10 @@ describe('ripple-cdr-openehr/lib/services/headingService', () => {
           text: 'foo bar baz'
         };
 
-        headingCache.bySourceId.get.and.resolveValue(dbData);
+        headingCache.bySourceId.get.and.returnValue(dbData);
         jumperService.check.and.returnValue(jumperObj);
         jumperService.getBySourceId.and.resolveValue(jumperDataObj);
-        discoveryDb.checkBySourceId.and.resolveValue(false);
+        discoveryDb.checkBySourceId.and.returnValue(false);
 
         const sourceId = 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d';
         const actual = await headingService.getBySourceId(sourceId, 'synopsis');
@@ -762,10 +762,10 @@ describe('ripple-cdr-openehr/lib/services/headingService', () => {
           dateOfOnset: '2018-02-01T12:00:00Z',
         };
 
-        headingCache.bySourceId.get.and.resolveValue(dbData);
+        headingCache.bySourceId.get.and.returnValue(dbData);
         jumperService.check.and.returnValue(jumperObj);
         jumperService.getBySourceId.and.resolveValue(jumperDataObj);
-        discoveryDb.checkBySourceId.and.resolveValue(false);
+        discoveryDb.checkBySourceId.and.returnValue(false);
 
         const sourceId = 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d';
         const actual = await headingService.getBySourceId(sourceId, 'summary');
@@ -817,9 +817,9 @@ describe('ripple-cdr-openehr/lib/services/headingService', () => {
           }
         };
 
-        headingCache.bySourceId.get.and.resolveValue(dbData);
+        headingCache.bySourceId.get.and.returnValue(dbData);
         jumperService.check.and.returnValue({ ok: false });
-        discoveryDb.checkBySourceId.and.resolveValue(false);
+        discoveryDb.checkBySourceId.and.returnValue(false);
 
         const sourceId = 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d';
         await headingService.getBySourceId(sourceId);
@@ -841,9 +841,9 @@ describe('ripple-cdr-openehr/lib/services/headingService', () => {
           dateCreated: 1517486400000
         };
 
-        headingCache.bySourceId.get.and.resolveValue(dbData);
+        headingCache.bySourceId.get.and.returnValue(dbData);
         jumperService.check.and.returnValue({ ok: false });
-        discoveryDb.checkBySourceId.and.resolveValue(false);
+        discoveryDb.checkBySourceId.and.returnValue(false);
 
         const sourceId = 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d';
         const actual = await headingService.getBySourceId(sourceId);
@@ -865,9 +865,9 @@ describe('ripple-cdr-openehr/lib/services/headingService', () => {
           text: 'some type'
         };
 
-        headingCache.bySourceId.get.and.resolveValue(dbData);
+        headingCache.bySourceId.get.and.returnValue(dbData);
         jumperService.check.and.returnValue({ ok: false });
-        discoveryDb.checkBySourceId.and.resolveValue(false);
+        discoveryDb.checkBySourceId.and.returnValue(false);
 
         const sourceId = 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d';
         const actual = await headingService.getBySourceId(sourceId, 'synopsis');
@@ -891,9 +891,9 @@ describe('ripple-cdr-openehr/lib/services/headingService', () => {
           dateCreated: 1517486400000
         };
 
-        headingCache.bySourceId.get.and.resolveValue(dbData);
+        headingCache.bySourceId.get.and.returnValue(dbData);
         jumperService.check.and.returnValue({ ok: false });
-        discoveryDb.checkBySourceId.and.resolveValue(false);
+        discoveryDb.checkBySourceId.and.returnValue(false);
 
         const sourceId = 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d';
         const actual = await headingService.getBySourceId(sourceId, 'summary');
@@ -933,7 +933,7 @@ describe('ripple-cdr-openehr/lib/services/headingService', () => {
         fetchCount: 8
       };
 
-      headingCache.byHost.getAllSourceIds.and.resolveValue([
+      headingCache.byHost.getAllSourceIds.and.returnValue([
         'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d',
         'marand-03134cc0-3741-4d3f-916a-a279a24448e5'
       ]);
@@ -951,7 +951,7 @@ describe('ripple-cdr-openehr/lib/services/headingService', () => {
         }
       );
 
-      headingCache.fetchCount.increment.and.resolveValue(8);
+      headingCache.fetchCount.increment.and.returnValue(8);
 
       const patientId = 9999999000;
       const heading = 'procedures';
@@ -1137,7 +1137,7 @@ describe('ripple-cdr-openehr/lib/services/headingService', () => {
     it('should return null when heading cache already exists', async () => {
       const expected = null;
 
-      headingCache.byHost.exists.and.resolveValue(true);
+      headingCache.byHost.exists.and.returnValue(true);
 
       const host = 'ethercis';
       const patientId = 9999999000;
@@ -1154,7 +1154,7 @@ describe('ripple-cdr-openehr/lib/services/headingService', () => {
         error: jasmine.any(Error)
       };
 
-      headingCache.byHost.exists.and.resolveValue(false);
+      headingCache.byHost.exists.and.returnValue(false);
       headingService.query.and.rejectValue(new Error('custom error'));
 
       const host = 'ethercis';
@@ -1170,7 +1170,7 @@ describe('ripple-cdr-openehr/lib/services/headingService', () => {
         ok: true
       };
 
-      headingCache.byHost.exists.and.resolveValue(false);
+      headingCache.byHost.exists.and.returnValue(false);
 
       const data = [
         {
@@ -1216,7 +1216,7 @@ describe('ripple-cdr-openehr/lib/services/headingService', () => {
         ok: true
       };
 
-      headingCache.byHost.exists.and.resolveValue(false);
+      headingCache.byHost.exists.and.returnValue(false);
 
       const data = [
         {
@@ -1262,7 +1262,7 @@ describe('ripple-cdr-openehr/lib/services/headingService', () => {
         ok: true
       };
 
-      headingCache.byHost.exists.and.resolveValue(false);
+      headingCache.byHost.exists.and.returnValue(false);
 
       const data = [
         {}
@@ -1286,7 +1286,7 @@ describe('ripple-cdr-openehr/lib/services/headingService', () => {
 
   describe('#delete', () => {
     it('should throw no existing record found error when no record in cache', async () => {
-      headingCache.bySourceId.get.and.resolveValue();
+      headingCache.bySourceId.get.and.returnValue();
 
       const patientId = 9999999000;
       const heading = 'procedures';
@@ -1333,7 +1333,7 @@ describe('ripple-cdr-openehr/lib/services/headingService', () => {
         date: 1514764800000,
         data: {}
       };
-      headingCache.bySourceId.get.and.resolveValue(dbData);
+      headingCache.bySourceId.get.and.returnValue(dbData);
 
       const patientId = 9999999000;
       const heading = 'procedures';

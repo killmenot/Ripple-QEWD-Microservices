@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  30 December 2018
+  25 January 2019
 
 */
 
@@ -47,9 +47,9 @@ class PhrFeedDb {
    * Gets phr feed by source id
    *
    * @param  {string|int} sourceId
-   * @return {Promise.<Object|null>}
+   * @return {Object|null}
    */
-  async getBySourceId(sourceId) {
+  getBySourceId(sourceId) {
     logger.info('db/phrFeedDb|getBySourceId', { sourceId });
 
     const node = this.phrFeeds.$(['bySourceId', sourceId]);
@@ -62,9 +62,9 @@ class PhrFeedDb {
    *
    * @param  {string} email
    * @param  {string} name
-   * @return {Promise.<Object|null>}
+   * @return {Object|null}
    */
-  async getByName(email, name) {
+  getByName(email, name) {
     logger.info('db/phrFeedDb|getByName', { email, name });
 
     const byEmailNode = this.phrFeeds.$(['byEmail', email]);
@@ -94,9 +94,9 @@ class PhrFeedDb {
    *
    * @param  {string} email
    * @param  {string} landingPageUrl
-   * @return {Promise.<Object|null>}
+   * @return {Object|null}
    */
-  async getByLandingPageUrl(email, landingPageUrl) {
+  getByLandingPageUrl(email, landingPageUrl) {
     logger.info('db/phrFeedDb|getByLandingPageUrl', { email, landingPageUrl });
 
     const byEmailNode = this.phrFeeds.$(['byEmail', email]);
@@ -125,9 +125,9 @@ class PhrFeedDb {
    * Gets phr feeds by email
    *
    * @param  {string} email
-   * @return {Promise.<Object[]>}
+   * @return {Object[]}
    */
-  async getByEmail(email) {
+  getByEmail(email) {
     logger.info('db/phrFeedDb|getByEmail', { email });
 
     const byEmailNode = this.phrFeeds.$(['byEmail', email]);
@@ -174,9 +174,9 @@ class PhrFeedDb {
    * Inserts a new db record
    *
    * @param  {Object} data
-   * @return {Promise}
+   * @return {void}
    */
-  async insert(data) {
+  insert(data) {
     logger.info('db/phrFeedDb|insert', { data });
 
     this.phrFeeds.$(['byEmail', data.email, data.sourceId]).value = 'true';
@@ -188,9 +188,9 @@ class PhrFeedDb {
    *
    * @param  {string} sourceId
    * @param  {Object} data
-   * @return {Promise}
+   * @return {void}
    */
-  async update(sourceId, data) {
+  update(sourceId, data) {
     logger.info('db/phrFeedDb|update', { sourceId, data });
 
     this.phrFeeds.$(['bySourceId', sourceId]).delete();

@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  30 December 2018
+  25 January 2019
 
 */
 
@@ -79,7 +79,7 @@ describe('ripple-cdr-openehr/lib/db/top3ThingsDb', () => {
       const expected = null;
 
       const patientId = 94347659193;
-      const actual = await top3ThingsDb.getLatestSourceId(patientId);
+      const actual = top3ThingsDb.getLatestSourceId(patientId);
 
       expect(actual).toEqual(expected);
     });
@@ -88,7 +88,7 @@ describe('ripple-cdr-openehr/lib/db/top3ThingsDb', () => {
       const expected = 'ce437b97-4f6e-4c96-89bb-0b58b29a79cb';
 
       const patientId = 9999999000;
-      const actual = await top3ThingsDb.getLatestSourceId(patientId);
+      const actual = top3ThingsDb.getLatestSourceId(patientId);
 
       expect(actual).toEqual(expected);
     });
@@ -99,7 +99,7 @@ describe('ripple-cdr-openehr/lib/db/top3ThingsDb', () => {
       const patientId = 9999999000;
       const sourceId = 'eaf394a9-5e05-49c0-9c69-c710c77eda76';
 
-      await top3ThingsDb.setLatestSourceId(patientId, sourceId);
+      top3ThingsDb.setLatestSourceId(patientId, sourceId);
 
       const dbNode = ctx.worker.db.use('Top3Things');
       expect(dbNode.$(['byPatient', 9999999000, 'latest']).value).toBe(sourceId);
@@ -121,7 +121,7 @@ describe('ripple-cdr-openehr/lib/db/top3ThingsDb', () => {
       };
 
       const sourceId = 'ce437b97-4f6e-4c96-89bb-0b58b29a79cb';
-      const actual = await top3ThingsDb.getBySourceId(sourceId);
+      const actual = top3ThingsDb.getBySourceId(sourceId);
 
       expect(actual).toEqual(expected);
     });
@@ -143,7 +143,7 @@ describe('ripple-cdr-openehr/lib/db/top3ThingsDb', () => {
           description3: 'quux3'
         }
       };
-      await top3ThingsDb.insert(patientId, sourceId, top3Things);
+      top3ThingsDb.insert(patientId, sourceId, top3Things);
 
       const dbNode = ctx.worker.db.use('Top3Things');
       expect(dbNode.$(['bySourceId', sourceId]).getDocument()).toEqual({

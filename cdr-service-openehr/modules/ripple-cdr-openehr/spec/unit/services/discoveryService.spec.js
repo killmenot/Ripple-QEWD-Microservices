@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  17 January 2019
+  25 January 2019
 
 */
 
@@ -153,7 +153,7 @@ describe('ripple-cdr-openehr/lib/services/discoveryService', () => {
     it('should return false when record exists in discovery cache', async () => {
       const expected = false;
 
-      discoveryDb.getSourceIdByDiscoverySourceId.and.resolveValue('foo-bar');
+      discoveryDb.getSourceIdByDiscoverySourceId.and.returnValue('foo-bar');
 
       const host = 'ethercis';
       const patientId = 9999999000;
@@ -171,7 +171,7 @@ describe('ripple-cdr-openehr/lib/services/discoveryService', () => {
     it('should return false when error thrown', async () => {
       const expected = false;
 
-      discoveryDb.getSourceIdByDiscoverySourceId.and.resolveValue(null);
+      discoveryDb.getSourceIdByDiscoverySourceId.and.returnValue(null);
       headingService.post.and.rejectValue(new Error('custom error'));
 
       const host = 'ethercis';
@@ -203,7 +203,7 @@ describe('ripple-cdr-openehr/lib/services/discoveryService', () => {
     it('should return false when non ok response from OpenEHR server', async () => {
       const expected = false;
 
-      discoveryDb.getSourceIdByDiscoverySourceId.and.resolveValue(null);
+      discoveryDb.getSourceIdByDiscoverySourceId.and.returnValue(null);
       headingService.post.and.resolveValue({ ok: false });
 
       const host = 'ethercis';
@@ -240,9 +240,9 @@ describe('ripple-cdr-openehr/lib/services/discoveryService', () => {
         compositionUid: '188a6bbe-d823-4fca-a79f-11c64af5c2e6::vm01.ethercis.org::1'
       };
 
-      discoveryDb.getSourceIdByDiscoverySourceId.and.resolveValue(null);
+      discoveryDb.getSourceIdByDiscoverySourceId.and.returnValue(null);
       headingService.post.and.resolveValue(response);
-      discoveryDb.insert.and.resolveValue();
+      discoveryDb.insert.and.returnValue();
 
       const host = 'ethercis';
       const patientId = 9999999000;
@@ -294,7 +294,7 @@ describe('ripple-cdr-openehr/lib/services/discoveryService', () => {
       const dbData = {
         discovery: '3020ad3c-8072-4b38-95f7-d8adbbbfb07a'
       };
-      discoveryDb.getBySourceId.and.resolveValue(dbData);
+      discoveryDb.getBySourceId.and.returnValue(dbData);
 
       const sourceId = 'ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d';
       await discoveryService.delete(sourceId);
@@ -314,7 +314,7 @@ describe('ripple-cdr-openehr/lib/services/discoveryService', () => {
         'marand-0f7192e9-168e-4dea-812a-3e1d236ae46d'
       ];
 
-      discoveryDb.getAllSourceIds.and.resolveValue([
+      discoveryDb.getAllSourceIds.and.returnValue([
         'ethercis-3020ad3c-8072-4b38-95f7-d8adbbbfb07a',
         'marand-0f7192e9-168e-4dea-812a-3e1d236ae46d'
       ]);
@@ -332,7 +332,7 @@ describe('ripple-cdr-openehr/lib/services/discoveryService', () => {
         'ethercis-3020ad3c-8072-4b38-95f7-d8adbbbfb07a'
       ];
 
-      discoveryDb.getSourceIds.and.resolveValue([
+      discoveryDb.getSourceIds.and.returnValue([
         'ethercis-3020ad3c-8072-4b38-95f7-d8adbbbfb07a'
       ]);
 
@@ -350,7 +350,7 @@ describe('ripple-cdr-openehr/lib/services/discoveryService', () => {
         foo: 'bar'
       };
 
-      discoveryDb.getBySourceId.and.resolveValue({
+      discoveryDb.getBySourceId.and.returnValue({
         foo: 'bar'
       });
 

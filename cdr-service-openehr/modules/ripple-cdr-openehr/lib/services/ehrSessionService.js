@@ -57,7 +57,7 @@ class EhrSessionService {
     const now = new Date().getTime();
 
     // when starting a session, try to use a cached one instead if possible
-    const cachedSession = await this.sessionCache.get(host);
+    const cachedSession = this.sessionCache.get(host);
     if (cachedSession) {
       if ((now - cachedSession.creationTime) < config.openehr.sessionTimeout) {
         // should be OK to use cached session
@@ -71,7 +71,7 @@ class EhrSessionService {
       debug('deleting expired cached session for %s', host);
       await this.stop(host, cachedSession.id);
 
-      await this.sessionCache.delete(host);
+      this.sessionCache.delete(host);
     }
 
     const ehrRestService = this.ctx.rest[host];
@@ -85,7 +85,7 @@ class EhrSessionService {
       creationTime: now,
       id: data.sessionId
     };
-    await this.sessionCache.set(host, session);
+    this.sessionCache.set(host, session);
     debug('session %s for %s host has been cached', host, data.sessionId);
 
     return {
@@ -104,7 +104,7 @@ class EhrSessionService {
     logger.info('services/ehrSessionService|stop', { host, sessionId });
 
     const now = new Date().getTime();
-    const cachedSession = await this.sessionCache.get(host);
+    const cachedSession = this.sessionCache.get(host);
 
     // only stop sessions that are over `sessionTimeout` old
     if (cachedSession) {
@@ -117,7 +117,7 @@ class EhrSessionService {
 
       // remove cached session id and continue to send request to shut it down on OpenEHR system
       debug('shutting down session for %s', host);
-      await this.sessionCache.delete(host);
+      this.sessionCache.delete(host);
     }
 
     const ehrRestService = this.ctx.rest[host];

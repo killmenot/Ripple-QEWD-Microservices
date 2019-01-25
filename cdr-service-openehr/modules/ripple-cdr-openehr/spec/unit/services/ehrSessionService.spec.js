@@ -76,7 +76,7 @@ describe('ripple-cdr-openehr/lib/services/ehrSessionService', () => {
         sessionId: '03134cc0-3741-4d3f-916a-a279a24448e5'
       };
 
-      sessionCache.get.and.resolveValue({
+      sessionCache.get.and.returnValue({
         id: '03134cc0-3741-4d3f-916a-a279a24448e5',
         creationTime: nowTime - config.openehr.sessionTimeout / 2
       });
@@ -95,7 +95,7 @@ describe('ripple-cdr-openehr/lib/services/ehrSessionService', () => {
 
       spyOn(ehrSessionService, 'stop');
 
-      sessionCache.get.and.resolveValue({
+      sessionCache.get.and.returnValue({
         id: '03134cc0-3741-4d3f-916a-a279a24448e5',
         creationTime: nowTime - config.openehr.sessionTimeout * 2
       });
@@ -170,7 +170,7 @@ describe('ripple-cdr-openehr/lib/services/ehrSessionService', () => {
     it('should return false when session is not over the timeout', async () => {
       const expected = false;
 
-      sessionCache.get.and.resolveValue({
+      sessionCache.get.and.returnValue({
         id: '03134cc0-3741-4d3f-916a-a279a24448e5',
         creationTime: nowTime - config.openehr.sessionTimeout / 2
       });

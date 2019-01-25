@@ -119,7 +119,7 @@ class HeadingService {
     debug('data: %j', data);
 
     const { headingCache } = this.ctx.cache;
-    const dbData = await headingCache.bySourceId.get(sourceId);
+    const dbData = headingCache.bySourceId.get(sourceId);
     if (!dbData) {
       throw new NotFoundError(`No existing ${heading} record found for sourceId: ${sourceId}`);
     }
@@ -219,7 +219,7 @@ class HeadingService {
     let responseObj = {};
 
     const { headingCache } = this.ctx.cache;
-    const dbData = await headingCache.bySourceId.get(sourceId);
+    const dbData = headingCache.bySourceId.get(sourceId);
     if (!dbData) return responseObj;
 
     const heading = dbData.heading;
@@ -262,12 +262,12 @@ class HeadingService {
       responseObj.sourceId = sourceId;
 
       dbData.pulsetile = responseObj;
-      await headingCache.bySourceId.set(sourceId, dbData);
+      headingCache.bySourceId.set(sourceId, dbData);
     }
 
     // check if this is a mapped record from discovery
     const { discoveryDb } = this.ctx.db;
-    const found = await discoveryDb.checkBySourceId(sourceId);
+    const found = discoveryDb.checkBySourceId(sourceId);
     if (found) {
       responseObj.source = 'GP';
     }
@@ -308,10 +308,10 @@ class HeadingService {
     logger.info('services/headingService|getSummary', { patientId, heading });
 
     const { headingCache } = this.ctx.cache;
-    const sourceIds = await headingCache.byHost.getAllSourceIds(patientId, heading);
+    const sourceIds = headingCache.byHost.getAllSourceIds(patientId, heading);
 
     const results = await P.mapSeries(sourceIds, x => this.getBySourceId(x, ResponseFormat.SUMMARY));
-    const fetchCount = await headingCache.fetchCount.increment(patientId, heading);
+    const fetchCount = headingCache.fetchCount.increment(patientId, heading);
 
     return {
       results,
@@ -352,7 +352,7 @@ class HeadingService {
     logger.info('services/headingService|getSynopsis', { patientId, heading, limit });
 
     const { headingCache } = this.ctx.cache;
-    const sourceIds = await headingCache.byDate.getAllSourceIds(patientId, heading, { limit });
+    const sourceIds = headingCache.byDate.getAllSourceIds(patientId, heading, { limit });
 
     const results = await P.mapSeries(sourceIds, x => this.getBySourceId(x, ResponseFormat.SYNOPSIS));
 
@@ -413,14 +413,14 @@ class HeadingService {
 
     const { headingCache } = this.ctx.cache;
 
-    const exists = await headingCache.byHost.exists(patientId, heading, host);
+    const exists = headingCache.byHost.exists(patientId, heading, host);
     if (exists) return null;
 
     try {
       const data = await this.query(host, patientId, heading);
       const now = Date.now();
 
-      await P.each(data, async (result) => {
+      data.forEach((result) => {
         if (heading === Heading.COUNTS) {
           result.uid = result.ehrId + '::';
           result.dateCreated = now;
@@ -440,9 +440,9 @@ class HeadingService {
             uid: result.uid
           };
 
-          await headingCache.byHost.set(patientId, heading, host, sourceId);
-          await headingCache.byDate.set(patientId, heading, date, sourceId);
-          await headingCache.bySourceId.set(sourceId, dbData);
+          headingCache.byHost.set(patientId, heading, host, sourceId);
+          headingCache.byDate.set(patientId, heading, date, sourceId);
+          headingCache.bySourceId.set(sourceId, dbData);
         }
       });
 
@@ -468,7 +468,7 @@ class HeadingService {
 
     const { headingCache } = this.ctx.cache;
 
-    const dbData = await headingCache.bySourceId.get(sourceId);
+    const dbData = headingCache.bySourceId.get(sourceId);
     if (!dbData) {
       throw new NotFoundError(`No existing ${heading} record found for sourceId: ${sourceId}`);
     }
@@ -487,10 +487,10 @@ class HeadingService {
     const ehrRestService = this.ctx.rest[host];
     await ehrRestService.deleteHeading(sessionId, compositionId);
 
-    await headingCache.byHost.delete(patientId, heading, host, sourceId);
-    await headingCache.byDate.delete(patientId, heading, date, sourceId);
-    await headingCache.bySourceId.delete(sourceId);
-    await headingCache.byHeading.delete(heading, sourceId);
+    headingCache.byHost.delete(patientId, heading, host, sourceId);
+    headingCache.byDate.delete(patientId, heading, date, sourceId);
+    headingCache.bySourceId.delete(sourceId);
+    headingCache.byHeading.delete(heading, sourceId);
 
     await ehrSessionService.stop(host, sessionId);
 
