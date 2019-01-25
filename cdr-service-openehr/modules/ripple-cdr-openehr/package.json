@@ -12,11 +12,11 @@
   "nyc": {
     "all": true,
     "include": [
+      "headings/**/*.js",
       "lib/**/*.js",
       "modules/**/*.js"
     ],
     "exclude": [
-      "lib/headings/**/*.js",
       "lib/jumper/**/*.js"
     ]
   },
@@ -29,8 +29,7 @@
     "qewd-transform-json": "^1.10.0",
     "request": "^2.87.0",
     "valid-url": "^1.0.9",
-    "winston": "^3.1.0",
-    "winston-daily-rotate-file": "^3.6.0"
+    "winston": "^3.1.0"
   },
   "devDependencies": {
     "coveralls": "^3.0.0",
@@ -38,12 +37,10 @@
     "ewd-document-store": "^1.24.0",
     "ewd-memory-globals": "^1.0.3",
     "ewd-session": "^2.19.0",
-    "glob": "^7.1.2",
     "jasmine": "^3.3.1",
     "jasmine-spec-reporter": "^4.1.1",
     "jasmine-spy-matchers": "^2.2.0",
     "jshint": "^2.9.7",
-    "mock-fs": "^4.5.0",
     "mockery": "^2.1.0",
     "nock": "^10.0.4",
     "nyc": "^13.1.0"
