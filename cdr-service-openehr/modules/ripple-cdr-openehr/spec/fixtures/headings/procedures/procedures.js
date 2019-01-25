@@ -30,7 +30,7 @@
 
 'use strict';
 
-const dateTime = require('../../../lib/shared/dateTime');
+const dateTime = require('../../../../lib/shared/dateTime');
 
 module.exports = {
   name: 'procedures',
