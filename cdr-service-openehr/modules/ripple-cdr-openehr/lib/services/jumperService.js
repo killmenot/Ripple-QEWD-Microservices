@@ -113,7 +113,7 @@ class JumperService {
       };
 
       jumper.query.call(this.ctx.worker, params, (responseObj) => {
-        if (responseObj.error) return reject(responseObj);
+        if (responseObj && responseObj.error) return reject(responseObj);
 
         return resolve(responseObj);
       });
