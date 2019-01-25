@@ -424,7 +424,8 @@ class HeadingService {
       const data = await this.query(host, patientId, heading);
       const now = Date.now();
 
-      data.forEach((result) => {
+      // data is empty when query handled by jumper
+      (data || []).forEach((result) => {
         if (heading === Heading.COUNTS) {
           result.uid = result.ehrId + '::';
           result.dateCreated = now;
