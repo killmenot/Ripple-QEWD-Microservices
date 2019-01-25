@@ -68,6 +68,7 @@ class HeadingService {
 
     const { jumperService } = this.ctx.services;
     const jumper = jumperService.check(heading, 'post');
+    logger.debug('jumper post status:', { jumper });
 
     if (jumper.ok) {
       return jumperService.post(host, patientId, heading, data);
@@ -131,6 +132,7 @@ class HeadingService {
 
     const { jumperService } = this.ctx.services;
     const jumper = jumperService.check(heading, 'put');
+    logger.debug('jumper put status:', { jumper });
 
     if (jumper.ok) {
       return jumperService.put(host, patientId, heading, compositionId, data);
@@ -181,6 +183,7 @@ class HeadingService {
 
     const { jumperService } = this.ctx.services;
     const jumper = jumperService.check(heading, 'query');
+    logger.debug('jumper query status:', { jumper });
 
     if (jumper.ok) {
       return jumperService.query(host, patientId, heading);
@@ -236,6 +239,7 @@ class HeadingService {
 
     const { jumperService } = this.ctx.services;
     const jumper = jumperService.check(heading, 'getBySourceId');
+    logger.debug('jumper getBySourceId status:', { jumper });
 
     const synopsisField = jumper.ok && jumper.synopsisField
       ? jumper.synopsisField
