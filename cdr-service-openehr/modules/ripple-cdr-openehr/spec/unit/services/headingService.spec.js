@@ -594,7 +594,7 @@ describe('ripple-cdr-openehr/lib/services/headingService', () => {
 
     it('should throw unprocessable entity error when heading not recognised, or no GET definition availables', async () => {
       const dbData = {
-        heading: 'proms',
+        heading: 'proms-test',
         host: 'ethercis',
         data: {
           uid: '0f7192e9-168e-4dea-812a-3e1d236ae46d::vm01.ethercis.org::1'
@@ -607,7 +607,7 @@ describe('ripple-cdr-openehr/lib/services/headingService', () => {
       const actual = headingService.getBySourceId(sourceId);
 
       await expectAsync(actual).toBeRejectedWith(
-        new UnprocessableEntityError('heading proms not recognised, or no GET definition available')
+        new UnprocessableEntityError('heading proms-test not recognised, or no GET definition available')
       );
 
       expect(headingCache.bySourceId.get).toHaveBeenCalledWith('ethercis-0f7192e9-168e-4dea-812a-3e1d236ae46d');

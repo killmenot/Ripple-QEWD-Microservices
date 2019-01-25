@@ -24,11 +24,11 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  22 December 2018
+  25 January 2019
 
 */
 
-var dateTime = require('../../shared/dateTime');
+var dateTime = require('../../lib/shared/dateTime');
 
 module.exports = {
   name: 'eolcareplans',
