@@ -39,7 +39,7 @@ const aql = {};
 function getHeadingDir() {
   return process.env.NODE_ENV === 'test'
     ? '../../spec/headings'
-    : '../headings';
+    : '../../headings';
 }
 
 function loadHeadingModule(heading) {
