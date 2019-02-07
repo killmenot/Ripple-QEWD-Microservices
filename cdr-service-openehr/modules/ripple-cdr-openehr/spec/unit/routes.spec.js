@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  22 December 2018
+  7 February 2019
 
 */
 
@@ -45,7 +45,7 @@ describe('ripple-cdr-openehr/lib/routes', () => {
   });
 
   it('should return correct routes count', () => {
-    const expected = 24;
+    const expected = 25;
     const actual = Object.keys(flatten(routes)).length;
     expect(actual).toBe(expected);
   });
@@ -119,6 +119,12 @@ describe('ripple-cdr-openehr/lib/routes', () => {
   it('GET /api/patients/:patientId/top3Things/:sourceId', () => {
     const expected = require('../../lib/handlers/top3Things/getDetail');
     const actual = resolveHandler('/api/patients/:patientId/top3Things/:sourceId', 'GET');
+    expect(actual).toBe(expected);
+  });
+
+  it('GET /api/hscn/:site/top3Things/:patientId', () => {
+    const expected = require('../../lib/handlers/top3Things/getHscnDetail');
+    const actual = resolveHandler('/api/hscn/:site/top3Things/:patientId', 'GET');
     expect(actual).toBe(expected);
   });
 

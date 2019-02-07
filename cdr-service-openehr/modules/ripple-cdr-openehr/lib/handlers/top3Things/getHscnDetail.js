@@ -28,16 +28,24 @@
 
 */
 
-'use strict';
+const { GetTop3ThingsHscnDetailCommand } = require('../../commands/top3Things');
+const { getResponseError } = require('../../errors');
 
-const getTop3ThingsDetail = require('./getDetail');
-const getTop3ThingsHscnDetail = require('./getHscnDetail');
-const getTop3ThingsSummary = require('./getSummary');
-const postTop3Things = require('./post');
+/**
+ * @param  {Object} args
+ * @param  {Function} finished
+ */
+module.exports = async function getTop3ThingsHscnDetail(args, finished) {
+  try {
+    const command = new GetTop3ThingsHscnDetailCommand(args.req.ctx);
+    const responseObj = await command.execute(args.site, args.patientId, args.req.headers);
 
-module.exports = {
-  getTop3ThingsDetail,
-  getTop3ThingsHscnDetail,
-  getTop3ThingsSummary,
-  postTop3Things
+    finished(responseObj);
+  } catch (err) {
+    const responseError = getResponseError(err);
+
+    finished(responseError);
+  }
 };
+
+

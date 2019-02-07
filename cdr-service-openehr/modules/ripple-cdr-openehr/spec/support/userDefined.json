@@ -13,6 +13,11 @@
       "platform": "ethercis"
     }
   },
+  "sites": {
+    "ltht": {
+      "credentials": "5ebe2294ecd0e0f08eab7690d2a6ee69"
+    }
+  },
   "defaultPostHost": "ethercis",
   "synopsis": {
     "headings": [

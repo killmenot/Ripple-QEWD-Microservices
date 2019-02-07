@@ -30,14 +30,65 @@
 
 'use strict';
 
-const getTop3ThingsDetail = require('./getDetail');
-const getTop3ThingsHscnDetail = require('./getHscnDetail');
-const getTop3ThingsSummary = require('./getSummary');
-const postTop3Things = require('./post');
+const request = require('request');
+const config = require('../config');
+const logger = require('../core/logger');
+const debug = require('debug')('ripple-cdr-openehr:services:openid-rest');
 
-module.exports = {
-  getTop3ThingsDetail,
-  getTop3ThingsHscnDetail,
-  getTop3ThingsSummary,
-  postTop3Things
-};
+function requestAsync(options) {
+  return new Promise((resolve, reject) => {
+    request(options, (err, response, body) => {
+      if (err) return reject(err);
+
+      return resolve(body);
+    });
+  });
+}
+
+class OpenidRestService {
+  constructor(ctx, hostConfig) {
+    this.ctx = ctx;
+    this.hostConfig = hostConfig;
+  }
+
+  static create(ctx) {
+    return new OpenidRestService(ctx, config.oidc);
+  }
+
+  /**
+   * Sends a request to get token introspection
+   *
+   * @param  {string} token
+   * @param  {string} credentials
+   * @return {Promise.<Object>}
+   */
+  async getTokenIntrospection(token, credentials) {
+    logger.info('services/openidRestService|getTokenIntrospection', { token, credentials });
+
+    const options = {
+      url: `${this.hostConfig.url}${this.hostConfig.path}/token/introspection`,
+      method: 'POST',
+      headers: {
+        Authorization: `Basic ${credentials}`
+      },
+      form: {
+        token: token
+      },
+      strictSSL: this.hostConfig.strictSSL
+    };
+
+    const results = await requestAsync(options);
+    debug('results: %s', results);
+
+    let parsed;
+    try {
+      parsed = JSON.parse(results);
+    } catch (err) {
+      parsed = {};
+    }
+
+    return parsed;
+  }
+}
+
+module.exports = OpenidRestService;

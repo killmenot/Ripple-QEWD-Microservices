@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  20 December 2018
+  7 February 2019
 
 */
 
@@ -32,7 +32,7 @@
 
 const checkNhsNumber = require('./handlers/checkNhsNumber');
 const { postFeed, putFeed, getFeedSummary, getFeedDetail } = require('./handlers/feeds');
-const { getTop3ThingsSummary, getTop3ThingsDetail, postTop3Things } = require('./handlers/top3Things');
+const { getTop3ThingsSummary, getTop3ThingsDetail, postTop3Things, getTop3ThingsHscnDetail } = require('./handlers/top3Things');
 const { mergeDiscoveryData, revertDiscoveryData, revertAllDiscoveryData } = require('./handlers/discovery');
 const { getHeadingSummaryFields } = require('./handlers/headings');
 
@@ -79,6 +79,9 @@ module.exports = {
   '/api/patients/:patientId/top3Things/:sourceId': {
     PUT: postTop3Things,
     GET: getTop3ThingsDetail
+  },
+  '/api/hscn/:site/top3Things/:patientId': {
+     GET: getTop3ThingsHscnDetail
   },
   '/api/patients/:patientId/:heading': {
     GET:  getPatientHeadingSummary,

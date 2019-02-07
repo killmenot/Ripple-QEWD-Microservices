@@ -24,18 +24,20 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  22 December 2018
+  7 February 2019
 
 */
 
 'use strict';
 
 const GetTop3ThingsDetailCommand = require('./getDetail');
+const GetTop3ThingsHscnDetailCommand  = require('./getHscnDetail');
 const GetTop3ThingsSummaryCommand  = require('./getSummary');
 const PostTop3ThingsCommand = require('./post');
 
 module.exports = {
   GetTop3ThingsDetailCommand,
+  GetTop3ThingsHscnDetailCommand,
   GetTop3ThingsSummaryCommand,
   PostTop3ThingsCommand
 };

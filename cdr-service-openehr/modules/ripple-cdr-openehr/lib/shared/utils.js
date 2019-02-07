@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  31 December 2018
+  7 February 2019
 
 */
 
@@ -92,9 +92,14 @@ function lazyLoadAdapter(target) {
   });
 }
 
+function parseAccessToken(authorization) {
+  return authorization.split('AccessToken ')[1];
+}
+
 module.exports = {
   buildSourceId,
   flatten,
   equals,
-  lazyLoadAdapter
+  lazyLoadAdapter,
+  parseAccessToken
 };

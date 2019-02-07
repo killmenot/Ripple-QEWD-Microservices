@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
- 31 December 2018
+ 7 February 2019
 
 */
 
@@ -88,6 +88,7 @@ describe('ripple-cdr-openehr/lib/index', () => {
       q = new Worker();
 
       req = {
+        path: '',
         session: {
           role: 'admin'
         }
@@ -104,6 +105,16 @@ describe('ripple-cdr-openehr/lib/index', () => {
       q.db.reset();
     });
 
+    it('should return true when access to /api/hscn/* endpoints', () => {
+      const expected = true;
+
+      req.path = '/api/hscn/ltht/top3Things/9999999111';
+
+      const actual = target.beforeMicroServiceHandler.call(q, req, finished);
+
+      expect(actual).toEqual(expected);
+    });
+
     it('should return false when authorization failed', () => {
       const expected = false;
 
@@ -117,7 +128,7 @@ describe('ripple-cdr-openehr/lib/index', () => {
       expect(actual).toEqual(expected);
     });
 
-    it('should return true when access to not /api/my endpoint', () => {
+    it('should return true when access to not /api/my/* endpoints', () => {
       const expected = true;
 
       q.jwt.handlers.validateRestRequest.and.returnValue(true);
@@ -131,7 +142,7 @@ describe('ripple-cdr-openehr/lib/index', () => {
       expect(actual).toEqual(expected);
     });
 
-    it('should return true when phr user access to /api/my*', () => {
+    it('should return true when phr user access to /api/my* endpoints', () => {
       const expected = true;
 
       q.jwt.handlers.validateRestRequest.and.returnValue(true);

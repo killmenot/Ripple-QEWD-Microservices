@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  20 December 2018
+  7 February 2019
 
 */
 
@@ -134,7 +134,7 @@ function isTop3ThingsPayloadValid(payload) {
 }
 
 /**
- * Returns true if heading valid. Otherwise throw an error
+ * Returns true if heading valid. Otherwise returns an error
  *
  * @param  {Object}  headingsConfig
  * @param  {string}  heading
@@ -154,6 +154,23 @@ function isGuid(s) {
   const regexGuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
   return regexGuid.test(s);
+}
+
+/**
+ * Returns true if site valid. Otherwise returns error
+ *
+ * @param  {Object}  sitesConfig
+ * @param  {string}  site
+ * @return {Boolean}
+ */
+function isSiteValid(sitesConfig, site) {
+  if (!site || !sitesConfig[site]) {
+    return respondErr('Invalid site');
+  }
+
+  return {
+    ok: true
+  };
 }
 
 function isSourceIdValid(sourceId) {
@@ -181,5 +198,6 @@ module.exports = {
   isTop3ThingsPayloadValid,
   isHeadingValid,
   isGuid,
+  isSiteValid,
   isSourceIdValid
 };

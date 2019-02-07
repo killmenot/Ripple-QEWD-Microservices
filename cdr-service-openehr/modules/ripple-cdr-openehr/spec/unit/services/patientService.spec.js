@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  25 January 2019
+  7 February 2019
 
 */
 
@@ -34,7 +34,7 @@ const { ExecutionContextMock } = require('../../mocks');
 const { EhrIdNotFoundError } = require('../../../lib/errors');
 const PatientService = require('../../../lib/services/patientService');
 
-describe('ripple-cdr-openehr/lib/services/statusService', () => {
+describe('ripple-cdr-openehr/lib/services/patientService', () => {
   let ctx;
   let patientService;
 

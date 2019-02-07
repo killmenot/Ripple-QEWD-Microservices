@@ -24,11 +24,25 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  20 December 2018
+  7 February 2019
 
 */
 
 'use strict';
+
+// NOTE: ak 07/02/2019 not the best idea but should work
+const globalConfig = process.env.NODE_ENV === 'test'
+  ? require('../../spec/support/configuration.json')
+  : require('/opt/qewd/mapped/settings/configuration.json');
+const oidc = globalConfig.phr.microservices.openid_connect;
+
+function normalizeHost(host, port) {
+  if (port === 80 || port === 443) {
+    return host;
+  }
+
+  return `${host}:${port}`;
+}
 
 module.exports = {
 
@@ -39,6 +53,12 @@ module.exports = {
      * @type {string}
      */
     defaultLevel: 'debug'
+  },
+
+  oidc: {
+    url: normalizeHost(oidc.host, oidc.port),
+    path: oidc.path_prefix,
+    strictSSL: false
   },
 
   openehr: {

@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  25 January 2019
+  7 February 2019
 
 */
 
@@ -44,6 +44,8 @@ module.exports = {
 
   beforeMicroServiceHandler(req, finished) {
     logger.info('beforeMicroServiceHandler');
+
+    if (req.path.startsWith('/api/hscn/')) return true;
 
     const authorized = this.jwt.handlers.validateRestRequest.call(this, req, finished);
     if (authorized) {

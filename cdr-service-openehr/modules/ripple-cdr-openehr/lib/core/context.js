@@ -24,7 +24,7 @@
  |  limitations under the License.                                          |
  ----------------------------------------------------------------------------
 
-  25 January 2019
+  7 February 2019
 
 */
 
@@ -69,6 +69,10 @@ class ExecutionContext {
 
   get serversConfig() {
     return this.userDefined.openehr;
+  }
+
+  get sitesConfig() {
+    return this.userDefined.sites;
   }
 
   get activeSessions() {

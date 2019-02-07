@@ -30,14 +30,55 @@
 
 'use strict';
 
-const getTop3ThingsDetail = require('./getDetail');
-const getTop3ThingsHscnDetail = require('./getHscnDetail');
-const getTop3ThingsSummary = require('./getSummary');
-const postTop3Things = require('./post');
+const { BadRequestError, ForbiddenError } = require('../../errors');
+const { parseAccessToken } = require('../../shared/utils');
+const { isPatientIdValid, isSiteValid } = require('../../shared/validation');
+const debug = require('debug')('ripple-cdr-openehr:commands:top3things:get-hscn-detail');
 
-module.exports = {
-  getTop3ThingsDetail,
-  getTop3ThingsHscnDetail,
-  getTop3ThingsSummary,
-  postTop3Things
-};
+class GetTop3ThingsHscnDetailCommand {
+  constructor(ctx) {
+    this.ctx = ctx;
+  }
+
+  /**
+   * @param  {string} site
+   * @param  {string} patientId
+   * @param  {Object} headers
+   * @return {Promise.<Object>}
+   */
+  async execute(site, patientId, headers) {
+    debug('site: %s, patientId: %s', site, patientId);
+    debug('headers: %j', headers);
+
+    // Exteral request for Top 3 Things, eg from LTHT
+    // Must be authenticated with an Access Token
+
+    const sitesConfig = this.ctx.sitesConfig;
+    const siteValid = isSiteValid(sitesConfig, site);
+    if (!siteValid.ok) {
+      throw new BadRequestError(siteValid.error);
+    }
+
+    // confirm token on OpenID Connect Server
+    const { openidRestService } = this.ctx.services;
+
+    const siteConfig = sitesConfig[site];
+    const token = parseAccessToken(headers.authorization);
+    const results = await openidRestService.getTokenIntrospection(token, siteConfig.credentials);
+    if (results.active !== true) {
+      throw new ForbiddenError('Invalid request');
+    }
+
+    const valid = isPatientIdValid(patientId);
+    if (!valid.ok) {
+      throw new BadRequestError(valid.error);
+    }
+
+    const { top3ThingsService } = this.ctx.services;
+    const responseObj = await top3ThingsService.getLatestDetailByPatientId(patientId);
+
+    return responseObj;
+  }
+}
+
+module.exports = GetTop3ThingsHscnDetailCommand;
