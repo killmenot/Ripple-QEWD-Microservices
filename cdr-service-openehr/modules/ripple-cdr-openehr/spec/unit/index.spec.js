@@ -112,6 +112,7 @@ describe('ripple-cdr-openehr/lib/index', () => {
 
       const actual = target.beforeMicroServiceHandler.call(q, req, finished);
 
+      expect(req.ctx instanceof ExecutionContext).toBe(true);
       expect(actual).toEqual(expected);
     });
 

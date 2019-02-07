@@ -45,7 +45,11 @@ module.exports = {
   beforeMicroServiceHandler(req, finished) {
     logger.info('beforeMicroServiceHandler');
 
-    if (req.path.startsWith('/api/hscn/')) return true;
+    if (req.path.startsWith('/api/hscn/')) {
+      req.ctx = new ExecutionContext(this);
+
+      return true;
+    }
 
     const authorized = this.jwt.handlers.validateRestRequest.call(this, req, finished);
     if (authorized) {
